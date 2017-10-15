@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.reg.dao.RegisterDao">
+    
+	<sql id="registerColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.type AS "type",
+		a.login_code AS "loginCode",
+		a.login_pass AS "loginPass",
+		a.parent_id AS "parentId",
+		a.email AS "email",
+		a.mobile_phone AS "mobilePhone",
+		a.name AS "name",
+		a.short_name AS "shortName",
+		a.contact AS "contact",
+		a.status AS "status",
+		a.cert_nbr AS "certNbr",
+		a.cert_pic1 AS "certPic1",
+		a.cert_pic2 AS "certPic2",
+		a.memcert_pic AS "memcertPic",
+		a.card_nbr AS "cardNbr",
+		a.card_pic1 AS "cardPic1",
+		a.card_pic2 AS "cardPic2",
+		a.addr AS "addr",
+		a.category AS "category",
+		a.settle_type as "settleType",
+		a.province AS "province",
+		a.city AS "city",
+		a.county AS "county",
+		a.bank_id AS "bankId",
+		a.sub_id AS "subId",
+		a.bank_open AS "bankOpen",
+		a.account_name AS "accountName",
+		a.account_number AS "accountNumber",
+		a.pay_code AS "payCode",
+		a.wx_member_code AS "wxMemberCode",
+		a.zfb_member_code AS "zfbMemberCode",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u.name AS "updateBy.name",
+		o.name AS "office.name"
+	</sql>
+	
+	<sql id="registerJoins">
+		LEFT JOIN  bu_epay_code b ON b.pay_code = a.pay_code
+		LEFT JOIN sys_office o ON o.id = b.office_id
+		LEFT JOIN sys_user u ON u.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="Register">
+		SELECT 
+			<include refid="registerColumns"/>
+		FROM bu_register_tmp a
+		<include refid="registerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Register">
+		SELECT 
+			<include refid="registerColumns"/>
+		FROM bu_register_tmp a
+		<include refid="registerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND (a.status = '0' OR a.status = '2')
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND a.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="contact != null and contact != ''">
+				AND a.contact = #{contact}
+			</if>
+			<if test="certNbr != null and certNbr != ''">
+				AND a.cert_nbr = #{certNbr}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date &gt;= #{createDate}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Register">
+		SELECT 
+			<include refid="registerColumns"/>
+		FROM bu_register_tmp a
+		<include refid="registerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="registerAudit">
+		UPDATE bu_register_tmp SET 	
+			status = #{status}
+			<if test="remarks != null and remarks != ''">
+				,remarks = #{remarks}
+			</if>
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+		and id = #{id}
+	</update>
+		
+	<insert id="insert">
+		INSERT INTO bu_register_tmp(
+			id,
+			code,
+			type,
+			login_code,
+			login_pass,
+			parent_id,
+			email,
+			mobile_phone,
+			name,
+			contact,
+			cert_nbr,
+			cert_pic1,
+			cert_pic2,
+			memcert_pic,
+			card_nbr,
+			card_pic1,
+			card_pic2,
+			addr,
+			province,
+			city,
+			county,
+			bank_id,
+			sub_id,
+			bank_open,
+			account_name,
+			account_number,
+			pay_code,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{code},
+			#{type},
+			#{loginCode},
+			#{loginPass},
+			#{parentId},
+			#{email},
+			#{mobilePhone},
+			#{name},
+			#{contact},
+			#{certNbr},
+			#{certPic1},
+			#{certPic2},
+			#{memcertPic},
+			#{cardNbr},
+			#{cardPic1},
+			#{cardPic2},
+			#{addr},
+			#{province},
+			#{city},
+			#{county},
+			#{bankId},
+			#{subId},
+			#{bankOpen},
+			#{accountName},
+			#{accountNumber},
+			#{payCode},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_register_tmp SET 	
+			id = #{id},
+			code = #{code},
+			type = #{type},
+			login_code = #{loginCode},
+			login_pass = #{loginPass},
+			parent_id = #{parentId},
+			email = #{email},
+			mobile_phone = #{mobilePhone},
+			name = #{name},
+			contact = #{contact},
+			cert_nbr = #{certNbr},
+			cert_pic1 = #{certPic1},
+			cert_pic2 = #{certPic2},
+			memcert_pic = #{memcertPic},
+			card_nbr = #{cardNbr},
+			card_pic1 = #{cardPic1},
+			card_pic2 = #{cardPic2},
+			addr = #{addr},
+			province = #{province},
+			city = #{city},
+			county = #{county},
+			bank_id = #{bankId},
+			sub_id = #{subId},
+			bank_open = #{bankOpen},
+			account_name = #{accountName},
+			account_number = #{accountNumber},
+			pay_code = #{payCode},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_register_tmp SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

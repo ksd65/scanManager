@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.AgentConfigDao">
+    
+	<sql id="agentConfigColumns">
+		a.id AS "id",
+		a.agent_id AS "agentId",
+		a.agent_name AS "agentName",
+		a.agent_short_name AS "agentShortName",
+		a.agent_copyright AS "agentCopyright",
+		a.url AS "url",
+		a.epaycode_url_name AS "epaycodeUrlName",
+		a.epaycode_img AS "epaycodeImg",
+		a.agent_url_name AS "agentUrlName",
+		a.agent_img AS "agentImg",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="agentConfigJoins">
+	</sql>
+    
+	<select id="get" resultType="AgentConfig">
+		SELECT 
+			<include refid="agentConfigColumns"/>
+		FROM sys_agent_config a
+		<include refid="agentConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AgentConfig">
+		SELECT 
+			<include refid="agentConfigColumns"/>
+		FROM sys_agent_config a
+		<include refid="agentConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="agentId != null and agentId != ''">
+				AND a.agent_id = #{agentId}
+			</if>
+			<if test="agentName != null and agentName != ''">
+				AND a.agent_name = #{agentName}
+			</if>
+			<if test="agentShortName != null and agentShortName != ''">
+				AND a.agent_short_name = #{agentShortName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByUrl" resultType="AgentConfig">
+		SELECT 
+			<include refid="agentConfigColumns"/>
+		FROM sys_agent_config a
+		<include refid="agentConfigJoins"/>
+		WHERE a.url = #{url}
+	</select> 
+	
+	<select id="findAllList" resultType="AgentConfig">
+		SELECT 
+			<include refid="agentConfigColumns"/>
+		FROM sys_agent_config a
+		<include refid="agentConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_agent_config(
+			agent_id,
+			agent_name,
+			agent_short_name,
+			agent_copyright,
+			url,
+			epaycode_url_name,
+			epaycode_img,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{agentId},
+			#{agentName},
+			#{agentShortName},
+			#{agentCopyright},
+			#{url},
+			#{epaycodeUrlName},
+			#{epaycodeImg},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_agent_config SET 	
+			agent_id = #{agentId},
+			agent_name = #{agentName},
+			agent_short_name = #{agentShortName},
+			agent_copyright = #{agentCopyright},
+			url = #{url},
+			epaycode_url_name = #{epaycodeUrlName},
+			epaycode_img = #{epaycodeImg},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_agent_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="getAgentConfigByAgtCode" resultType="AgentConfig" parameterType="String">
+	    SELECT
+			<include refid="agentConfigColumns"/>
+		FROM sys_agent_config a
+		<include refid="agentConfigJoins"/>
+		WHERE a.del_flag = 0 AND a.agent_id = #{agtCode}
+	</select>
+</mapper>

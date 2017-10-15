@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.PayBillMonthProfitRptDao">
+    
+    <sql id="payBillMonthProfitRptColumns">
+		a.month AS "month",
+		a.d0_count AS "d0Count",
+		a.d0_amount AS "d0Amount",
+		a.t1_count AS "t1Count",
+		a.t1_amount AS "t1Amount",
+		a.total_count AS "totalCount",
+		a.total_amount AS "totalAmount"
+    </sql>
+    
+    <sql id="payBillMonthProfitRptJoins">
+		
+	</sql>
+	
+    <select id="get" resultType="PayBillMonthProfitRpt">
+    	
+    </select>
+    
+    <!-- 月利润统计 -->
+    <select id="findList" resultType="PayBillMonthProfitRpt">
+        select
+	        a.month AS "month",
+	        a.office_id AS "office.id",
+	        a.code AS "office.code",
+	        a.name AS "office.name",
+
+	        a.d0_amount AS "d0Amount",
+	        a.t1_amount AS "t1Amount",
+	        a.ml_wjf_amount AS "mlWjfAmount",
+	        a.ml_jf_amount AS "mlJfAmount",
+	        a.total_amount AS "totalAmount",
+
+	        a.d0_profit AS "d0Profit",
+	        a.t1_profit AS "t1Profit",
+	        a.ml_wjf_profit AS "mlWjfProfit",
+	        a.ml_jf_profit AS "mlJfProfit",
+	        a.total_profit AS "totalProfit"
+
+        from rpt_pay_bill_profit a
+		LEFT JOIN (
+			select id,parent_id,parent_ids 
+			from sys_office 
+			where del_flag = '0' and (agt_type = '1' or agt_type = '2' or agt_type = '3')
+		) o ON o.id = a.office_id
+		<where>
+		    a.month = #{month}
+		    <if test="isAdmin != null and isAdmin != ''">
+		      AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		    </if>
+		    <if test="isAdmin == null or isAdmin == ''">
+		      AND o.parent_id = #{office.id}
+		    </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.code
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findAllList" resultType="PayBillMonthProfitRpt">
+    </select>
+    
+    <!-- 
+    	吴逢生 2017-03-12
+    	查询利润明细 -->
+    <select id="findProfitDetailList" resultType="PayBillMonthDetailRpt">
+        select 
+        	office.name as "office.name",
+	        t.office_id as "office.id",
+	        t.settle_date as "settleDate",
+	        t.code AS "code",
+	        m.name AS "memberName",
+			sum(CASE t.trans_type WHEN '0' THEN profit ELSE 0 END) as "t1Amount",
+			sum(CASE t.trans_type WHEN '1' THEN profit ELSE 0 END) as "t1Profit",
+			sum(CASE t.trans_type WHEN '2' THEN profit ELSE 0 END) as "d0Amount",
+			sum(CASE t.trans_type WHEN '3' THEN profit ELSE 0 END) as "d0Profit",
+			
+			sum(CASE t.trans_type WHEN '4' THEN profit ELSE 0 END) as "mlJfAmount",
+			sum(CASE t.trans_type WHEN '5' THEN profit ELSE 0 END) as "mlJfProfit",
+			sum(CASE t.trans_type WHEN '6' THEN profit ELSE 0 END) as "mlWjfAmount",
+			sum(CASE t.trans_type WHEN '7' THEN profit ELSE 0 END) as "mlWjfProfit"
+			
+			FROM(
+				(
+					select  t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'0' as trans_type from (
+							select t.code,t.settle_date,t.office_id,t.amount as profit from rpt_pay_bill_t1 t
+							right join (
+							SELECT o.id,rate.t1_draw_fee,rate.t1_trade_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				union
+				<!-- T1 -->
+				(
+					select  t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'1' as trans_type from (
+							select t.code,t.settle_date,t.office_id,TRUNCATE((case when t.amount >= 2.5 then t.amount * (t.t1_trade_rate - office.t1_trade_rate)
+															 else 0 end),2) as profit from rpt_pay_bill_t1 t
+							right join (
+							SELECT o.id,rate.t1_draw_fee,rate.t1_trade_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				union
+				(
+					select t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'2' as trans_type from (
+							select t.code,t.settle_date,t.office_id,t.amount as profit from rpt_withdraw_bill t
+							right join (
+							SELECT o.id,rate.t0_draw_fee,rate.t0_trade_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				
+				<!-- T0 -->
+				union
+				(
+					select  t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'3' as trans_type from (
+							select t.code,t.settle_date,t.office_id,TRUNCATE((t.amount * (t.t0_trade_rate - office.t0_trade_rate) + (t.t0_draw_fee - office.t0_draw_fee)),2) as profit from rpt_withdraw_bill t
+							right join (
+							SELECT o.id,rate.t0_draw_fee,rate.t0_trade_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				<!-- 快捷(有积分) -->
+				union
+				(
+					select t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'4' as trans_type from (
+							select t.code,t.settle_date,t.office_id,t.amount as profit from rpt_pay_bill_ml_jf t
+							right join (
+							SELECT o.id,rate.t0_draw_fee,rate.t0_trade_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				union
+				(
+					select  t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'5' as trans_type from (
+							select t.code,t.settle_date,t.office_id,TRUNCATE((t.amount * (t.ml_jf_rate - office.ml_jf_rate) + (t.ml_jf_fee - office.ml_jf_fee)),2) as profit from rpt_pay_bill_ml_jf t
+							right join (
+							SELECT o.id,rate.bonus_quick_fee as ml_jf_fee,rate.bonus_quick_rate as ml_jf_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				<!-- 快捷(无积分) -->
+				union
+				(
+					select t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'6' as trans_type from (
+							select t.code,t.settle_date,t.office_id,t.amount as profit from rpt_pay_bill_ml_wjf t
+							right join (
+							SELECT o.id,rate.t0_draw_fee,rate.t0_trade_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				union
+				(
+					select  t.code,sum(t.profit) as profit,t.settle_date,t.office_id,'7' as trans_type from (
+							select t.code,t.settle_date,t.office_id,TRUNCATE((t.amount * (t.ml_wjf_rate - office.ml_wjf_rate) + (t.ml_wjf_fee - office.ml_wjf_fee)),2) as profit from rpt_pay_bill_ml_wjf t
+							right join (
+							SELECT o.id,rate.quick_fee as ml_wjf_fee,rate.quick_rate as ml_wjf_rate from sys_office o
+							left join (select * from bu_agent_rate where del_flag = '0') rate on rate.office_id = #{office.id}
+							where FIND_IN_SET(#{office.id},o.parent_ids) or o.id = #{office.id}) office on office.id = t.office_id
+							where t.month = #{month}
+					) t
+					group by t.settle_date,t.office_id,t.code
+				)
+				
+			) t
+			left join (select * from bu_member_info where del_flag = '0') m on m.code = t.code
+			left join sys_office office on office.id = t.office_id
+			<where>
+				left(t.settle_date,6) = #{month}
+				AND (office.id=#{office.id} or office.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+				<if test="memberName != null and memberName != ''">
+		        	AND m.name LIKE concat('%',#{memberName},'%')
+		    	</if>
+		  	</where>
+		  	<choose>
+				<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+					ORDER BY ${page.orderBy}
+				</when>
+				<otherwise>
+				    GROUP BY t.office_id,t.settle_date,t.code,office.name
+				</otherwise>
+			</choose>
+    </select>
+    
+</mapper>

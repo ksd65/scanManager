@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.mem.dao.MemberDao">
+    
+	<sql id="memberColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.type AS "type",
+		a.login_code AS "loginCode",
+		a.login_pass AS "loginPass",
+		a.parent_id AS "parent.id",
+		a.email AS "email",
+		a.mobile_phone AS "mobilePhone",
+		a.name AS "name",
+		a.short_name AS "shortName",
+		a.contact AS "contact",
+		a.status AS "status",
+		a.sex_type AS "sexType",
+		a.birthday AS "birthday",
+		a.home_phone AS "homePhone",
+		a.cert_nbr AS "certNbr",
+		a.cert_pic1 AS "certPic1",
+		a.cert_pic2 AS "certPic2",
+		a.memcert_pic AS "memcertPic",
+		a.card_nbr AS "cardNbr",
+		a.card_pic1 AS "cardPic1",
+		a.card_pic2 AS "cardPic2",
+		a.addr AS "addr",
+		a.category AS "category",
+		a.province AS "province",
+		a.city AS "city",
+		a.county AS "county",
+		a.verify_flag AS "verifyFlag",
+		a.wx_route_id AS "wxRouteId",
+		a.wx_member_code AS "wxMemberCode",
+		a.wx_merchant_code AS "wxMerchantCode",
+		a.zfb_route_id AS "zfbRouteId",
+		a.zfb_member_code AS "zfbMemberCode",
+		a.zfb_merchant_code AS "zfbMerchantCode",
+		a.t0_draw_fee AS "t0DrawFee",
+		a.t0_trade_rate AS "t0TradeRate",
+		a.t1_draw_fee AS "t1DrawFee",
+		a.t1_trade_rate AS "t1TradeRate",
+		a.pay_code AS "payCode",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.settle_type as "memberBank.settleType",
+		b.bank_open as "memberBank.bankOpen",
+		b.account_name as "memberBank.accountName",
+		b.account_number as "memberBank.accountNumber",
+		b.create_date as "memberBank.createDate",
+		o.name AS "office.name",
+		o.agt_type AS "office.agtType",
+		o.parent_ids AS "office.parentIds",
+		o.agt_grade AS "office.agtGrade",
+		a.qq_route_id AS "qqRouteId",
+		a.qq_member_code AS "qqMemberCode",
+		a.qq_merchant_code AS "qqMerchantCode",
+		a.wx_status AS "wxStatus",
+		a.zfb_status AS "zfbStatus",
+		a.qq_status AS "qqStatus",
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1",
+		a.bd_route_id AS "bdRouteId",
+		a.bd_member_code AS "bdMemberCode",
+		a.bd_merchant_code AS "bdMerchantCode",
+		a.bd_status AS "bdStatus",
+		a.jd_route_id AS "jdRouteId",
+		a.jd_member_code AS "jdMemberCode",
+		a.jd_merchant_code AS "jdMerchantCode",
+		a.jd_status AS "jdStatus",
+		a.ml_jf_status AS "mlJfStatus",
+		a.ml_jf_fee AS "mlJfFee",
+		a.ml_jf_rate AS "mlJfRate",
+		a.ml_wjf_status AS "mlWjfStatus",
+		a.ml_wjf_fee AS "mlWjfFee",
+		a.ml_wjf_rate AS "mlWjfRate",
+		ap.areaName AS "provinceName",
+		aci.areaName AS "cityName",
+		aco.areaName AS "countyName",
+		a.level AS "level",
+		a.draw_status AS "drawStatus",
+		a.single_limit AS "singleLimit",
+		a.day_limit AS "dayLimit",
+		a.bus_pic AS "busPic",
+		a.head_pic AS "headPic",
+		a.desk_pic AS "deskPic",
+		a.inside_pic AS "insidePic",
+		a.staff_pic AS "staffPic"
+	</sql>
+	
+	<sql id="memberJoins">
+		LEFT JOIN bu_member_bank b ON b.member_id = a.id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = a.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		left join v_agent_level_info oi on oi.id = c.office_id
+		left join bu_area_code ap on ap.areaCode = a.province
+		left join bu_area_code aci on aci.areaCode = a.city
+		left join bu_area_code aco on aco.areaCode = a.county
+	</sql>
+    
+	<select id="get" resultType="Member">
+		SELECT 
+			<include refid="memberColumns"/>
+		FROM bu_member_info a
+		<include refid="memberJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Member">
+		SELECT 
+			<include refid="memberColumns"/>
+		FROM bu_member_info a
+		<include refid="memberJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND a.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="contact != null and contact != ''">
+				AND a.contact = #{contact}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date &gt;= #{createDate}
+			</if>
+			<if test="wxStatus != null and wxStatus != ''">
+				AND a.wx_status = #{wxStatus}
+			</if>
+			<if test="zfbStatus != null and zfbStatus != ''">
+				AND a.zfb_status = #{zfbStatus}
+			</if>
+			<if test="payCode != null and payCode != ''">
+				AND a.pay_code = #{payCode}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND (a.create_date between str_to_date(DATE_FORMAT(#{createDate},'%Y-%m-%d'),'%Y-%m-%d %H:%i:%s')
+				AND DATE_ADD(str_to_date(DATE_FORMAT(#{createDate},'%Y-%m-%d'),'%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY))
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Member">
+		SELECT 
+			<include refid="memberColumns"/>
+		FROM bu_member_info a
+		<include refid="memberJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findBankList" resultType="Member">
+		SELECT 
+			<include refid="memberColumns"/>
+		FROM bu_member_info a
+		<include refid="memberJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_member_info(
+			id,
+			code,
+			type,
+			login_code,
+			login_pass,
+			parent_id,
+			email,
+			mobile_phone,
+			name,
+			contact,
+			status,
+			sex_type,
+			birthday,
+			home_phone,
+			cert_nbr,
+			cert_pic1,
+			cert_pic2,
+			memcert_pic,
+			card_nbr,
+			card_pic1,
+			card_pic2,
+			addr,
+			province,
+			city,
+			county,
+			verify_flag,
+			wx_route_id,
+			zfb_route_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			`level`,
+			draw_status,
+			single_limit,
+			day_limit,
+			bus_pic,
+			head_pic,
+			desk_pic,
+			inside_pic,
+			staff_pic,
+		) VALUES (
+			#{id},
+			#{code},
+			#{type},
+			#{loginCode},
+			#{loginPass},
+			#{parent.id},
+			#{email},
+			#{mobilePhone},
+			#{name},
+			#{contact},
+			#{status},
+			#{sexType},
+			#{birthday},
+			#{homePhone},
+			#{certNbr},
+			#{certPic1},
+			#{certPic2},
+			#{memcertPic},
+			#{cardNbr},
+			#{cardPic1},
+			#{cardPic2},
+			#{addr},
+			#{province},
+			#{city},
+			#{county},
+			#{verifyFlag},
+			#{wxRouteId},
+			#{zfbRouteId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{level},
+			#{drawStatus},
+			#{singleLimit},
+			#{dayLimit},
+			#{busPic},
+			#{headPic},
+			#{deskPic},
+			#{insidePic},
+			#{staffPic},
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_member_info a, bu_member_bank b SET 	
+			mobile_phone = #{mobilePhone},
+			a.name = #{name},
+			a.short_name = #{shortName},
+			a.contact = #{contact},
+			a.status = #{status},
+			a.cert_nbr = #{certNbr},
+			a.cert_pic1 = #{certPic1},
+			a.cert_pic2 = #{certPic2},
+			a.addr = #{addr},
+			a.wx_route_id = #{wxRouteId},
+			a.zfb_route_id = #{zfbRouteId},
+			
+			a.short_name = #{shortName},
+			a.mobile_phone = #{mobilePhone},
+			a.t0_draw_fee = #{t0DrawFee},
+			a.t0_trade_rate = #{t0TradeRate},
+			a.t1_draw_fee = #{t1DrawFee},
+			a.t1_trade_rate = #{t1TradeRate},
+			
+			b.settle_type = #{memberBank.settleType},
+			b.account_number = #{memberBank.accountNumber},
+			b.bank_open = #{memberBank.bankOpen},
+			
+			a.update_by = #{updateBy.id},
+			a.update_date = #{updateDate},
+			b.bank_open =  #{memberBank.bankOpen},
+			b.account_number =  #{memberBank.accountNumber},
+			a.level = #{level},
+			a.draw_status =#{drawStatus},
+			a.single_limit =#{singleLimit},
+			a.day_limit =#{dayLimit},
+			a.bus_pic =#{busPic},
+			a.head_pic =#{headPic},
+			a.desk_pic =#{deskPic},
+			a.inside_pic =#{insidePic},
+			a.staff_pic =#{staffPic}
+
+		WHERE a.id = b.member_id
+		and a.id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_member_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insertMemberBank">
+		INSERT INTO bu_member_bank(
+			id,
+			member_id,
+			bank_id,
+			province,
+			city,
+			sub_id,
+			bank_open,
+			account_name,
+			account_number,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{memberId},
+			#{bankId},
+			#{province},
+			#{city},
+			#{subId},
+			#{bankOpen},
+			#{accountName},
+			#{accountNumber},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<insert id="insertMemberAccount">
+		INSERT INTO bu_account(
+			id,
+			member_id,
+			balance,
+			freeze_money,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{memberId},
+			#{balance},
+			#{freezeMoney},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<select id="getMemberIdByCode" resultType="String">
+		SELECT id
+		FROM bu_member_info a
+		WHERE a.code = #{code}
+	</select>
+	
+	<!-- 吴逢生 2017-04-03 -->
+	<select id="findMonthMemberNum" resultType="Member">
+	    select 
+	    a.tx_month as "txMonth",
+	    a.num as "num"
+	    from rpt_month_member a
+	    <where>
+			a.tx_month >= #{beginMonth} and a.tx_month &lt;= #{endMonth}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.tx_month ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 纪居源  -->
+	
+	<select id="findBankInfoList" resultType="Member">
+		SELECT 
+			<include refid="memberColumns"/>,
+			ba.name AS "bindBankUsername",
+			ba.bank_name AS "bindBankName",
+			ba.acc AS "bindBankNumber",
+			ba.mobile_phone AS "bindBankPhone",
+			ba.create_date AS "bindBankTime"
+		FROM bu_member_info a
+		<include refid="memberJoins"/>
+		right join bu_member_bind_acc ba on ba.member_id = a.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND a.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			
+			<if test="beginBindBankTime != null and beginBindBankTime != ''">
+				AND left(ba.create_date,19) >= #{beginBindBankTime}
+			</if>
+			<if test="endBindBankTime != null and endBindBankTime != ''">
+				AND left(ba.create_date,19) &lt;= #{endBindBankTime}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<update id="disable">
+		UPDATE bu_member_info SET 
+			status = 1
+		WHERE id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.TradeDetailDao">
+    
+	<sql id="tradeDetailColumns">
+		a.id AS "id",
+		a.member_id AS "memberId",
+		b.code AS "memberCode",
+		a.merchant_code AS "merchantCode",
+		a.money AS "money",
+		a.d0_money AS "d0Money",
+		a.d0_member_fee AS "d0MemberFee",
+		a.d0_member_draw AS "d0MemberDraw",
+		a.d0_routeway_fee AS "d0RoutewayFee",
+		a.d0_routeway_draw AS "d0RoutewayDraw",
+		a.t1_money AS "t1Money",
+		a.t1_member_fee AS "t1MemberFee",
+		a.t1_member_draw AS "t1MemberDraw",
+		a.t1_routeway_fee AS "t1RoutewayFee",
+		a.t1_routeway_draw AS "t1RoutewayDraw",
+		a.order_code AS "orderCode",
+		a.txn_type AS "txnType",
+		a.pt_serial_no AS "ptSerialNo",
+		a.req_date AS "reqDate",
+		a.resp_date AS "respDate",
+		a.resp_type AS "respType",
+		a.resp_code AS "respCode",
+		a.resp_msg AS "respMsg",
+		a.card_type AS "cardType",
+		a.route_id AS "routeId",
+		a.pay_time AS "payTime",
+		a.balance_date AS "balanceDate",
+		a.channel_no AS "channelNo",
+		a.settle_type AS "settleType",
+		a.settle_cancel_flag AS "settleCancelFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.code AS "member.code",
+		b.name AS "member.name",
+		b.name AS "memberName",
+		o.name AS "office.name",
+		o.parent_ids AS "office.parentIds",
+		o.agt_grade AS "office.agtGrade",
+		<!--  
+		left(a.req_date,8) AS 
+		-->
+		a.txn_date AS "txDate",
+		right(a.resp_date,6) AS "txTime",
+		
+		a.member_trade_rate AS "memberTradeRate",
+		a.member_draw_fee AS "memberDrawFee",
+		a.member_settle_money AS "memberSettleMoney",
+		b.mobile_phone AS "mobilePhone",
+		a.interface_type AS "interfaceType",
+		
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+	</sql>
+	
+	<sql id="bu_trade_detail">
+		`d`.`id` AS `id`,
+		`d`.`txn_date` AS `txn_date`,
+		`d`.`member_id` AS `member_id`,
+		`d`.`member_code` AS `member_code`,
+		`d`.`merchant_code` AS `merchant_code`,
+		`d`.`money` AS `money`,
+		`d`.`member_trade_rate` AS `member_trade_rate`,
+		`d`.`member_draw_fee` AS `member_draw_fee`,
+		`d`.`member_settle_money` AS `member_settle_money`,
+		`d`.`d0_money` AS `d0_money`,
+		`d`.`d0_member_fee` AS `d0_member_fee`,
+		`d`.`d0_member_draw` AS `d0_member_draw`,
+		`d`.`d0_routeway_fee` AS `d0_routeway_fee`,
+		`d`.`d0_routeway_draw` AS `d0_routeway_draw`,
+		`d`.`t1_money` AS `t1_money`,
+		`d`.`t1_member_fee` AS `t1_member_fee`,
+		`d`.`t1_member_draw` AS `t1_member_draw`,
+		`d`.`t1_routeway_fee` AS `t1_routeway_fee`,
+		`d`.`t1_routeway_draw` AS `t1_routeway_draw`,
+		`d`.`order_code` AS `order_code`,
+		`d`.`order_num_outer` AS `order_num_outer`,
+		`d`.`txn_type` AS `txn_type`,
+		`d`.`pt_serial_no` AS `pt_serial_no`,
+		`d`.`req_date` AS `req_date`,
+		`d`.`resp_date` AS `resp_date`,
+		`d`.`resp_type` AS `resp_type`,
+		`d`.`resp_code` AS `resp_code`,
+		`d`.`resp_msg` AS `resp_msg`,
+		`d`.`card_type` AS `card_type`,
+		`d`.`route_id` AS `route_id`,
+		`d`.`pay_time` AS `pay_time`,
+		`d`.`balance_date` AS `balance_date`,
+		`d`.`channel_no` AS `channel_no`,
+		`d`.`settle_type` AS `settle_type`,
+		`d`.`interface_type` AS `interface_type`,
+		`d`.`platform_type` AS `platform_type`,
+		`d`.`settle_cancel_flag` AS `settle_cancel_flag`,
+		`d`.`create_by` AS `create_by`,
+		`d`.`create_date` AS `create_date`,
+		`d`.`update_by` AS `update_by`,
+		`d`.`update_date` AS `update_date`,
+		`d`.`remarks` AS `remarks`,
+		`d`.`del_flag` AS `del_flag`,
+		'' AS `acc`
+	</sql>
+	<sql id="ml_trade_detail">
+		`e`.`id` AS `id`,
+		`e`.`txn_date` AS `txn_date`,
+		`e`.`member_id` AS `member_id`,
+		`e`.`member_code` AS `member_code`,
+		`e`.`merchant_code` AS `merchant_code`,
+		`e`.`money` AS `money`,
+		`e`.`member_trade_rate` AS `member_trade_rate`,
+		`e`.`member_draw_fee` AS `member_draw_fee`,
+		`e`.`member_settle_money` AS `member_settle_money`,
+		`e`.`d0_money` AS `d0_money`,
+		`e`.`d0_member_fee` AS `d0_member_fee`,
+		`e`.`d0_member_draw` AS `d0_member_draw`,
+		`e`.`d0_routeway_fee` AS `d0_routeway_fee`,
+		`e`.`d0_routeway_draw` AS `d0_routeway_draw`,
+		`e`.`t1_money` AS `t1_money`,
+		`e`.`t1_member_fee` AS `t1_member_fee`,
+		`e`.`t1_member_draw` AS `t1_member_draw`,
+		`e`.`t1_routeway_fee` AS `t1_routeway_fee`,
+		`e`.`t1_routeway_draw` AS `t1_routeway_draw`,
+		`e`.`order_code` AS `order_code`,
+		`e`.`order_num_outer` AS `order_num_outer`,
+		`e`.`txn_type` AS `txn_type`,
+		`e`.`pt_serial_no` AS `pt_serial_no`,
+		`e`.`req_date` AS `req_date`,
+		`e`.`resp_date` AS `resp_date`,
+		`e`.`resp_type` AS `resp_type`,
+		`e`.`resp_code` AS `resp_code`,
+		`e`.`resp_msg` AS `resp_msg`,
+		'' AS `card_type`,
+		'' AS `route_id`,
+		`e`.`pay_time` AS `pay_time`,
+		'' AS `balance_date`,
+		'' AS `channel_no`,
+		`e`.`settle_type` AS `settle_type`,
+		'' AS `interface_type`,
+		'' AS `platform_type`,
+		'' AS `settle_cancel_flag`,
+		`e`.`create_by` AS `create_by`,
+		`e`.`create_date` AS `create_date`,
+		`e`.`update_by` AS `update_by`,
+		`e`.`update_date` AS `update_date`,
+		`e`.`remarks` AS `remarks`,
+		`e`.`del_flag` AS `del_flag`,
+		`e`.`acc` AS `acc`
+	</sql>
+	
+	<sql id="tradeDetailJoins">
+		LEFT JOIN bu_member_info b ON b.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		left join v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="TradeDetail">
+		SELECT 
+			<include refid="tradeDetailColumns"/>
+		FROM v_trade_detail a
+		<include refid="tradeDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TradeDetail">
+		SELECT 
+			<include refid="tradeDetailColumns"/>
+		FROM (SELECT
+			<include refid="bu_trade_detail"/>
+			FROM
+				`bu_trade_detail` `d`
+			where 
+			d.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND d.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND d.txn_date &lt;= #{endTime}
+			</if>
+			UNION ALL
+			SELECT
+			<include refid="ml_trade_detail"/>
+			FROM
+				`ml_trade_detail` `e`
+			where
+			e.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND e.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND e.txn_date &lt;= #{endTime}
+			</if>
+	     	) a
+		<include refid="tradeDetailJoins"/>
+		<where>
+			1=1
+			<if test="memberCode != null and memberCode != ''">
+				AND b.code = #{memberCode}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="txnType != null and txnType != ''">
+				AND a.txn_type = #{txnType}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+				AND a.pt_serial_no = #{ptSerialNo}
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			<!--  
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			-->
+			
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="balanceStartTime != null and balanceStartTime != ''">
+				AND a.balance_date &gt;= #{balanceStartTime}
+			</if>
+			<if test="balanceEndTime != null and balanceEndTime != ''">
+				AND a.balance_date &lt;= #{balanceEndTime}
+			</if>
+			
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.resp_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findHisList" resultType="TradeDetail">
+		SELECT
+			<include refid="tradeDetailColumns"/>
+		FROM  (SELECT
+			<include refid="bu_trade_detail"/>
+			FROM
+				`bu_trade_detail_his` `d`
+			where 
+			d.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND d.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND d.txn_date &lt;= #{endTime}
+			</if>
+			UNION ALL
+			SELECT
+			<include refid="ml_trade_detail"/>
+			FROM
+				`ml_trade_detail_his` `e`
+			where
+			e.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND e.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND e.txn_date &lt;= #{endTime}
+			</if>
+	     	) a
+		<include refid="tradeDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberCode != null and memberCode != ''">
+				AND b.code = #{memberCode}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="txnType != null and txnType != ''">
+				AND a.txn_type = #{txnType}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+				AND a.pt_serial_no = #{ptSerialNo}
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			<!--  
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			-->
+			<if test="beginTime != null and beginTime != ''">
+				AND a.txn_date >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.txn_date &lt;= #{endTime}
+			</if>
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="balanceStartTime != null and balanceStartTime != ''">
+				AND a.balance_date &gt;= #{balanceStartTime}
+			</if>
+			<if test="balanceEndTime != null and balanceEndTime != ''">
+				AND a.balance_date &lt;= #{balanceEndTime}
+			</if>
+
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.resp_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TradeDetail">
+		SELECT 
+			<include refid="tradeDetailColumns"/>
+		FROM v_trade_detail a
+		<include refid="tradeDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_trade_detail(
+			id,
+			member_id,
+			member_code,
+			merchant_code,
+			money,
+			order_code,
+			txn_type,
+			pt_serial_no,
+			req_date,
+			resp_date,
+			resp_type,
+			resp_code,
+			resp_msg,
+			card_type,
+			route_id,
+			pay_time,
+			balance_date,
+			channel_no,
+			settle_type,
+			settle_cancel_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks
+		) VALUES (
+			#{id},
+			#{memberId},
+			#{memberCode},
+			#{merchantCode},
+			#{money},
+			#{orderCode},
+			#{txnType},
+			#{ptSerialNo},
+			#{reqDate},
+			#{respDate},
+			#{respType},
+			#{respCode},
+			#{respMsg},
+			#{cardType},
+			#{routeId},
+			#{payTime},
+			#{balanceDate},
+			#{channelNo},
+			#{settleType},
+			#{settleCancelFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_trade_detail SET 	
+			member_id = #{memberId},
+			member_code = #{memberCode},
+			merchant_code = #{merchantCode},
+			money = #{money},
+			order_code = #{orderCode},
+			txn_type = #{txnType},
+			pt_serial_no = #{ptSerialNo},
+			req_date = #{reqDate},
+			resp_date = #{respDate},
+			resp_type = #{respType},
+			resp_code = #{respCode},
+			resp_msg = #{respMsg},
+			card_type = #{cardType},
+			route_id = #{routeId},
+			pay_time = #{payTime},
+			balance_date = #{balanceDate},
+			channel_no = #{channelNo},
+			settle_type = #{settleType},
+			settle_cancel_flag = #{settleCancelFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM bu_trade_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 吴逢生 2017-04-03 -->
+	<select id="findMonthTradeMoney" resultType="TradeDetail">
+	    select  
+		    a.tx_month as "txMonth",
+		    a.wx_money as "wxMoney",
+		    a.qq_money as "qqMoney",
+		    a.zfb_money as "zfbMoney",
+		    
+		    a.bouns_quick_money as "bounsQuickMoney",
+		    a.quick_money as "quickMoney",
+		    
+		    a.all_money as "allMoney",
+		    a.jd_money as "jdMoney",
+		    a.bd_money as "bdMoney"
+	    from rpt_month_trade a
+	    <where>
+			a.tx_month >= #{beginMonth} and a.tx_month &lt;= #{endMonth}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.tx_month ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 纪居源 2017-6-11 -->
+	<select id="findQuickList" resultType="TradeDetail">
+	    select  
+			<include refid="tradeDetailColumns"/>
+	    from v_trade_detail a
+	    <include refid="tradeDetailJoins"/>
+	    <where>
+	    	a.del_flag = #{DEL_FLAG_NORMAL}
+	    	AND (a.txn_type = 6 OR a.txn_type = 7)
+			<if test="memberCode != null and memberCode != ''">
+				AND b.code = #{memberCode}
+			</if>
+			<if test="txnType != null and txnType != ''">
+				AND a.txn_type = #{txnType}
+			</if>
+			<!--  
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			-->
+			<if test="beginTime != null and beginTime != ''">
+				AND a.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.txn_date &lt;= #{endTime}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.req_date DESC
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

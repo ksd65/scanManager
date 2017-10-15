@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.bill.dao.MsPayBillDao">
+    
+	<sql id="msPayBillColumns">
+		a.id AS "id",
+		a.cooperator AS "cooperator",
+		a.member_id AS "memberId",
+		a.merchant_code AS "merchantCode",
+		a.smzf_msg_id AS "smzfMsgId",
+		a.req_msg_id AS "reqMsgId",
+		a.amount AS "amount",
+		a.member_trade_rate AS "memberTradeRate",
+		a.settle_date AS "settleDate",
+		a.resp_type AS "respType",
+		a.resp_code AS "respCode",
+		a.resp_msg AS "respMsg",
+		a.transaction_type AS "transactionType",
+		a.ori_req_msg_id AS "oriReqMsgId",
+		a.fee AS "fee",
+		a.pay_way AS "payWay",
+		a.pay_type AS "payType",
+		a.draw_batch_no AS "drawBatchNo",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.name AS "member.name",
+		b.name AS "memberName",
+		b.mobile_phone AS "mobilePhone",
+		b.t0_draw_fee AS "member.t0DrawFee",
+		b.t0_trade_rate AS "member.t0TradeRate",
+		b.t1_draw_fee AS "member.t1DrawFee",
+		b.t1_trade_rate AS "member.t1TradeRate",
+		o.name AS "office.name",
+		o.parent_ids AS "office.parentIds",
+		o.agt_grade AS "office.agtGrade",
+		a.settle_type AS "settleType",
+		
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+	</sql>
+	
+	<sql id="msPayBillJoins">
+		LEFT JOIN bu_member_info b ON b.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		left join v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="MsPayBill">
+		SELECT 
+			<include refid="msPayBillColumns"/>
+		FROM bu_ms_pay_bill a
+		<include refid="msPayBillJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MsPayBill">
+		SELECT 
+			<include refid="msPayBillColumns"/>
+		FROM bu_ms_pay_bill a
+		<include refid="msPayBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="merchantCode != null and merchantCode != ''">
+				AND a.merchant_code = #{merchantCode}
+			</if>
+			<if test="smzfMsgId != null and smzfMsgId != ''">
+				AND a.smzf_msg_id = #{smzfMsgId}
+			</if>
+			<if test="reqMsgId != null and reqMsgId != ''">
+				AND a.req_msg_id = #{reqMsgId}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				AND a.settle_date >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.settle_date &lt;= #{endTime}
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.settle_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MsPayBill">
+		SELECT 
+			<include refid="msPayBillColumns"/>
+		FROM bu_ms_pay_bill a
+		<include refid="msPayBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_ms_pay_bill(
+			id,
+			cooperator,
+			merchant_code,
+			smzf_msg_id,
+			req_msg_id,
+			amount,
+			settle_date,
+			resp_type,
+			resp_code,
+			resp_msg,
+			transaction_type,
+			ori_req_msg_id,
+			fee,
+			pay_way,
+			pay_type,
+			draw_batch_no,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{cooperator},
+			#{merchantCode},
+			#{smzfMsgId},
+			#{reqMsgId},
+			#{amount},
+			#{settleDate},
+			#{respType},
+			#{respCode},
+			#{respMsg},
+			#{transactionType},
+			#{oriReqMsgId},
+			#{fee},
+			#{payWay},
+			#{payType},
+			#{drawBatchNo},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_ms_pay_bill SET 	
+			cooperator = #{cooperator},
+			merchant_code = #{merchantCode},
+			smzf_msg_id = #{smzfMsgId},
+			req_msg_id = #{reqMsgId},
+			amount = #{amount},
+			settle_date = #{settleDate},
+			resp_type = #{respType},
+			resp_code = #{respCode},
+			resp_msg = #{respMsg},
+			transaction_type = #{transactionType},
+			ori_req_msg_id = #{oriReqMsgId},
+			fee = #{fee},
+			pay_way = #{payWay},
+			pay_type = #{payType},
+			draw_batch_no = #{drawBatchNo},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_ms_pay_bill SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

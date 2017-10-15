@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.PayBillCurrentMonthProfitRptDao">
+    
+    <sql id="payBillCurrentMonthProfitRptColumns">
+        a.month AS "month",
+        a.office_id AS "office.id",
+        a.code AS "office.code",
+        a.name AS "office.name",
+        o.name AS "memberName",
+        a.txDate AS "txDate",
+		a.amount AS "amount",
+		a.transType AS "transType",
+		a.profit AS "profit",
+
+		a.d0_amount AS "d0Amount",
+        a.t1_amount AS "t1Amount",
+        a.ml_wjf_amount AS "mlWjfAmount",
+        a.ml_jf_amount AS "mlJfAmount",
+
+        a.d0_profit AS "d0Profit",
+        a.t1_profit AS "t1Profit",
+        a.ml_wjf_profit AS "mlWjfProfit",
+        a.ml_jf_profit AS "mlJfProfit",
+    </sql>
+    
+    <sql id="payBillCurrentMonthProfitRptJoins">
+		LEFT JOIN sys_office o ON o.id = a.office_id
+	</sql>
+	
+    <select id="get" resultType="PayBillCurrentMonthProfitRpt">
+    	
+    </select>
+    
+    <!-- 月利润统计 -->
+    <select id="findList" resultType="PayBillCurrentMonthProfitRpt">
+
+        SELECT
+            t.office_id AS "office.id" ,
+            t.settle_date AS "txDate" ,
+            t. CODE AS "code" ,
+            t.trans_type AS "transType" ,
+            t.profit AS "profit" ,
+            t.amount AS "amount" ,
+            office. NAME AS "office.name" ,
+            m. NAME AS "memberName",
+            sum(CASE t.trans_type WHEN '0' THEN amount ELSE 0 END) as "t1Amount",
+            sum(CASE t.trans_type WHEN '0' THEN profit ELSE 0 END) as "t1Profit",
+            sum(CASE t.trans_type WHEN '1' THEN amount ELSE 0 END) as "d0Amount",
+            sum(CASE t.trans_type WHEN '1' THEN profit ELSE 0 END) as "d0Profit",
+
+            sum(CASE t.trans_type WHEN '2' THEN amount ELSE 0 END) as "mlJfAmount",
+            sum(CASE t.trans_type WHEN '2' THEN profit ELSE 0 END) as "mlJfProfit",
+            sum(CASE t.trans_type WHEN '3' THEN amount ELSE 0 END) as "mlWjfAmount",
+            sum(CASE t.trans_type WHEN '3' THEN profit ELSE 0 END) as "mlWjfProfit"
+        FROM
+        (
+            (
+                SELECT
+                    t. CODE ,
+                    t.profit AS profit ,
+                    t.amount AS amount ,
+                    t.settle_date ,
+                    t.office_id ,
+                    '0' AS trans_type
+                FROM
+                  rpt_day_pay_bill_t1 t
+                WHERE
+                  t.settle_date &gt;= #{beginTime}
+                  AND t.settle_date &lt;= #{endTime}
+                GROUP BY
+                    t.settle_date ,
+                    t.office_id ,
+                    t. CODE
+            )
+            UNION
+            (
+                SELECT
+                    t. CODE ,
+                    t.profit AS profit ,
+                    t.amount AS amount ,
+                    t.settle_date ,
+                    t.office_id ,
+                    '1' AS trans_type
+                FROM
+                  rpt_day_pay_bill_d0 t
+                WHERE
+                  t.settle_date &gt;= #{beginTime}
+                  AND t.settle_date &lt;= #{endTime}
+                GROUP BY
+                    t.settle_date ,
+                    t.office_id ,
+                    t. CODE
+            )
+            UNION
+            (
+                SELECT
+                    t. CODE ,
+                    t.profit AS profit ,
+                    t.amount AS amount ,
+                    t.settle_date ,
+                    t.office_id ,
+                    '2' AS trans_type
+                FROM
+                    rpt_day_pay_bill_ml_jf t
+                WHERE
+                    t.settle_date &gt;= #{beginTime}
+                    AND t.settle_date &lt;= #{endTime}
+                GROUP BY
+                    t.settle_date ,
+                    t.office_id ,
+                    t. CODE
+            )
+            UNION
+            (
+                SELECT
+                    t. CODE ,
+                    t.profit AS profit ,
+                    t.amount AS amount ,
+                    t.settle_date ,
+                    t.office_id ,
+                    '3' AS trans_type
+                FROM
+                    rpt_day_pay_bill_ml_wjf t
+                WHERE
+                    t.settle_date &gt;= #{beginTime}
+                    AND t.settle_date &lt;= #{endTime}
+                GROUP BY
+                    t.settle_date ,
+                    t.office_id ,
+                    t. CODE
+            )
+        ) t
+        LEFT JOIN(
+            SELECT
+              *
+            FROM
+              bu_member_info
+            WHERE
+              del_flag = '0') m ON m. CODE = t. CODE
+        LEFT JOIN sys_office office ON office.id = t.office_id
+			<where>
+				AND (office.id=#{office.id} or office.parent_id  = #{office.id})
+				<if test="memberName != null and memberName != ''">
+		        	AND m.name LIKE concat('%',#{memberName},'%')
+		    	</if>
+		  	</where>
+		  	<choose>
+				<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+					ORDER BY ${page.orderBy}
+				</when>
+
+			</choose>
+		
+	</select>
+
+    <!--AND (office.id=#{office.id} or office.parent_ids LIKE-->
+    <!--<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>-->
+    <!--<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>-->
+    <!--<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>-->
+
+    <select id="findAllList" resultType="PayBillCurrentMonthProfitRpt">
+    </select>
+    
+</mapper>

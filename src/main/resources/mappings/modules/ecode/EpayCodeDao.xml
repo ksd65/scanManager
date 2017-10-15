@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.ecode.dao.EpayCodeDao">
+    
+	<sql id="epayCodeColumns">
+		a.id AS "id",
+		a.pay_code AS "payCode",
+		a.status AS "status",
+		a.office_id AS "office.id",
+		a.member_id AS "memberId",
+		a.batch_no AS "batchNo",
+		a.create_batch_no AS "createBatchNo",
+		a.path AS "path",
+		a.flow AS "flow",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		o.name AS "office.name",
+		
+		a.t0_draw_fee AS "t0DrawFee",
+		a.t0_trade_rate AS "t0TradeRate",
+		a.t1_draw_fee AS "t1DrawFee",
+		a.t1_trade_rate AS "t1TradeRate",
+		a.ml_jf_fee AS "mlJfFee",
+		a.ml_jf_rate AS "mlJfRate",
+		a.ml_wjf_fee AS "mlWjfFee",
+		a.ml_wjf_rate AS "mlWjfRate"
+	</sql>
+	
+	<sql id="epayCodeJoins">
+		LEFT JOIN sys_office o ON o.id = a.office_id
+	</sql>
+    
+	<select id="get" resultType="EpayCode">
+		SELECT 
+			<include refid="epayCodeColumns"/>
+		FROM bu_epay_code a
+		<include refid="epayCodeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="EpayCode">
+		SELECT 
+			<include refid="epayCodeColumns"/>
+		FROM bu_epay_code a
+		<include refid="epayCodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="payCode != null and payCode != ''">
+				AND a.pay_code = #{payCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no = #{batchNo}
+			</if>
+			<if test="createBatchNo != null and createBatchNo != ''">
+				AND a.create_batch_no = #{createBatchNo}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.pay_code DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EpayCode">
+		SELECT 
+			<include refid="epayCodeColumns"/>
+		FROM bu_epay_code a
+		<include refid="epayCodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_epay_code(
+			id,
+			pay_code,
+			status,
+			office_id,
+			member_id,
+			batch_no,
+			create_batch_no,
+			path,
+			flow,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			t0_draw_fee,
+			t0_trade_rate,
+			t1_draw_fee,
+			t1_trade_rate,
+			ml_jf_fee,
+			ml_jf_rate,
+			ml_wjf_fee,
+			ml_wjf_rate
+		) VALUES (
+			#{id},
+			#{payCode},
+			#{status},
+			#{office.id},
+			#{memberId},
+			#{batchNo},
+			#{createBatchNo},
+			#{path},
+			#{flow},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{t0DrawFee},
+			#{t0TradeRate},
+			#{t1DrawFee},
+			#{t1TradeRate},
+			#{mlJfFee},
+			#{mlJfRate},
+			#{mlWjfFee},
+			#{mlWjfRate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_epay_code SET 	
+			pay_code = #{payCode},
+			status = #{status},
+			office_id = #{office.id},
+			member_id = #{memberId},
+			batch_no = #{batchNo},
+			create_batch_no = #{createBatchNo},
+			path = #{path},
+			flow = #{flow},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_epay_code SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<sql id="transferDetailColumns">
+		a.id AS "id",
+		a.office_id AS "office.id",
+		a.transfer_office_id AS "transferOffice.id",
+		a.batch_no AS "batchNo",
+		a.amount AS "amount",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		o2.name AS "transferOffice.name"
+	</sql>
+	
+	<sql id="transferDetailJoins">
+		LEFT JOIN sys_office o ON o.id = a.office_id
+		LEFT JOIN sys_office o2 ON o2.id = a.transfer_office_id
+	</sql>
+	
+	<select id="findTransferDetailList" resultType="TransferDetail">
+		SELECT 
+			<include refid="transferDetailColumns"/>
+		FROM bu_transfer_detail a
+		<include refid="transferDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getTransferAmount" resultType="String">
+		SELECT count(*)
+		FROM bu_epay_code a
+		WHERE a.office_id=#{office.id}
+		and (a.status = '1' or a.status = '2')
+	</select>
+	
+	<select id="getCreateAmount" resultType="String">
+		SELECT count(*)
+		FROM bu_epay_code a
+		WHERE a.office_id=#{office.id}
+		and a.status = '2'
+	</select>
+	
+	<update id="transferEpayCode">
+		UPDATE bu_epay_code SET 	
+			status = #{status},
+			office_id = #{transferOffice.id},
+			batch_no = #{batchNo},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE pay_code in (
+		select a.pay_code from (select * from bu_epay_code b where b.office_id = #{office.id}
+		and (b.status = '1' or b.status = '2') LIMIT #{amount}) a
+		)
+	</update>
+	
+	<insert id="insertTransferDetail">
+		INSERT INTO bu_transfer_detail(
+			id,
+			office_id,
+			transfer_office_id,
+			batch_no,
+			amount,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{office.id},
+			#{transferOffice.id},
+			#{batchNo},
+			#{amount},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<select id="getBatchNoSeq" resultType="String">
+		SELECT _nextval('batchNo')
+		FROM dual
+	</select>
+	
+	<select id="findCreateEpayCode" resultType="EpayCode">
+		SELECT 
+			<include refid="epayCodeColumns"/>
+		FROM bu_epay_code a
+		<include refid="epayCodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and a.office_id = #{office.id}
+			and a.status = '2'
+		</where>
+		ORDER BY a.pay_code ASC LIMIT #{amount}	
+	</select>
+	
+	<select id="getCreateBatchNoSeq" resultType="String">
+		SELECT _nextval('createBatchNo')
+		FROM dual
+	</select>
+	
+	<update id="createEpayCode">
+		UPDATE bu_epay_code SET 	
+			status = #{status},
+			create_batch_no = #{createBatchNo},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+		and office_id = #{office.id}
+		and status = '2'
+		ORDER BY pay_code ASC LIMIT #{amount}	
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE bu_epay_code SET 	
+			status = #{status}
+			<if test="memberId != null and memberId != ''">
+				,member_id = #{memberId}
+			</if>
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+		and pay_code = #{payCode}
+	</update>
+	
+	<update id="updatePath">
+		UPDATE bu_epay_code SET 	
+			path = #{path}
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+		and pay_code = #{payCode}
+	</update>
+	
+	<update id="updateFeeAndRate">
+	    UPDATE bu_epay_code SET
+			t0_draw_fee = #{t0DrawFee},
+			t0_trade_rate = #{t0TradeRate},
+			t1_draw_fee = #{t1DrawFee},
+			t1_trade_rate = #{t1TradeRate},			
+			ml_jf_fee = #{mlJfFee},
+			ml_jf_rate = #{mlJfRate},
+			ml_wjf_fee = #{mlWjfFee},
+			ml_wjf_rate = #{mlWjfRate},			
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+</mapper>

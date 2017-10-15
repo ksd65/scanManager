@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.bill.dao.MsWithdrawBillDao">
+    
+	<sql id="msWithdrawBillColumns">
+		a.id AS "id",
+		a.cooperator AS "cooperator",
+		a.member_id AS "memberId",
+		a.merchant_code AS "merchantCode",
+		a.smzf_msg_id AS "smzfMsgId",
+		a.req_msg_id AS "reqMsgId",
+		a.acc_no AS "accNo",
+		a.acc_name AS "accName",
+		a.member_trade_rate AS "t0TradeRate",
+		a.draw_amount AS "drawAmount",
+		a.draw_fee AS "drawFee",
+		a.trade_fee AS "tradeFee",
+		a.settle_date AS "settleDate",
+		a.resp_type AS "respType",
+		a.resp_code AS "respCode",
+		a.resp_msg AS "respMsg",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.name AS "member.name",
+		b.name AS "memberName",
+		o.name AS "office.name",
+		o.parent_ids AS "office.parentIds",
+		o.agt_grade AS "office.agtGrade",
+		(a.draw_amount + a.draw_fee + a.trade_fee) AS "amount",
+		
+		b.mobile_phone AS "mobilePhone",
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+	</sql>
+	
+	<sql id="msWithdrawBillJoins">
+		LEFT JOIN bu_member_info b ON b.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		left join v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="MsWithdrawBill">
+		SELECT 
+			<include refid="msWithdrawBillColumns"/>
+		FROM bu_ms_withdraw_bill a
+		<include refid="msWithdrawBillJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MsWithdrawBill">
+		SELECT 
+			<include refid="msWithdrawBillColumns"/>
+		FROM bu_ms_withdraw_bill a
+		<include refid="msWithdrawBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="merchantCode != null and merchantCode != ''">
+				AND a.merchant_code = #{merchantCode}
+			</if>
+			<if test="smzfMsgId != null and smzfMsgId != ''">
+				AND a.smzf_msg_id = #{smzfMsgId}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				AND a.settle_date >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.settle_date &lt;= #{endTime}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.settle_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MsWithdrawBill">
+		SELECT 
+			<include refid="msWithdrawBillColumns"/>
+		FROM bu_ms_withdraw_bill a
+		<include refid="msWithdrawBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_ms_withdraw_bill(
+			id,
+			cooperator,
+			member_id,
+			merchant_code,
+			smzf_msg_id,
+			req_msg_id,
+			acc_no,
+			acc_name,
+			draw_amount,
+			draw_fee,
+			trade_fee,
+			settle_date,
+			resp_type,
+			resp_code,
+			resp_msg,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{cooperator},
+			#{memberId},
+			#{merchantCode},
+			#{smzfMsgId},
+			#{reqMsgId},
+			#{accNo},
+			#{accName},
+			#{drawAmount},
+			#{drawFee},
+			#{tradeFee},
+			#{settleDate},
+			#{respType},
+			#{respCode},
+			#{respMsg},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_ms_withdraw_bill SET 	
+			cooperator = #{cooperator},
+			member_id = #{memberId},
+			merchant_code = #{merchantCode},
+			smzf_msg_id = #{smzfMsgId},
+			req_msg_id = #{reqMsgId},
+			acc_no = #{accNo},
+			acc_name = #{accName},
+			draw_amount = #{drawAmount},
+			draw_fee = #{drawFee},
+			trade_fee = #{tradeFee},
+			settle_date = #{settleDate},
+			resp_type = #{respType},
+			resp_code = #{respCode},
+			resp_msg = #{respMsg},
+			create_date = #{createDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_ms_withdraw_bill SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

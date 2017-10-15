@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.draw.dao.RoutewayDrawDao">
+    
+	<sql id="routewayDrawColumns">
+		a.id AS "id",
+		a.member_id AS "memberId",
+		a.member_code AS "memberCode",
+		a.merchant_code AS "merchantCode",
+		(a.drawAmount + a.drawFee + a.tradeFee)  AS "money",
+		a.order_code AS "orderCode",
+		a.pt_serial_no AS "ptSerialNo",
+		a.req_date AS "reqDate",
+		a.resp_date AS "respDate",
+		a.resp_type AS "respType",
+		a.resp_code AS "respCode",
+		a.resp_msg AS "respMsg",
+		a.drawamount AS "drawamount",
+		a.member_trade_rate AS "memberRate",
+		a.drawfee AS "drawfee",
+		a.tradefee AS "tradefee",
+		a.settle_date AS "settleDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.name AS "member.name",
+		b.name AS "memberName",
+		b.mobile_phone AS "mobilePhone",
+		o.name AS "office.name",
+		o.parent_ids AS "office.parentIds",
+		o.agt_grade AS "office.agtGrade",
+		left(a.req_date,8) AS "txDate",
+		right(a.req_date,6) AS "txTime",
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+	</sql>
+	
+	<sql id="routewayDrawJoins">
+		LEFT JOIN bu_member_info b ON b.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		left join v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="RoutewayDraw">
+		SELECT 
+			<include refid="routewayDrawColumns"/>
+		FROM bu_routeway_draw a
+		<include refid="routewayDrawJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RoutewayDraw">
+		SELECT 
+			<include refid="routewayDrawColumns"/>
+		FROM bu_routeway_draw a
+		<include refid="routewayDrawJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberCode != null and memberCode != ''">
+				AND a.member_code = #{memberCode}
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				AND a.merchant_code = #{merchantCode}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+				AND a.pt_serial_no = #{ptSerialNo}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.req_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RoutewayDraw">
+		SELECT 
+			<include refid="routewayDrawColumns"/>
+		FROM bu_routeway_draw a
+		<include refid="routewayDrawJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_routeway_draw(
+			id,
+			member_id,
+			member_code,
+			merchant_code,
+			money,
+			order_code,
+			pt_serial_no,
+			req_date,
+			resp_date,
+			resp_type,
+			resp_code,
+			resp_msg,
+			drawamount,
+			drawfee,
+			tradefee,
+			settle_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{memberId},
+			#{memberCode},
+			#{merchantCode},
+			#{money},
+			#{orderCode},
+			#{ptSerialNo},
+			#{reqDate},
+			#{respDate},
+			#{respType},
+			#{respCode},
+			#{respMsg},
+			#{drawamount},
+			#{drawfee},
+			#{tradefee},
+			#{settleDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_routeway_draw SET 	
+			member_id = #{memberId},
+			member_code = #{memberCode},
+			merchant_code = #{merchantCode},
+			money = #{money},
+			order_code = #{orderCode},
+			pt_serial_no = #{ptSerialNo},
+			req_date = #{reqDate},
+			resp_date = #{respDate},
+			resp_type = #{respType},
+			resp_code = #{respCode},
+			resp_msg = #{respMsg},
+			drawamount = #{drawamount},
+			drawfee = #{drawfee},
+			tradefee = #{tradefee},
+			settle_date = #{settleDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_routeway_draw SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

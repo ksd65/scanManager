@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.PayBillMonthRptDao">
+    
+    <sql id="payBillMonthRptColumns">
+		a.month AS "month",
+		a.d0_count AS "d0Count",
+		a.d0_amount AS "d0Amount",
+		a.t1_count AS "t1Count",
+		a.t1_amount AS "t1Amount",
+		a.total_count AS "totalCount",
+		a.total_amount AS "totalAmount"
+    </sql>
+    
+    <sql id="payBillMonthRptJoins">
+		LEFT JOIN sys_office o ON o.id = a.office_id
+	</sql>
+	
+    <select id="get" resultType="PayBillMonthRpt">
+    	
+    </select>
+    
+    <!-- 月交统计 -->
+    <select id="findList" resultType="PayBillMonthRpt">
+		SELECT 
+			a.month AS "month",
+			a.code AS "office.code",
+			a.name AS "office.name",
+			a.d0_count  AS "d0Count",
+			a.d0_amount AS "d0Amount",
+			a.t1_count  AS "t1Count",
+			a.t1_amount AS "t1Amount",
+			
+			a.ml_jf_count AS "mlJfCount",
+			a.ml_jf_amount AS "mlJfAmount",
+			a.ml_wjf_count AS "mlWjfCount",
+			a.ml_wjf_amount AS "mlWjfAmount",
+			
+			a.total_count AS "totalCount",
+			a.total_amount AS "totalAmount"
+		FROM rpt_pay_bill_trans a
+		<include refid="payBillMonthRptJoins"/>
+		<where>
+		    <if test="isAdmin != null and isAdmin != ''">
+		        (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		    </if>
+		    <if test="isAdmin == null or isAdmin == ''">
+		        (o.id = #{office.id} or o.parent_id = #{office.id})
+		    </if>
+		    <if test="month != null and month != ''">
+		        AND a.month = #{month}
+		    </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				
+			</otherwise>
+		</choose>
+	</select>
+	
+    <select id="findAllList" resultType="PayBillMonthRpt">
+    </select>
+    
+    
+    
+</mapper>

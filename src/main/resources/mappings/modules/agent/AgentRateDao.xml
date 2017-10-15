@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.agent.dao.AgentRateDao">
+    
+	<sql id="agentRateColumns">
+		a.id AS "id",
+		a.office_id AS "office.id",
+		a.t0_draw_fee AS "t0DrawFee",
+		a.t0_trade_rate AS "t0TradeRate",
+		a.t1_draw_fee AS "t1DrawFee",
+		a.t1_trade_rate AS "t1TradeRate",
+		a.bonus_quick_rate AS "bonusQuickRate",
+		a.bonus_quick_fee AS "bonusQuickFee",
+		a.quick_rate AS "quickRate",
+		a.quick_fee AS "quickFee",
+		a.m_t0_draw_fee AS "mT0DrawFee",
+		a.m_t0_trade_rate AS "mT0TradeRate",
+		a.m_t1_draw_fee AS "mT1DrawFee",
+		a.m_t1_trade_rate AS "mT1TradeRate",
+		a.m_bonus_quick_rate AS "mBonusQuickRate",
+		a.m_bonus_quick_fee AS "mBonusQuickFee",
+		a.m_quick_rate AS "mQuickRate",
+		a.m_quick_fee AS "mQuickFee",
+		a.m_url AS "mUrl",
+		a.m_img AS "mImg",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		o2.name AS "office.name"
+	</sql>
+	
+	<sql id="agentRateJoins">
+		LEFT JOIN sys_office o2 ON o2.id = a.office_id
+	</sql>
+    
+	<select id="get" resultType="AgentRate">
+		SELECT 
+			<include refid="agentRateColumns"/>
+		FROM bu_agent_rate a
+		<include refid="agentRateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AgentRate">
+		SELECT 
+			<include refid="agentRateColumns"/>
+		FROM bu_agent_rate a
+		<include refid="agentRateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="agtName != null and agtName != ''">
+				AND o2.name = #{agtName}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o2.parent_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AgentRate">
+		SELECT 
+			<include refid="agentRateColumns"/>
+		FROM bu_agent_rate a
+		<include refid="agentRateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_agent_rate(
+			office_id,
+			t0_draw_fee,
+			t0_trade_rate,
+			t1_draw_fee,
+			t1_trade_rate,
+			bonus_quick_rate,
+			bonus_quick_fee,
+			quick_rate ,
+			quick_fee,
+			m_t0_draw_fee,
+			m_t0_trade_rate,
+			m_t1_draw_fee,
+			m_t1_trade_rate,
+			m_bonus_quick_rate,
+			m_bonus_quick_fee,
+			m_quick_rate ,
+			m_quick_fee,
+			m_url,
+			m_img,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{office.id},
+			#{t0DrawFee},
+			#{t0TradeRate},
+			#{t1DrawFee},
+			#{t1TradeRate},	
+			#{bonusQuickRate},
+			#{bonusQuickFee},
+			#{quickRate},
+			#{quickFee},
+			#{mT0DrawFee},
+			#{mT0TradeRate},
+			#{mT1DrawFee},
+			#{mT1TradeRate},	
+			#{mBonusQuickRate},
+			#{mBonusQuickFee},
+			#{mQuickRate},
+			#{mQuickFee},
+			#{mUrl},
+			#{mImg},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_agent_rate SET 	
+			office_id = #{office.id},
+			t0_draw_fee = #{t0DrawFee},
+			t0_trade_rate = #{t0TradeRate},
+			t1_draw_fee = #{t1DrawFee},
+			t1_trade_rate = #{t1TradeRate},
+			bonus_quick_rate = #{bonusQuickRate},
+			bonus_quick_fee = #{bonusQuickFee},
+			quick_rate = #{quickRate},
+			quick_fee = #{quickFee},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_agent_rate SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getOfficeCfg" resultType="String">
+		SELECT count(*)
+		FROM bu_agent_rate a
+		WHERE a.office_id=#{office.id}
+		and a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<select id="getAgentRateByOfficeId" resultType="AgentRate">
+		SELECT 
+			<include refid="agentRateColumns"/>
+		FROM bu_agent_rate a
+		<include refid="agentRateJoins"/>
+		WHERE a.office_id=#{office.id}
+		and a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<update id="updateMemberRate">
+		UPDATE bu_agent_rate SET 	
+			m_t0_draw_fee = #{mT0DrawFee},
+			m_t0_trade_rate = #{mT0TradeRate},
+			m_t1_draw_fee = #{mT1DrawFee},
+			m_t1_trade_rate = #{mT1TradeRate},
+			m_bonus_quick_rate = #{mBonusQuickRate},
+			m_bonus_quick_fee = #{mBonusQuickFee},
+			m_quick_rate = #{mQuickRate},
+			m_quick_fee = #{mQuickFee},
+			m_url = #{mUrl},
+			m_img = #{mImg}
+		WHERE office_id = #{office.id}
+		and del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+</mapper>

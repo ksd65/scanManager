@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.mem.dao.MemberBindAccDtlDao">
+    
+	<sql id="memberBindAccDtlColumns">
+		a.member_id AS "memberId",
+		a.acc AS "acc",
+		a.bank_id AS "bankId",
+		a.bank_name AS "bankName",
+		a.name AS "name",
+		a.order_num AS "orderNum",
+		a.mobile_phone AS "mobilePhone",
+		a.bind_type AS "bindType",
+		a.resp_code AS "respCode",
+		a.resp_msg AS "respMsg",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		m.id AS "member.id",
+		m.code AS "member.code",
+		m.mobile_phone AS "member.mobilePhone",
+		m.name AS "member.name",
+		o.name AS "office.name",
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+	</sql>
+	
+	<sql id="memberBindAccDtlJoins">
+		LEFT JOIN bu_member_info m on m.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		LEFT JOIN v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="MemberBindAccDtl">
+		SELECT 
+			<include refid="memberBindAccDtlColumns"/>
+		FROM bu_member_bind_acc_dtl a
+		<include refid="memberBindAccDtlJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MemberBindAccDtl">
+		SELECT 
+			<include refid="memberBindAccDtlColumns"/>
+		FROM bu_member_bind_acc_dtl a
+		<include refid="memberBindAccDtlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="member != null and member.mobilePhone != null and member.mobilePhone != ''">
+				AND m.mobile_phone = #{member.mobilePhone}
+			</if>
+			<if test="member != null and member.name != null and member.name != ''">
+				AND m.name = #{member.name}
+			</if>
+			<if test="beginBindTime != null and beginBindTime != ''">
+				AND left(a.create_date,19) >= #{beginBindTime}
+			</if>
+			<if test="endBindTime != null and endBindTime != ''">
+				AND left(a.create_date,19) &lt;= #{endBindTime}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MemberBindAccDtl">
+		SELECT 
+			<include refid="memberBindAccDtlColumns"/>
+		FROM bu_member_bind_acc_dtl a
+		<include refid="memberBindAccDtlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_member_bind_acc_dtl(
+			member_id,
+			acc,
+			bank_id,
+			bank_name,
+			name,
+			order_num,
+			mobile_phone,
+			bind_type,
+			resp_code,
+			resp_msg,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{memberId},
+			#{acc},
+			#{bankId},
+			#{bankName},
+			#{name},
+			#{orderNum},
+			#{mobilePhone},
+			#{bindType},
+			#{respCode},
+			#{respMsg},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_member_bind_acc_dtl SET 	
+			member_id = #{memberId},
+			acc = #{acc},
+			bank_id = #{bankId},
+			bank_name = #{bankName},
+			name = #{name},
+			order_num = #{orderNum},
+			mobile_phone = #{mobilePhone},
+			bind_type = #{bindType},
+			resp_code = #{respCode},
+			resp_msg = #{respMsg},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_member_bind_acc_dtl SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
