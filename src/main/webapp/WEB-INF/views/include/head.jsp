@@ -15,6 +15,7 @@
 <link href="${ctxStatic}/jquery-jbox/2.3/Skins/Bootstrap/jbox.min.css" rel="stylesheet" />
 <script src="${ctxStatic}/jquery-jbox/2.3/jquery.jBox-2.3.min.js" type="text/javascript"></script>
 <script src="${ctxStatic}/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="${ctxStatic}/laydate/laydate.js" type="text/javascript"></script>
 <script src="${ctxStatic}/common/mustache.min.js" type="text/javascript"></script>
 <link href="${ctxStatic}/common/jeesite.css" type="text/css" rel="stylesheet" />
 <link href="${ctxStatic}/common/bms.min.css" type="text/css" rel="stylesheet" />
