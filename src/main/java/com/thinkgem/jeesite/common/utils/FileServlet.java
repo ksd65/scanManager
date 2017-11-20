@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.config.Global;
+
 public class FileServlet
   extends HttpServlet
 {
@@ -41,6 +43,11 @@ public class FileServlet
   public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException
   {
+	  String pattern = getInitParameter("url-pattern");
+	  if("/a/file_upload_img".equals(pattern)){
+		  fileUploadImg(request,response);
+		  return;
+	  }
     String filePath = getFilePath(request);
     File file = FileUtil.getFile(filePath, this.defaultFile);
     if (file != null)
@@ -63,6 +70,28 @@ public class FileServlet
       out.close();
     }
   }
+  
+  public void fileUploadImg(HttpServletRequest request, HttpServletResponse response)throws IOException{
+	  String basePath = Global.getConfig("filePath");
+	  String urlPattern = getInitParameter("url-pattern");
+	  String requestUri = request.getRequestURI();
+	  String fileName = requestUri.substring(requestUri.indexOf(urlPattern)+urlPattern.length());
+	  String filePath = basePath + fileName;
+	  response.setContentType("image/jpeg");      //设置返回内容格式
+      File file = new File(filePath);       //括号里参数为文件图片路径
+      if(file.exists()){   //如果文件存在
+    	  InputStream in = new FileInputStream(filePath);   //用该文件创建一个输入流
+    	  OutputStream os = response.getOutputStream();  //创建输出流
+    	  byte[] b = new byte[1024];  
+    	  while( in.read(b)!= -1){  
+    		  os.write(b);     
+    	  }
+    	  in.close(); 
+    	  os.flush();
+    	  os.close();
+      }
+  }
+  
   
   public void init(ServletConfig config)
     throws ServletException

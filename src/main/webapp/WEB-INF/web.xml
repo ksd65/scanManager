@@ -202,6 +202,19 @@
 		<url-pattern>/file_servelt/*</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>fileUploadImgServlet</servlet-name>
+		<servlet-class>com.thinkgem.jeesite.common.utils.FileServlet</servlet-class>
+		<init-param>
+			<param-name>url-pattern</param-name>
+			<param-value>/a/file_upload_img</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>fileUploadImgServlet</servlet-name>
+		<url-pattern>/a/file_upload_img/*</url-pattern>
+	</servlet-mapping>
+	
 	<!-- FineReport 
 	<servlet>
 		<servlet-name>ReportServer</servlet-name>

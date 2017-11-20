@@ -184,23 +184,23 @@
 			<td colspan="4" class="cert-info">
 				<div class="block">
 					<div>身份证(正面)</div>
-					<img src="${member.certPic1}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.certPic1}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>身份证(反面)</div>
-					<img src="${member.certPic2}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.certPic2}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>银行卡(正面)</div>
-					<img src="${member.cardPic1}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.cardPic1}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>银行卡(反面)</div>
-					<img src="${member.cardPic2}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.cardPic2}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
-					<div>手持身份证、银行卡</div>
-					<img src="${member.memcertPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<div>授权书</div>
+					<img src="${ctx}/file_upload_img${member.memcertPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 			</td>
 		</tr>
@@ -208,23 +208,23 @@
 			<td colspan="4" class="cert-info">
 				<div class="block">
 					<div>营业执照</div>
-					<img src="${member.busPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.busPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>门头、门店</div>
-					<img src="${member.headPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.headPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>收银台</div>
-					<img src="${member.deskPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.deskPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>公司、商铺内部</div>
-					<img src="${member.insidePic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.insidePic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 				<div class="block">
 					<div>员工照片</div>
-					<img src="${member.staffPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
+					<img src="${ctx}/file_upload_img${member.staffPic}" alt="" onerror="javascript:this.src='${defaultImg}'"/>
 				</div>
 			</td>
 		</tr>
