@@ -15,4 +15,6 @@ import com.thinkgem.jeesite.modules.draw.entity.RoutewayDraw;
 @MyBatisDao
 public interface RoutewayDrawDao extends CrudDao<RoutewayDraw> {
 	
+	int audit(RoutewayDraw routewayDraw);
+	
 }

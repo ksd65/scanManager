@@ -56,6 +56,13 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String memberRate;		// 商户费率
 	private String agentNameLevel1;// 所属一级机构
 	
+	private String auditStatus; //审核状态
+	private Date auditTime;
+	private String auditBy;
+	
+	private String applyBeginTime;
+	private String applyEndTime;
+	private String drawMoney;
 	public RoutewayDraw() {
 		super();
 	}
@@ -313,5 +320,55 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
+
+	public String getAuditStatus() {
+		return auditStatus;
+	}
+
+	public void setAuditStatus(String auditStatus) {
+		this.auditStatus = auditStatus;
+	}
+
+	public Date getAuditTime() {
+		return auditTime;
+	}
+
+	public void setAuditTime(Date auditTime) {
+		this.auditTime = auditTime;
+	}
+
+	public String getApplyBeginTime() {
+		return applyBeginTime;
+	}
+
+	public void setApplyBeginTime(String applyBeginTime) {
+		this.applyBeginTime = applyBeginTime;
+	}
+
+	public String getApplyEndTime() {
+		return applyEndTime;
+	}
+
+	public void setApplyEndTime(String applyEndTime) {
+		this.applyEndTime = applyEndTime;
+	}
+
+	public String getDrawMoney() {
+		return drawMoney;
+	}
+
+	public void setDrawMoney(String drawMoney) {
+		this.drawMoney = drawMoney;
+	}
+
+	public String getAuditBy() {
+		return auditBy;
+	}
+
+	public void setAuditBy(String auditBy) {
+		this.auditBy = auditBy;
+	}
+	
+	
 	
 }

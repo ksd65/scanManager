@@ -34,7 +34,10 @@
 		o.agt_grade AS "office.agtGrade",
 		left(a.req_date,8) AS "txDate",
 		right(a.req_date,6) AS "txTime",
-		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1",
+		a.money as "drawMoney",
+		a.audit_status as "auditStatus",
+		a.audit_date AS "auditDate"
 	</sql>
 	
 	<sql id="routewayDrawJoins">
@@ -74,6 +77,12 @@
 			<if test="endTime != null and endTime != ''">
 				AND left(a.req_date,8) &lt;= #{endTime}
 			</if>
+			<if test="applyBeginTime != null and applyBeginTime != ''">
+				AND a.create_date >= #{applyBeginTime}
+			</if>
+			<if test="applyEndTime != null and applyEndTime != ''">
+				AND a.create_date &lt;= #{applyEndTime}
+			</if>
 			<if test="respType != null and respType != ''">
 				AND a.resp_type = #{respType}
 			</if>
@@ -89,6 +98,9 @@
 			<if test="mobilePhone != null and mobilePhone != ''">
 				AND b.mobile_phone = #{mobilePhone}
 			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
 		</where>
 		<!-- 数据范围过滤 -->
 		<!-- ${sqlMap.dsf} -->
@@ -97,7 +109,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.req_date DESC
+				ORDER BY a.create_date DESC,a.req_date DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -196,6 +208,15 @@
 	<update id="delete">
 		UPDATE bu_routeway_draw SET 
 			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="audit">
+		UPDATE bu_routeway_draw SET 	
+			audit_status = #{auditStatus},
+			remarks = #{remarks,jdbcType=VARCHAR},
+			audit_by = #{auditBy},
+			audit_date = sysdate()
 		WHERE id = #{id}
 	</update>
 	

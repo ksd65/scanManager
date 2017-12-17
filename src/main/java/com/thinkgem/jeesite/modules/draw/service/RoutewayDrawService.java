@@ -45,4 +45,9 @@ public class RoutewayDrawService extends CrudService<RoutewayDrawDao, RoutewayDr
 		super.delete(routewayDraw);
 	}
 	
+	@Transactional(readOnly = false)
+	public int audit(RoutewayDraw routewayDraw) {
+		return dao.audit(routewayDraw);
+	}
+	
 }
