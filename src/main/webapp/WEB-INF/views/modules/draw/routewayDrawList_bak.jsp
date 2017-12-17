@@ -119,21 +119,6 @@
 			<li><label>平台流水号：</label>
 				<form:input path="ptSerialNo" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
-			<li><label>审核状态：</label>
-				<form:select path="auditStatus" class="input-medium">
-					<form:option value="" label="所有"/>
-					<form:options items="${fns:getDictList('draw_audit_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>申请日期：</label>
-				<input id="applyBeginTime" name="applyBeginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="${routewayDraw.applyBeginTime}"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
-			<span>到</span>
-				<input id="applyEndTime" name="applyEndTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="${routewayDraw.applyEndTime}"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
-			</li>
 			<li><label>提现日期：</label>
 				<input id="beginTime" name="beginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${routewayDraw.beginTime}"
@@ -143,15 +128,16 @@
 					value="${routewayDraw.endTime}"
 					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
 			</li>
-			<li><label>提现结果：</label>
+			<li><label>应答类型：</label>
 				<form:select path="respType" class="input-medium">
 					<form:option value="" label="所有"/>
 					<form:options items="${fns:getDictList('resp_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" onclick="return page();"/>
-			</li>
-			
+				<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
+			<li class="clearfix"></li>
+			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="button" onclick="getSumData();" value="统计"/></li>
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
@@ -168,29 +154,27 @@
 				<!--  
 				<th>通道商户编号</th>
 				-->
-				<th>申请时间</th>
-				<th>申请提现金额</th>
-				<th>审核状态</th>
-				<th>审核备注</th>
 				<th>平台流水号</th>
 				<!-- <th>请求日期时间</th> -->
 				
 				<th>提现日期</th>
 				<th>提现时间</th>
 				
-				<th>提现结果</th>
-				<th>提现结果说明</th>
-				<!--<th>交易金额</th>
-				
+				<th>应答类型</th>
+				<th>应答码</th>
+				<th>交易金额</th>
+				<!--
 				<th>应答描述</th>
-				
+				-->
 				<th>实际提现金额</th>
-				<th>提现手续费</th>-->
-			<!-- 	<th>商户费率</th>
+				<th>提现手续费</th>
+				<th>商户费率</th>
 				<th>交易手续费</th>
-				<th>对账日期</th> -->
+				<th>对账日期</th>
 				<!-- <th>创建时间</th> -->
-				
+				<!--  
+				<shiro:hasPermission name="draw:routewayDraw:edit"><th>操作</th></shiro:hasPermission>
+				-->
 			</tr>
 		</thead>
 		<tbody>
@@ -219,20 +203,6 @@
 				</td>
 				-->
 				<td>
-					<fmt:formatDate value="${routewayDraw.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${routewayDraw.drawMoney}
-				</td>
-				<td>
-					<c:if test="${routewayDraw.auditStatus=='1'}">待审核</c:if>
-					<c:if test="${routewayDraw.auditStatus=='2'}">通过</c:if>
-					<c:if test="${routewayDraw.auditStatus=='3'}">不通过</c:if>
-				</td>
-				<td>
-					${routewayDraw.remarks}
-				</td>
-				<td>
 					${routewayDraw.ptSerialNo}
 				</td>
 				<%-- <td>
@@ -246,28 +216,26 @@
 				</td>
 				
 				<td>
-					<c:if test="${routewayDraw.respType=='S'}">成功</c:if>
-					<c:if test="${routewayDraw.respType=='E'}">失败</c:if>
-					<c:if test="${routewayDraw.respType=='R'}">不确定</c:if>
+					${fns:getDictLabel(routewayDraw.respType,'resp_type','应答类型')}
 				</td>
 				<td>
-					${routewayDraw.respMsg}
+					${routewayDraw.respCode}
 				</td>
-				<!--<td>
+				<td>
 					${routewayDraw.money }
 				</td>
-				  
+				<!--  
 				<td>
 					${routewayDraw.respMsg}
 				</td>
-				
+				-->
 				<td>
 					${routewayDraw.drawamount}
 				</td>
 				<td>
 					${routewayDraw.drawfee}
 				</td>
-			<!-- 	<td>
+				<td>
 					${routewayDraw.memberRate}
 				</td>
 				<td>
@@ -275,13 +243,16 @@
 				</td>
 				<td>
 					${routewayDraw.settleDate}
-				</td> -->
+				</td>
 				<%-- <td>
 					<fmt:formatDate value="${routewayDraw.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td> --%>
-				 
-				
-				 
+				<!-- 
+				<shiro:hasPermission name="draw:routewayDraw:edit"><td>
+    				<a href="${ctx}/draw/routewayDraw/form?id=${routewayDraw.id}">修改</a>
+					<a href="${ctx}/draw/routewayDraw/delete?id=${routewayDraw.id}" onclick="return confirmx('确认要删除该通道提现明细吗？', this.href)">删除</a>
+				</td></shiro:hasPermission>
+				 -->
 			</tr>
 		</c:forEach>
 		</tbody>

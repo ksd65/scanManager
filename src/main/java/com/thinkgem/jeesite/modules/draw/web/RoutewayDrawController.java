@@ -84,15 +84,39 @@ public class RoutewayDrawController extends BaseController {
 		
 		//默认显示当天数据
 		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
-			routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
+			//routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
 		}
 		
 		if(StringUtils.isEmpty(routewayDraw.getEndTime())){
-			routewayDraw.setEndTime(DateUtils.getDate("yyyyMMdd"));
+			//routewayDraw.setEndTime(DateUtils.getDate("yyyyMMdd"));
+		}
+		
+		String applyBeginTime = routewayDraw.getApplyBeginTime();
+		if(StringUtils.isNotEmpty(applyBeginTime)){
+			routewayDraw.setApplyBeginTime(applyBeginTime+" 00:00:00");
+		}else{
+			routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd")+" 00:00:00");
+		}
+		String applyEndTime = routewayDraw.getApplyEndTime();
+		if(StringUtils.isNotEmpty(applyEndTime)){
+			routewayDraw.setApplyEndTime(applyEndTime+" 23:59:59");
+		}else{
+			routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd")+" 23:59:59");
 		}
 		
 		Page<RoutewayDraw> page = routewayDrawService.findPage(new Page<RoutewayDraw>(request, response), routewayDraw); 
 		model.addAttribute("page", page);
+		if(StringUtils.isNotEmpty(applyBeginTime)){
+			routewayDraw.setApplyBeginTime(applyBeginTime);
+		}else{
+			routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd"));
+		}
+		if(StringUtils.isNotEmpty(applyEndTime)){
+			routewayDraw.setApplyEndTime(applyEndTime);
+		}else{
+			routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd"));
+		}
+		
 		model.addAttribute("routewayDraw", routewayDraw);
 		return "modules/draw/routewayDrawList";
 	}
@@ -229,19 +253,27 @@ public class RoutewayDrawController extends BaseController {
 		String applyBeginTime = routewayDraw.getApplyBeginTime();
 		if(StringUtils.isNotEmpty(applyBeginTime)){
 			routewayDraw.setApplyBeginTime(applyBeginTime+" 00:00:00");
+		}else{
+			routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd")+" 00:00:00");
 		}
 		String applyEndTime = routewayDraw.getApplyEndTime();
 		if(StringUtils.isNotEmpty(applyEndTime)){
 			routewayDraw.setApplyEndTime(applyEndTime+" 23:59:59");
+		}else{
+			routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd")+" 23:59:59");
 		}
 		
 		Page<RoutewayDraw> page = routewayDrawService.findPage(new Page<RoutewayDraw>(request, response), routewayDraw); 
 		model.addAttribute("page", page);
 		if(StringUtils.isNotEmpty(applyBeginTime)){
 			routewayDraw.setApplyBeginTime(applyBeginTime);
+		}else{
+			routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd"));
 		}
 		if(StringUtils.isNotEmpty(applyEndTime)){
 			routewayDraw.setApplyEndTime(applyEndTime);
+		}else{
+			routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd"));
 		}
 		model.addAttribute("routewayDraw", routewayDraw);
 		return "modules/draw/routewayDrawAuditList";
