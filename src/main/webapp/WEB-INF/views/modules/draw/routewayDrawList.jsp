@@ -170,6 +170,8 @@
 				-->
 				<th>申请时间</th>
 				<th>申请提现金额</th>
+				<th>实际提现金额</th>
+				<th>提现手续费</th>
 				<th>审核状态</th>
 				<th>审核备注</th>
 				<th>平台流水号</th>
@@ -223,6 +225,12 @@
 				</td>
 				<td>
 					${routewayDraw.drawMoney}
+				</td>
+				<td>
+					${routewayDraw.drawamount}
+				</td>
+				<td>
+					${routewayDraw.drawfee}
 				</td>
 				<td>
 					<c:if test="${routewayDraw.auditStatus=='1'}">待审核</c:if>
