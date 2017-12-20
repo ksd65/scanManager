@@ -81,7 +81,7 @@ public class RoutewayDrawController extends BaseController {
 		}
 		
 		routewayDraw.setOffice(office);	
-		
+		routewayDraw.setDrawType("1");//提现
 		//默认显示当天数据
 		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
 			//routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
@@ -240,7 +240,7 @@ public class RoutewayDrawController extends BaseController {
 		}
 		
 		routewayDraw.setOffice(office);	
-		
+		routewayDraw.setDrawType("1");//提现
 		//默认显示当天数据
 		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
 			//routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
@@ -317,5 +317,41 @@ public class RoutewayDrawController extends BaseController {
 		}
 		return data;
 	}
+	
+	@RequiresPermissions("draw:agentPayList:view")
+	@RequestMapping(value = {"agentPayList"})
+	public String agentPayList(RoutewayDraw routewayDraw, HttpServletRequest request, HttpServletResponse response, Model model,String officeId) {
+		// 当前用户代理商
+		Office office = UserUtils.getUser().getOffice();
+		
+		// 选择代理商
+		if(StringUtils.isNotBlank(officeId)){
+			Office office2 = officeService.get(officeId);
+			if(office2 != null){
+				office = office2;
+			}
+		}
+		
+		routewayDraw.setOffice(office);	
+		routewayDraw.setDrawType("2");//代付
+		//默认显示当天数据
+		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
+			routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
+		}
+		
+		if(StringUtils.isEmpty(routewayDraw.getEndTime())){
+			routewayDraw.setEndTime(DateUtils.getDate("yyyyMMdd"));
+		}
+		
+			
+		Page<RoutewayDraw> page = routewayDrawService.findPage(new Page<RoutewayDraw>(request, response), routewayDraw); 
+		model.addAttribute("page", page);
+		
+		
+		model.addAttribute("routewayDraw", routewayDraw);
+		return "modules/draw/agentPayList";
+	}
+	
+	
 
 }

@@ -368,4 +368,23 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     	return result.toString();
     }
     
+    public static String replaceCertNoStar(String str){
+    	StringBuffer sb = new StringBuffer(str);
+    	sb.replace(4, str.length()-4, "********");
+    	return sb.toString();
+    }
+    public static String replaceNameStar(String str){
+    	StringBuffer sb = new StringBuffer(str);
+    	if(str.length()>2){
+    		sb.replace(1, str.length()-1, "*");
+    	}else{
+    		sb.replace(1, str.length(), "*");
+    	}
+    	return sb.toString();
+    }
+    
+    public static void main(String[] args) {
+		System.out.println(StringUtils.replaceNameStar("林晓"));
+	}
+    
 }

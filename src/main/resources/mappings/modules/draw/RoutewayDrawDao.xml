@@ -37,7 +37,14 @@
 		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1",
 		a.money as "drawMoney",
 		a.audit_status as "auditStatus",
-		a.audit_date AS "auditDate"
+		a.audit_date AS "auditDate",
+		a.draw_type as "drawType",
+		a.order_num_outer as "orderNumOuter",
+		a.bank_name as "bankName",
+		a.bank_account as "bankAccount",
+		a.account_name as "accountName",
+		a.cert_no as "certNo",
+		a.tel as "tel"
 	</sql>
 	
 	<sql id="routewayDrawJoins">
@@ -70,6 +77,12 @@
 			</if>
 			<if test="ptSerialNo != null and ptSerialNo != ''">
 				AND a.pt_serial_no = #{ptSerialNo}
+			</if>
+			<if test="orderNumOuter != null and orderNumOuter != ''">
+				AND a.order_num_outer = #{orderNumOuter}
+			</if>
+			<if test="drawType != null and drawType != ''">
+				AND a.draw_type = #{drawType}
 			</if>
 			<if test="beginTime != null and beginTime != ''">
 				AND left(a.req_date,8) >= #{beginTime}

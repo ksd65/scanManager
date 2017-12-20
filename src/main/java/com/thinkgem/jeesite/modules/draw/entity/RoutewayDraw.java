@@ -63,6 +63,13 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String applyBeginTime;
 	private String applyEndTime;
 	private String drawMoney;
+	private String drawType;
+	private String orderNumOuter;
+	private String bankName;
+	private String bankAccount;
+	private String accountName;
+	private String certNo;
+	private String tel;
 	public RoutewayDraw() {
 		super();
 	}
@@ -367,6 +374,62 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 
 	public void setAuditBy(String auditBy) {
 		this.auditBy = auditBy;
+	}
+
+	public String getDrawType() {
+		return drawType;
+	}
+
+	public void setDrawType(String drawType) {
+		this.drawType = drawType;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(String bankAccount) {
+		this.bankAccount = bankAccount;
+	}
+
+	public String getAccountName() {
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+
+	public String getCertNo() {
+		return certNo;
+	}
+
+	public void setCertNo(String certNo) {
+		this.certNo = certNo;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	public String getOrderNumOuter() {
+		return orderNumOuter;
+	}
+
+	public void setOrderNumOuter(String orderNumOuter) {
+		this.orderNumOuter = orderNumOuter;
 	}
 	
 	

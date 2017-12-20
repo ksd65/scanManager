@@ -244,4 +244,20 @@
     <example>${fns:toJson(object)}</example>  
   </function>
   
+  <function>
+    <description>证件号码脱敏</description>
+    <name>replaceCertNoStar</name>
+    <function-class>com.thinkgem.jeesite.common.utils.StringUtils</function-class>
+    <function-signature>java.lang.String replaceCertNoStar(java.lang.String)</function-signature>
+    <example>${fns:replaceCertNoStar(html)}</example>  
+  </function>
+  
+  <function>
+    <description>姓名脱敏</description>
+    <name>replaceNameStar</name>
+    <function-class>com.thinkgem.jeesite.common.utils.StringUtils</function-class>
+    <function-signature>java.lang.String replaceNameStar(java.lang.String)</function-signature>
+    <example>${fns:replaceNameStar(html)}</example>  
+  </function>
+  
 </taglib>
