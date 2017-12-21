@@ -120,6 +120,7 @@
 				
 				<th>结算方式</th>
 				<th>交易订单编号</th>
+				<th>交易方式 </th>
 				<th>交易类型 </th>
 				<!-- <th>平台流水号</th> -->
 				<!-- <th>请求时间</th> -->
@@ -178,6 +179,9 @@
 				</td>
 				<td>
 					${tradeDetail.orderCode}
+				</td>
+				<td>
+					${fns:getDictLabel(tradeDetail.txnMethod,'txn_method',tradeDetail.txnMethod)}
 				</td>
 				<td>
 					${fns:getDictLabel(tradeDetail.txnType,'txn_type',tradeDetail.txnType)}

@@ -41,6 +41,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	private String t1RoutewayDraw;	// T1通道 提现手续费
 	
 	private String orderCode;		// 交易订单编号
+	private String txnMethod;		// 交易方式
 	private String txnType;		// 交易类型 1:微信 2:支付宝
 	private String ptSerialNo;		// 平台流水号
 	private String reqDate;		// 请求日期时间
@@ -618,6 +619,14 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 
 	public void setBalanceEndTime(String balanceEndTime) {
 		this.balanceEndTime = balanceEndTime;
+	}
+
+	public String getTxnMethod() {
+		return txnMethod;
+	}
+
+	public void setTxnMethod(String txnMethod) {
+		this.txnMethod = txnMethod;
 	}
 	
 	
