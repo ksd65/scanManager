@@ -143,7 +143,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	}
 	
 	
-	@ExcelField(title="所属一级机构", align=2, sort=40)
+	//@ExcelField(title="所属一级机构", align=2, sort=40)
 	public String getAgentNameLevel1() {
 		return agentNameLevel1;
 	}
@@ -153,7 +153,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	}
 	
 	
-	@ExcelField(title="所属机构", align=2, sort=50)
+	@ExcelField(title="所属机构", align=2, sort=40)
 	public String getOfficeName() {
 		if(office == null){
 			return officeName;
@@ -167,7 +167,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.officeName = officeName;
 	}
 
-	@ExcelField(title="交易金额", align=2, sort=60)
+	@ExcelField(title="交易金额", align=2, sort=50)
 	public String getMoney() {
 		return money;
 	}
@@ -176,7 +176,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.money = money;
 	}
 	
-	@ExcelField(title="商户费率", align=2, sort=65)
+	@ExcelField(title="商户费率", align=2, sort=55)
 	public String getMemberTradeRate() {
 		return memberTradeRate;
 	}
@@ -195,7 +195,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.settleType = settleType;
 	}
 	
-	@ExcelField(title="交易订单编号", align=2, sort=75)
+	@ExcelField(title="交易订单号", align=2, sort=75)
 	@Length(min=1, max=32, message="交易订单编号长度必须介于 1 和 32 之间")
 	public String getOrderCode() {
 		return orderCode;
@@ -281,7 +281,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.interfaceType = interfaceType;
 	}
 	
-	@ExcelField(title="商户提现费", align=2, sort=66)
+	@ExcelField(title="商户提现费", align=2, sort=60)
 	public String getMemberDrawFee() {
 		return memberDrawFee;
 	}
@@ -460,7 +460,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	public void setRouteId(String routeId) {
 		this.routeId = routeId;
 	}
-	
+	@ExcelField(title="通道流水号", align=2, sort=77)
 	@Length(min=0, max=64, message="支付渠道流水号长度必须介于 0 和 64 之间")
 	public String getChannelNo() {
 		return channelNo;
@@ -623,6 +623,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.balanceEndTime = balanceEndTime;
 	}
 
+	@ExcelField(title="交易方式", align=2, sort=79, dictType="txn_method")
 	public String getTxnMethod() {
 		return txnMethod;
 	}
@@ -630,7 +631,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	public void setTxnMethod(String txnMethod) {
 		this.txnMethod = txnMethod;
 	}
-
+	@ExcelField(title="商户订单号", align=2, sort=76)
 	public String getOrderNumOuter() {
 		return orderNumOuter;
 	}
