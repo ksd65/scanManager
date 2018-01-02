@@ -95,6 +95,8 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	private String balanceStartTime;//对账开始时间
 	private String balanceEndTime;	//对账结束时间
 	
+	private String orderNumOuter;
+	
 	public TradeDetail() {
 		super();
 	}
@@ -627,6 +629,14 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 
 	public void setTxnMethod(String txnMethod) {
 		this.txnMethod = txnMethod;
+	}
+
+	public String getOrderNumOuter() {
+		return orderNumOuter;
+	}
+
+	public void setOrderNumOuter(String orderNumOuter) {
+		this.orderNumOuter = orderNumOuter;
 	}
 	
 	

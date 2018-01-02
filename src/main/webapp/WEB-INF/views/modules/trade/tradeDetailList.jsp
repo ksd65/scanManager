@@ -84,8 +84,14 @@
 				</form:select>
 			</li>
 			
-			<li><label>订单编号：</label>
+			<li><label>订单号：</label>
 				<form:input id="orderCode" path="orderCode" htmlEscape="false" maxlength="32" class="input-medium"/>
+			</li>
+			<li><label>商户订单号：</label>
+				<form:input id="orderNumOuter" path="orderNumOuter" htmlEscape="false" maxlength="32" class="input-medium"/>
+			</li>
+			<li><label>通道流水号：</label>
+				<form:input id="channelNo" path="channelNo" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
 			
 			<li><label>对账日期：</label>
@@ -119,7 +125,9 @@
 				<!-- <th>结算金额</th> -->
 				
 				<th>结算方式</th>
-				<th>交易订单编号</th>
+				<th>交易订单号</th>
+				<th>商户订单号</th>
+				<th>通道流水号</th>
 				<th>交易方式 </th>
 				<th>交易类型 </th>
 				<!-- <th>平台流水号</th> -->
@@ -179,6 +187,12 @@
 				</td>
 				<td>
 					${tradeDetail.orderCode}
+				</td>
+				<td>
+					${tradeDetail.orderNumOuter}
+				</td>
+				<td>
+					${tradeDetail.channelNo}
 				</td>
 				<td>
 					${fns:getDictLabel(tradeDetail.txnMethod,'txn_method',tradeDetail.txnMethod)}
