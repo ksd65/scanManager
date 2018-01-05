@@ -95,4 +95,12 @@ public class TradeDetailService extends CrudService<TradeDetailDao, TradeDetail>
 		tradeDetailPage.setList(dao.findHisList(tradeDetail));
 		return tradeDetailPage;
 	}
+	
+	public Double countSumMoney(TradeDetail tradeDetail) {
+		return dao.countSumMoney(tradeDetail);
+	}
+	
+	public Integer countRecord(TradeDetail tradeDetail) {
+		return dao.countRecord(tradeDetail);
+	}
 }

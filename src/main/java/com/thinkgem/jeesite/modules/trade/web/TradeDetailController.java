@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.trade.web;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,17 +94,21 @@ public class TradeDetailController extends BaseController {
 		tradeDetail.setOffice(office);		
 		
 		int sumCount = 0;
-		BigDecimal b_sumMoney = new BigDecimal("0.00");
-		List<TradeDetail> list = tradeDetailService.findList(tradeDetail);
+	//	BigDecimal b_sumMoney = new BigDecimal("0.00");
+		sumCount = tradeDetailService.countRecord(tradeDetail);
+		Double money = tradeDetailService.countSumMoney(tradeDetail);
+		money = money ==null ? 0:money;
+		DecimalFormat df = new DecimalFormat("#.00");
+	/*	List<TradeDetail> list = tradeDetailService.findList(tradeDetail);
 		if(list.size() > 0){
 			for(TradeDetail t:list){
 				sumCount++;
 				b_sumMoney = b_sumMoney.add(new BigDecimal(t.getMoney()));
 			}
-		}
+		}*/
 		
 		data.put("sumCount", sumCount);
-		data.put("sumMoney", b_sumMoney.doubleValue());
+		data.put("sumMoney", df.format(money.doubleValue()));
 		return data;
 	}
 	

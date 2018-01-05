@@ -268,6 +268,131 @@
 			</otherwise>
 		</choose>
 	</select>
+	
+	
+	<select id="countSumMoney" resultType="java.lang.Double">
+		SELECT
+			SUM(a.money)
+			FROM
+				`bu_trade_detail` `a`
+			LEFT JOIN bu_member_info b ON b.id = a.member_id
+			LEFT JOIN bu_epay_code c ON c.pay_code = b.pay_code
+			LEFT JOIN sys_office o ON o.id = c.office_id
+			where 1=1 and
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND a.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.txn_date &lt;= #{endTime}
+			</if>
+			<if test="memberCode != null and memberCode != ''">
+				AND b.code = #{memberCode}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+			 <![CDATA[ 	AND a.order_code LIKE CONCAT('%', #{orderCode},'%') ]]>
+			</if>
+			<if test="txnType != null and txnType != ''">
+				AND a.txn_type = #{txnType}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+			<![CDATA[	AND a.pt_serial_no  LIKE CONCAT('%', #{ptSerialNo},'%')]]>
+			</if>
+			<if test="orderNumOuter != null and orderNumOuter != ''">
+			 <![CDATA[ 	AND a.order_num_outer LIKE CONCAT('%', #{orderNumOuter},'%') ]]>
+			</if>
+			<if test="channelNo != null and channelNo != ''">
+			 <![CDATA[ 	AND a.channel_no LIKE CONCAT('%', #{channelNo},'%') ]]>
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			
+			
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="balanceStartTime != null and balanceStartTime != ''">
+				AND a.balance_date &gt;= #{balanceStartTime}
+			</if>
+			<if test="balanceEndTime != null and balanceEndTime != ''">
+				AND a.balance_date &lt;= #{balanceEndTime}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+	</select>	
+	
+	<select id="countRecord" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+			FROM
+				`bu_trade_detail` `a`
+			LEFT JOIN bu_member_info b ON b.id = a.member_id
+			LEFT JOIN bu_epay_code c ON c.pay_code = b.pay_code
+			LEFT JOIN sys_office o ON o.id = c.office_id
+			where 1=1 and
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND a.txn_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.txn_date &lt;= #{endTime}
+			</if>
+			<if test="memberCode != null and memberCode != ''">
+				AND b.code = #{memberCode}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+			 <![CDATA[ 	AND a.order_code LIKE CONCAT('%', #{orderCode},'%') ]]>
+			</if>
+			<if test="txnType != null and txnType != ''">
+				AND a.txn_type = #{txnType}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+			<![CDATA[	AND a.pt_serial_no  LIKE CONCAT('%', #{ptSerialNo},'%')]]>
+			</if>
+			<if test="orderNumOuter != null and orderNumOuter != ''">
+			 <![CDATA[ 	AND a.order_num_outer LIKE CONCAT('%', #{orderNumOuter},'%') ]]>
+			</if>
+			<if test="channelNo != null and channelNo != ''">
+			 <![CDATA[ 	AND a.channel_no LIKE CONCAT('%', #{channelNo},'%') ]]>
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			
+			
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="balanceStartTime != null and balanceStartTime != ''">
+				AND a.balance_date &gt;= #{balanceStartTime}
+			</if>
+			<if test="balanceEndTime != null and balanceEndTime != ''">
+				AND a.balance_date &lt;= #{balanceEndTime}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+	</select>
 
 	<select id="findHisList" resultType="TradeDetail">
 		SELECT
