@@ -25,5 +25,6 @@ public interface MemberDao extends CrudDao<Member> {
 	
 	public List<Member> findMonthMemberNum(Member member);
 	public List<Member> findBankInfoList(Member member);
+	public List<Member> findListByOfficeId(Member member);
 	public void disable(Member member);
 }

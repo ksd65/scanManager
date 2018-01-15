@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.BankDao">
+    
+	<sql id="bankColumns">
+		a.id,
+		a.code,
+		a.name,
+		a.sort,
+		a.kbin_id AS "kbinId",
+		a.ft_bank_id AS "ftBankId"
+	</sql>
+	
+    
+	<select id="get" resultType="Bank">
+		SELECT
+			<include refid="bankColumns"/>
+		FROM bu_bank a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Bank">
+		SELECT
+			<include refid="bankColumns"/>
+		FROM bu_bank a
+		ORDER BY a.sort
+	</select>
+	
+	<select id="findAllList" resultType="Bank">
+		SELECT
+			<include refid="bankColumns"/>
+		FROM bu_bank a
+		ORDER BY a.sort
+	</select>
+	
+	
+	
+</mapper>

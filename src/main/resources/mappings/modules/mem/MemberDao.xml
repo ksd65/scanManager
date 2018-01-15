@@ -204,6 +204,18 @@
 		</choose>
 	</select>
 	
+	<select id="findListByOfficeId" resultType="Member">
+		SELECT 
+			<include refid="memberColumns"/>
+		FROM bu_member_info a
+		<include refid="memberJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND o.id=#{office.id}
+		</where>	
+			
+		ORDER BY a.create_date DESC
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO bu_member_info(
 			id,

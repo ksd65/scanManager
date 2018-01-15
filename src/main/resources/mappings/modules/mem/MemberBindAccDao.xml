@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.mem.dao.MemberBindAccDao">
+    
+	<sql id="memberBindAccColumns">
+		a.id,
+		a.member_id AS "memberId",
+		a.acc AS "acc",
+		a.bank_id AS "bankId",
+		a.bank_name AS "bankName",
+		a.bank_code AS "bankCode",
+		a.name AS "name",
+		a.sub_name AS "subName",
+		a.sub_id AS "subId",
+		a.order_num AS "orderNum",
+		a.mobile_phone AS "mobilePhone",
+		a.jf_state AS "jfState",
+		a.wjf_state AS "wjfState",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		m.id AS "member.id",
+		m.code AS "member.code",
+		m.mobile_phone AS "member.mobilePhone",
+		m.name AS "member.name",
+		o.name AS "office.name",
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+	</sql>
+	
+	<sql id="memberBindAccJoins">
+		LEFT JOIN bu_member_info m on m.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		LEFT JOIN v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="MemberBindAcc">
+		SELECT 
+			<include refid="memberBindAccColumns"/>
+		FROM bu_member_bind_acc a
+		<include refid="memberBindAccJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MemberBindAcc">
+		SELECT 
+			<include refid="memberBindAccColumns"/>
+		FROM bu_member_bind_acc a
+		<include refid="memberBindAccJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="member != null and member.mobilePhone != null and member.mobilePhone != ''">
+				AND m.mobile_phone = #{member.mobilePhone}
+			</if>
+			<if test="member != null and member.name != null and member.name != ''">
+				AND m.name = #{member.name}
+			</if>
+			<if test="member != null and member.id != null and member.id != ''">
+				AND m.id = #{member.id}
+			</if>
+			<if test="bindBeginTime != null and bindBeginTime != ''">
+				AND a.create_date >= #{bindBeginTime}
+			</if>
+			<if test="bindEndTime != null and bindEndTime != ''">
+				AND a.create_date &lt;= #{bindEndTime}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MemberBindAcc">
+		SELECT 
+			<include refid="memberBindAccColumns"/>
+		FROM bu_member_bind_acc a
+		<include refid="memberBindAccJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_member_bind_acc(
+			member_id,
+			acc,
+			bank_id,
+			bank_name,
+			bank_code,
+			name,
+			sub_name,
+			sub_id,
+			order_num,
+			mobile_phone,
+			jf_state,
+			wjf_state,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{memberId},
+			#{acc},
+			#{bankId,jdbcType=VARCHAR},
+			#{bankName,jdbcType=VARCHAR},
+			#{bankCode,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{subName,jdbcType=VARCHAR},
+			#{subId,jdbcType=VARCHAR},
+			#{orderNum,jdbcType=VARCHAR},
+			#{mobilePhone,jdbcType=VARCHAR},
+			#{jfState,jdbcType=VARCHAR},
+			#{wjfState,jdbcType=VARCHAR},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks,jdbcType=VARCHAR},
+			#{delFlag,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_member_bind_acc SET 	
+			member_id = #{memberId},
+			acc = #{acc},
+			bank_id = #{bankId},
+			bank_name = #{bankName},
+			name = #{name},
+			order_num = #{orderNum},
+			mobile_phone = #{mobilePhone},
+			bind_type = #{bindType},
+			resp_code = #{respCode},
+			resp_msg = #{respMsg},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_member_bind_acc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

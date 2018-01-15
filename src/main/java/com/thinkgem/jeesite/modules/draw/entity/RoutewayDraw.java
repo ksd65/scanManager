@@ -66,10 +66,13 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String drawType;
 	private String orderNumOuter;
 	private String bankName;
+	private String subName;
+	private String subId;
 	private String bankAccount;
 	private String accountName;
 	private String certNo;
 	private String tel;
+	private String bankCode;
 	public RoutewayDraw() {
 		super();
 	}
@@ -430,6 +433,30 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 
 	public void setOrderNumOuter(String orderNumOuter) {
 		this.orderNumOuter = orderNumOuter;
+	}
+
+	public String getSubName() {
+		return subName;
+	}
+
+	public void setSubName(String subName) {
+		this.subName = subName;
+	}
+
+	public String getSubId() {
+		return subId;
+	}
+
+	public void setSubId(String subId) {
+		this.subId = subId;
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
 	}
 	
 	

@@ -55,6 +55,10 @@ public class MemberService extends CrudService<MemberDao, Member> {
 		page.setList(dao.findBankInfoList(member));
 		return page;
 	}
+	
+	public List<Member> findListByOfficeId(Member member) {
+		return dao.findListByOfficeId(member);
+	}
 
 	//审核通过
 	@Transactional(readOnly = false)

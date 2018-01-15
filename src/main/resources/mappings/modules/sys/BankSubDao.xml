@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.BankSubDao">
+    
+	<sql id="bankSubColumns">
+		a.id,
+		a.tel,
+		a.sub_name AS "subName",
+		a.city_id AS "cityId",
+		a.bank_id AS "bankId",
+		a.sub_id AS "subId"
+	</sql>
+	
+    
+	<select id="get" resultType="BankSub">
+		SELECT
+			<include refid="bankSubColumns"/>
+		FROM bu_bank_sub a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BankSub">
+		SELECT
+			<include refid="bankSubColumns"/>
+		FROM bu_bank_sub a
+		WHERE 1=1
+		<if test="bankId != null and bankId != ''">
+			AND a.bank_id = #{bankId}
+		</if>
+		<if test="cityId != null and cityId != ''">
+			AND a.city_id = #{cityId}
+		</if>
+	</select>
+	
+	<select id="findAllList" resultType="BankSub">
+		SELECT
+			<include refid="bankSubColumns"/>
+		FROM bu_bank_sub a
+		WHERE 1=1
+		<if test="bankId != null and bankId != ''">
+			AND a.bank_id = #{bankId}
+		</if>
+		<if test="cityId != null and cityId != ''">
+			AND a.city_id = #{cityId}
+		</if>
+	</select>
+	
+	
+	
+</mapper>

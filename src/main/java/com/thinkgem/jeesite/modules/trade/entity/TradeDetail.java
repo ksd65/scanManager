@@ -185,7 +185,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.memberTradeRate = memberTradeRate;
 	}
 
-	@ExcelField(title="结算方式", align=2, sort=70 , dictType="settle_type")
+	//@ExcelField(title="结算方式", align=2, sort=70 , dictType="settle_type")
 	@Length(min=0, max=1, message="结算方式长度必须介于 0 和 1 之间")
 	public String getSettleType() {
 		return settleType;
