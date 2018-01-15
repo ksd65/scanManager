@@ -159,12 +159,14 @@
 		<thead>
 			<tr>
 				<th>商户名称</th>
-				<th>手机号</th>
-				<!--
+				<!--<th>手机号</th>
+				
 				<th>所属一级机构</th>
 				-->
 				<th>所属机构</th>
 				<th>商户编号</th>
+				<th>银行卡号</th>
+				<th>账户名称</th>
 				<!--  
 				<th>通道商户编号</th>
 				-->
@@ -201,10 +203,10 @@
 				<td>
 					${routewayDraw.member.name}
 				</td>
-				<td>
+				<!--<td>
 					${routewayDraw.mobilePhone }
 				</td>
-				<!-- 
+				 
 				<td>
 					${routewayDraw.agentNameLevel1 }
 				</td>
@@ -214,6 +216,13 @@
 				</td>
 				<td>
 					${routewayDraw.memberCode}
+				</td>
+				<td>
+				${fns:replaceCertNoStar(routewayDraw.bankAccount) }
+				</td>
+				
+				<td>
+				${fns:replaceNameStar(routewayDraw.accountName) }
 				</td>
 				<!--  
 				<td>

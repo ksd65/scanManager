@@ -124,7 +124,7 @@
 				<th>商户提现费</th>
 				<!-- <th>结算金额</th> -->
 				
-				<th>结算方式</th>
+			<!-- 	<th>结算方式</th> -->
 				<th>交易订单号</th>
 				<th>商户订单号</th>
 				<th>通道流水号</th>
@@ -182,9 +182,9 @@
 					${tradeDetail.memberSettleMoney}
 				</td> --%>
 				
-				<td>
+			<!-- 	<td>
 					${fns:getDictLabel(tradeDetail.settleType,'settle_type',tradeDetail.settleType)}
-				</td>
+				</td> -->
 				<td>
 					${tradeDetail.orderCode}
 				</td>
