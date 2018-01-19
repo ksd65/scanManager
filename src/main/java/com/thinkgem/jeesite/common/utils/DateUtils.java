@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -93,6 +94,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         cal.setTime(new Date());
         cal.add(Calendar.MONTH, -1);
         return formatDate(cal.getTime(), "MM");
+	}
+	
+	/**
+	 * 获取上个月
+	 * @return
+	 */
+	public static String getLastMonthYear(){
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MONTH, -1);
+        return formatDate(cal.getTime(), "yyyyMM");
 	}
 	
 	/**
@@ -203,6 +215,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
+	 * 返回当前日期的前n天 
+	 * @param n
+	 * @return
+	 */
+	public static String getBeforeDate(int n,String format){
+		if(format == null ||"".equals(format)){
+			format = "yyyy-MM-dd";
+		}
+		Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -n);    //得到前n天
+        String  date = new SimpleDateFormat(format).format(calendar.getTime());
+        return date;
+	}
+	/**
 	 * @param args
 	 * @throws ParseException
 	 */
@@ -211,5 +237,11 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		System.out.println(getDate("yyyy年MM月dd日 E"));
 //		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 //		System.out.println(time/(24*60*60*1000));
+		System.out.println(getLastMonthYear());
+		System.out.println(DateFormatUtils.format(new Date(), "HHmmss"));
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date1 = format.parse("2017-12-19 00:00:00");
+		Date date2 = format.parse("2018-01-20 00:00:00");
+		System.out.println(getDistanceOfTwoDate(date1, date2));
 	}
 }

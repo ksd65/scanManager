@@ -26,4 +26,8 @@ public interface TradeDetailDao extends CrudDao<TradeDetail> {
     public Double countSumMoney(TradeDetail tradeDetail);
     
     public Integer countRecord(TradeDetail tradeDetail);
+    
+    public Double countSumMoneyHis(TradeDetail tradeDetail);
+    
+    public Integer countRecordHis(TradeDetail tradeDetail);
 }

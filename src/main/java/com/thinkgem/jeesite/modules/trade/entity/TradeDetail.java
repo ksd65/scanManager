@@ -3,18 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.trade.entity;
 
-import org.hibernate.validator.constraints.Length;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
-
-import java.util.Date;
-
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.Length;
+
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
-import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.mem.entity.Member;
+import com.thinkgem.jeesite.modules.sys.entity.Office;
 
 /**
  * 交易明细查询Entity
@@ -133,7 +129,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.memberName = memberName;
 	}
 
-	@ExcelField(title="手机号", align=2, sort=30)
+	//@ExcelField(title="手机号", align=2, sort=30)
 	public String getMobilePhone() {
 		return mobilePhone;
 	}
@@ -243,7 +239,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.respType = respType;
 	}
 	
-	@ExcelField(title="借贷记类型", align=2, sort=120, dictType="card_type")
+	//@ExcelField(title="借贷记类型", align=2, sort=120, dictType="card_type")
 	@Length(min=0, max=1, message="借贷记类型长度必须介于 0 和 1 之间")
 	public String getCardType() {
 		return cardType;
@@ -262,7 +258,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.payTime = payTime;
 	}
 	
-	@ExcelField(title="对账日期", align=2, sort=140)
+	//@ExcelField(title="对账日期", align=2, sort=140)
 	@Length(min=0, max=10, message="对账日期长度必须介于 0 和 10 之间")
 	public String getBalanceDate() {
 		return balanceDate;
@@ -281,7 +277,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.interfaceType = interfaceType;
 	}
 	
-	@ExcelField(title="商户提现费", align=2, sort=60)
+	//@ExcelField(title="商户提现费", align=2, sort=60)
 	public String getMemberDrawFee() {
 		return memberDrawFee;
 	}

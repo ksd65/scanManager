@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.DebitNoteDao">
+    
+	<sql id="debitNoteColumns">
+		a.id AS "id",
+		a.member_id AS "memberId",
+		b.code AS "memberCode",
+		a.merchant_code AS "merchantCode",
+		a.money AS "money",
+		a.order_code AS "orderCode",
+		a.order_num_outer AS "orderNumOuter",
+		a.txn_type AS "txnType",
+		a.txn_method AS "txnMethod",
+		a.settle_type AS "settleType",
+		a.trade_rate AS "memberTradeRate",
+		a.status AS "status",
+		a.route_id AS "routeId",
+		a.resp_code AS "respCode",
+		a.resp_msg AS "respMsg",
+		
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		
+		b.code AS "member.code",
+		b.name AS "member.name",
+		b.name AS "memberName",
+		o.name AS "office.name",
+		o.parent_ids AS "office.parentIds",
+		o.agt_grade AS "office.agtGrade",
+		
+		b.mobile_phone AS "mobilePhone"
+	</sql>
+	
+	
+	
+	
+	<sql id="debitNoteJoins">
+		LEFT JOIN bu_member_info b ON b.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+	</sql>
+    
+	<select id="get" resultType="DebitNote">
+		SELECT 
+			<include refid="debitNoteColumns"/>
+		FROM bu_debit_note a
+		<include refid="debitNoteJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DebitNote">
+		SELECT 
+			<include refid="debitNoteColumns"/>
+		FROM bu_debit_note a
+		<include refid="debitNoteJoins"/>
+		<where>
+			1=1
+			<if test="memberCode != null and memberCode != ''">
+				AND b.code = #{memberCode}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+			 <![CDATA[ 	AND a.order_code LIKE CONCAT('%', #{orderCode},'%') ]]>
+			</if>
+			<if test="txnType != null and txnType != ''">
+				AND a.txn_type = #{txnType}
+			</if>
+			<if test="orderNumOuter != null and orderNumOuter != ''">
+			 <![CDATA[ 	AND a.order_num_outer LIKE CONCAT('%', #{orderNumOuter},'%') ]]>
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			  
+			<if test="beginTime != null and beginTime != ''">
+				AND a.create_date >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+			
+			
+			<if test="respType != null and respType != ''">
+				<choose>
+					<when test="respType=='2'">
+						<![CDATA[ 	(AND a.status <>'0' AND AND a.status <>'1' AND a.status <>'3')]]>
+					</when>
+					<otherwise>
+						AND a.status = #{respType}
+					</otherwise>
+				</choose>
+			</if>
+			
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name = #{memberName}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		<!-- ${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+</mapper>

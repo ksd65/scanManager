@@ -140,20 +140,17 @@ public class TradeDetailController extends BaseController {
 				office = office2;
 			}
 		}
-		tradeDetail.setOffice(office);		
+		tradeDetail.setOffice(office);	
+		DecimalFormat df = new DecimalFormat("#.00");
 		
 		int sumCount = 0;
-		BigDecimal b_sumMoney = new BigDecimal("0.00");
-		List<TradeDetail> list = tradeDetailService.findHisList(tradeDetail);
-		if(list.size() > 0){
-			for(TradeDetail t:list){
-				sumCount++;
-				b_sumMoney = b_sumMoney.add(new BigDecimal(t.getMoney()));
-			}
-		}
+		//	BigDecimal b_sumMoney = new BigDecimal("0.00");
+		sumCount = tradeDetailService.countRecordHis(tradeDetail);
+		Double money = tradeDetailService.countSumMoneyHis(tradeDetail);
+		money = money ==null ? 0:money;
 		
 		data.put("sumCount", sumCount);
-		data.put("sumMoney", b_sumMoney.doubleValue());
+		data.put("sumMoney", df.format(money.doubleValue()));
 		return data;
 	}
 	
@@ -178,6 +175,10 @@ public class TradeDetailController extends BaseController {
 		if ("1".equals(first)) {
 			tradeDetail.setBeginTime(DateUtils.getDate("yyyyMMdd"));
 			tradeDetail.setEndTime(DateUtils.getDate("yyyyMMdd"));
+			if ("his".equals(request.getParameter("his"))) {
+				tradeDetail.setBeginTime(DateUtils.getBeforeDate(31, "yyyyMMdd"));
+				tradeDetail.setEndTime(DateUtils.getBeforeDate(31, "yyyyMMdd"));
+			}
 		}
 		//默认显示当天数据
 		/*

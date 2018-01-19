@@ -18,6 +18,17 @@
 			
 		});
 		function page(n,s){
+			var beginTime = $("#beginTime").val();
+			beginTime = beginTime.substr(0,4)+"-"+beginTime.substr(4,2)+"-"+beginTime.substr(6,2);
+			var endTime = $("#endTime").val();
+			endTime = endTime.substr(0,4)+"-"+endTime.substr(4,2)+"-"+endTime.substr(6,2);
+			var day1 = new Date(beginTime);
+			var day2 = new Date(endTime);
+			var days=Math.floor((day2-day1)/(24*3600*1000));
+			if(days+1>7){
+				alert("查询日期跨度不能超过7天");
+				return false;
+			}
 			if(n) $("#pageNo").val(n);
 			if(s) $("#pageSize").val(s);
 			$("#searchForm").attr("action","${ctx}/trade/tradeDetail/");
@@ -30,7 +41,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/trade/tradeDetail/">交易明细列表</a></li>
+		<li class="active"><a href="${ctx}/trade/tradeDetail/">历史成功交易明细列表</a></li>
 		<!--  
 		<shiro:hasPermission name="trade:tradeDetail:edit"><li><a href="${ctx}/trade/tradeDetail/form">交易明细添加</a></li></shiro:hasPermission>
 		-->
@@ -50,20 +61,20 @@
 			<li><label>商户名称：</label>
 				<form:input id="memberName" path="memberName" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
-			<li><label>手机号：</label>
+		<%--	<li><label>手机号：</label>
 				<form:input id="mobilePhone" path="mobilePhone" htmlEscape="false" maxlength="11" class="input-medium"/>
 			</li>
-			<%-- <li><label>平台流水号：</label>
+			 <li><label>平台流水号：</label>
 				<form:input path="ptSerialNo" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li> --%>
 			<li><label>交易日期：</label>
 				<input id="beginTime" name="beginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${tradeDetail.beginTime}"
-					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
+					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true,maxDate:'#F{$dp.$D(\'endTime\');}'});"/>
 			<span>到</span>
 				<input id="endTime" name="endTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${tradeDetail.endTime}"
-					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
+					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true,maxDate:'%y-%M-{%d-31}',minDate:'#F{$dp.$D(\'beginTime\');}'});"/>
 			</li>
 			<li><label>交易类型：</label>
 				<form:select id="txnType" path="txnType" class="input-medium">
@@ -71,32 +82,38 @@
 					<form:options items="${fns:getDictList('txn_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>交易状态：</label>
+			<!-- <li><label>交易状态：</label>
 				<form:select id="respType" path="respType" class="input-medium">
 					<form:option value="" label="所有"/>
 					<form:options items="${fns:getDictList('resp_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>结算方式：</label>
+		 	<li><label>结算方式：</label>
 				<form:select id="settleType" path="settleType" class="input-medium">
 					<form:option value="" label="所有"/>
 					<form:options items="${fns:getDictList('settle_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
-			</li>
+			</li>  -->
 			
-			<li><label>订单编号：</label>
+			<li><label>订单号：</label>
 				<form:input id="orderCode" path="orderCode" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
+			<li><label>商户订单号：</label>
+				<form:input id="orderNumOuter" path="orderNumOuter" htmlEscape="false" maxlength="32" class="input-medium"/>
+			</li>
+			<li><label>通道流水号：</label>
+				<form:input id="channelNo" path="channelNo" htmlEscape="false" maxlength="32" class="input-medium"/>
+			</li>
 			
-			<li><label>对账日期：</label>
+		<!--	<li><label>对账日期：</label>
 				<input id="balanceStartTime" name="balanceStartTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${tradeDetail.balanceStartTime}"
 					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
-			<span>到</span>
+		 	<span>到</span>
 				<input id="balanceEndTime" name="balanceEndTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${tradeDetail.balanceEndTime}"
 					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
-			</li>
+			</li> -->
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" onclick="return page();"/>
 				<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
 				<input id="btnSumData" class="btn btn-primary" type="button" onclick="getSumData();" value="统计"/>
@@ -109,17 +126,20 @@
 			<tr>
 				<th>商户编号</th>
 				<th>商户名称</th>
-				<th>手机号</th>
-				<!--<th>所属一级机构</th>-->
+				<!--<th>手机号</th>
+				<th>所属一级机构</th>-->
 				<th>所属机构</th>
 				<th>交易金额</th>
 				
 				<th>商户费率</th>
-				<th>商户提现费</th>
-				<!-- <th>结算金额</th> -->
+				<!--<th>商户提现费</th>
+				 <th>结算金额</th> -->
 				
-				<th>结算方式</th>
-				<th>交易订单编号</th>
+			<!-- 	<th>结算方式</th> -->
+				<th>交易订单号</th>
+				<th>商户订单号</th>
+				<th>通道流水号</th>
+				<th>交易方式 </th>
 				<th>交易类型 </th>
 				<!-- <th>平台流水号</th> -->
 				<!-- <th>请求时间</th> -->
@@ -131,12 +151,12 @@
 				<th>应答类型</th>
 				<th>应答码</th>
 				<th>应答描述</th>
-				-->
-				<th>借贷记类型 </th>
+				
+				<th>借贷记类型 </th>-->
 				<th>支付时间</th>
-				<th>对账日期</th>
+				<!--<th>对账日期</th>
 				<th>接口类型</th>
-				<!--  
+				  
 				<th>创建时间</th>
 				-->
 				<shiro:hasPermission name="trade:tradeDetail:edit"><th>操作</th></shiro:hasPermission>
@@ -151,10 +171,10 @@
 				<td>
 					${tradeDetail.member.name}
 				</td>
-				<td>
+				<%--<td>
 					${tradeDetail.mobilePhone}
 				</td>
-				<%--<td>
+				<td>
 					${tradeDetail.agentNameLevel1 }
 				</td>--%>
 				<td>
@@ -166,18 +186,27 @@
 				<td>
 					${tradeDetail.memberTradeRate}
 				</td>
-				 <td>
+				<%-- <td>
 					${tradeDetail.memberDrawFee}
 				</td>
-				<%--<td>
+				<td>
 					${tradeDetail.memberSettleMoney}
 				</td> --%>
 				
-				<td>
+			<!--	<td>
 					${fns:getDictLabel(tradeDetail.settleType,'settle_type',tradeDetail.settleType)}
-				</td>
+				</td>  -->
 				<td>
 					${tradeDetail.orderCode}
+				</td>
+				<td>
+					${tradeDetail.orderNumOuter}
+				</td>
+				<td>
+					${tradeDetail.channelNo}
+				</td>
+				<td>
+					${fns:getDictLabel(tradeDetail.txnMethod,'txn_method',tradeDetail.txnMethod)}
 				</td>
 				<td>
 					${fns:getDictLabel(tradeDetail.txnType,'txn_type',tradeDetail.txnType)}
@@ -210,20 +239,20 @@
 				<td>
 					${tradeDetail.respMsg}
 				</td>
-				-->
+				
 				<td>
 					${fns:getDictLabel(tradeDetail.cardType,'card_type','贷记')}
-				</td>
+				</td>-->
 				<td>
 					${tradeDetail.payTime}
 				</td>
-				<td>
+			<!--	<td>
 					${tradeDetail.balanceDate}
 				</td>
 				<td>
 					${fns:getDictLabel(tradeDetail.interfaceType,'interface_type','普通')}
 				</td>
-				<!--  
+				  
 				<td>
 					<fmt:formatDate value="${tradeDetail.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
@@ -280,11 +309,11 @@ function getSumData(){
 	var officeId = $("#officeid").val();
 	//var memberCode = $("#memberCode").val();
 	var memberName = $("#memberName").val();
-	var mobilePhone = $("#mobilePhone").val();
+	var mobilePhone = "";
 	var beginTime = $("#beginTime").val();
 	var endTime = $("#endTime").val();
-	var respType = $("#respType option:selected").val();
-	var settleType = $("#settleType").val();
+	var respType = "";
+	var settleType = "";
 	var txnType = $("#txnType").val();
 	
 	$.ajax({
