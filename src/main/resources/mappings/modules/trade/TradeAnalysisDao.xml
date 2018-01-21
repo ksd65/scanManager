@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.TradeAnalysisDao">
+    
+	<sql id="analysisColumns">
+		k.count0,
+		k.count1,
+		k.count2,
+		k.count3,
+		k.count4,
+		k.count5,
+		k.count6,
+		k.count7,
+		k.count8,
+		k.count9,
+		k.count10,
+		k.count11,
+		k.count1 AS "successCount",
+		(k.count0+k.count2+k.count3+k.count4+k.count5+k.count6+k.count7+k.count8+k.count9+k.count10+k.count11) AS "failCount",
+		(k.count0+k.count2+k.count10) AS "routeFailCount",
+		ROUND(k.count1/(k.count0+count1+k.count2+k.count3+k.count4+k.count5+k.count6+k.count7+k.count8+k.count9+k.count10+k.count11)*100,2) AS "platSuccessPer",
+		ROUND(k.count1/(k.count0+count1+k.count2+k.count10)*100,2) AS "rountSuccessPer"
+	</sql>
+	
+	<sql id="countColumns">
+		MAX(CASE s.`status` WHEN '0' THEN IFNULL(counts,0) ELSE 0 END) count0,
+		MAX(CASE s.`status` WHEN '1' THEN IFNULL(counts,0) ELSE 0 END) count1,
+		MAX(CASE s.`status` WHEN '2' THEN IFNULL(counts,0) ELSE 0 END) count2,
+		MAX(CASE s.`status` WHEN '3' THEN IFNULL(counts,0) ELSE 0 END) count3,
+		MAX(CASE s.`status` WHEN '4' THEN IFNULL(counts,0) ELSE 0 END) count4,
+		MAX(CASE s.`status` WHEN '5' THEN IFNULL(counts,0) ELSE 0 END) count5,
+		MAX(CASE s.`status` WHEN '6' THEN IFNULL(counts,0) ELSE 0 END) count6,
+		MAX(CASE s.`status` WHEN '7' THEN IFNULL(counts,0) ELSE 0 END) count7,
+		MAX(CASE s.`status` WHEN '8' THEN IFNULL(counts,0) ELSE 0 END) count8,
+		MAX(CASE s.`status` WHEN '9' THEN IFNULL(counts,0) ELSE 0 END) count9,
+		MAX(CASE s.`status` WHEN '10' THEN IFNULL(counts,0) ELSE 0 END) count10,
+		MAX(CASE s.`status` WHEN '11' THEN IFNULL(counts,0) ELSE 0 END) count11
+	</sql>
+	
+	
+	
+	<select id="routeMerchantAnalysis" resultType="TradeAnalysis">
+		SELECT k.route_id AS routeId,k.route_name AS routeName,
+			k.merchant_code AS merchantCode,k.merchant_name AS merchantName,
+			k.txn_method AS txnMethod,k.txn_type AS txnType,
+			<include refid="analysisColumns"/>
+		FROM (
+			SELECT m.id, s.merchant_code,m.merchant_name,m.route_id,m.route_name,s.txn_method,s.txn_type,
+			<include refid="countColumns"/>
+			FROM(
+				SELECT t.merchant_code,t.`status`,t.txn_method,t.txn_type,count(1) counts 
+				FROM bu_debit_note t WHERE 1=1
+				<if test="beginTime != null and beginTime != ''">
+					AND t.create_date>= #{beginTime}
+				</if>
+				<if test="endTime != null and endTime != ''">
+					AND t.create_date &lt;= #{endTime}
+				</if>
+				<if test="merchantCode != null and merchantCode != ''">
+					AND t.merchant_code = #{merchantCode}
+				</if>
+				<if test="txnType != null and txnType != ''">
+					AND t.txn_type = #{txnType}
+				</if>
+				<if test="txnMethod != null and txnMethod != ''">
+					AND t.txn_method = #{txnMethod}
+				</if>
+				<if test="routeId != null and routeId != ''">
+					AND t.route_id = #{routeId}
+				</if>
+				GROUP BY t.merchant_code,t.`status`,t.txn_method,t.txn_type
+			)s JOIN bu_merchant m ON s.merchant_code=m.merchant_code
+			GROUP BY s.merchant_code,s.txn_method,s.txn_type
+		)k ORDER BY k.id
+	</select>
+	
+	<select id="routeAnalysis" resultType="TradeAnalysis">
+		SELECT k.route_id AS routeId,k.txn_method AS txnMethod,k.txn_type AS txnType,
+			<include refid="analysisColumns"/>
+		FROM (
+			SELECT s.route_id,s.txn_method,s.txn_type,
+			<include refid="countColumns"/>
+			FROM(
+				SELECT t.route_id,t.`status`,t.txn_method,t.txn_type,count(1) counts 
+				FROM bu_debit_note t WHERE 1=1
+				<if test="beginTime != null and beginTime != ''">
+					AND t.create_date>= #{beginTime}
+				</if>
+				<if test="endTime != null and endTime != ''">
+					AND t.create_date &lt;= #{endTime}
+				</if>
+				<if test="merchantCode != null and merchantCode != ''">
+					AND t.merchant_code = #{merchantCode}
+				</if>
+				<if test="txnType != null and txnType != ''">
+					AND t.txn_type = #{txnType}
+				</if>
+				<if test="txnMethod != null and txnMethod != ''">
+					AND t.txn_method = #{txnMethod}
+				</if>
+				<if test="routeId != null and routeId != ''">
+					AND t.route_id = #{routeId}
+				</if>
+				GROUP BY t.route_id,t.`status`,t.txn_method,t.txn_type
+			)s 
+			GROUP BY s.route_id,s.txn_method,s.txn_type
+		)k ORDER BY k.route_id
+	</select>
+	
+	<select id="memberAnalysis" resultType="TradeAnalysis">
+		SELECT k.member_id AS memberId,k.member_name AS memberName,
+		k.`code` AS memberCode,k.office_name AS "office.name",
+		k.txn_method AS txnMethod,k.txn_type AS txnType,
+			<include refid="analysisColumns"/>
+		FROM (
+			SELECT s.member_id, s.`code`,s.member_name,s.office_name,s.txn_method,s.txn_type,
+			<include refid="countColumns"/>
+			FROM(
+				SELECT t.member_id,m.`name` member_name,m.`code`,o.`name` office_name,
+				t.`status`,t.txn_method,t.txn_type,count(1) counts 
+				FROM bu_debit_note t
+				LEFT JOIN bu_member_info m ON m.id=t.member_id
+				LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+				LEFT JOIN sys_office o ON o.id = c.office_id
+				 WHERE 1=1
+				 <if test="memberCode != null and memberCode != ''">
+					AND m.code = #{memberCode}
+				</if>
+				<if test="beginTime != null and beginTime != ''">
+					AND t.create_date>= #{beginTime}
+				</if>
+				<if test="endTime != null and endTime != ''">
+					AND t.create_date &lt;= #{endTime}
+				</if>
+				<if test="merchantCode != null and merchantCode != ''">
+					AND t.merchant_code = #{merchantCode}
+				</if>
+				<if test="txnType != null and txnType != ''">
+					AND t.txn_type = #{txnType}
+				</if>
+				<if test="txnMethod != null and txnMethod != ''">
+					AND t.txn_method = #{txnMethod}
+				</if>
+				<if test="routeId != null and routeId != ''">
+					AND t.route_id = #{routeId}
+				</if>
+				<if test="office != null and office.id != null and office.id !=''">
+					AND (o.id=#{office.id} or o.parent_ids LIKE 
+						<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+						<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+						<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+				</if>
+				<if test="memberName != null and memberName != ''">
+					AND m.name = #{memberName}
+				</if>
+				GROUP BY t.member_id,t.`status`,t.txn_method,t.txn_type
+			)s 
+			GROUP BY s.member_id,s.txn_method,s.txn_type
+		)k ORDER BY k.member_id
+	</select>
+	
+	
+</mapper>
