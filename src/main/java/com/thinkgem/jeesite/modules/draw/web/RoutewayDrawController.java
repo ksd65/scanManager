@@ -42,6 +42,7 @@ import com.thinkgem.jeesite.modules.sys.entity.BankSub;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -420,6 +421,18 @@ public class RoutewayDrawController extends BaseController {
 			if (drawMoney == null || "".equals(drawMoney)) {
 				result.put("returnCode", "0001");
 				result.put("returnMsg", "提现金额为空");
+				return result;
+			}
+			String drawPwd = request.getParameter("drawPwd");
+			if (drawPwd == null || "".equals(drawPwd)) {
+				result.put("returnCode", "0001");
+				result.put("returnMsg", "提现密码为空");
+				return result;
+			}
+			User user = UserUtils.getUser();
+			if (!SystemService.validatePassword(drawPwd, user.getDrawPwd())){
+				result.put("returnCode", "0001");
+				result.put("returnMsg", "提现密码错误");
 				return result;
 			}
 			

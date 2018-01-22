@@ -19,9 +19,14 @@
 				alert("请选择提现银行卡");
 				return;
 			}
+			var drawPwd = $("#drawPwd").val();
+			if(drawPwd==""){
+				alert("请输入提现密码");
+				return;
+			}
 			$.ajax({
 				url:"${ctx }/draw/routewayDraw/applySubmit",
-				data:{drawMoney:amount,bindAccId:bindAcc},
+				data:{drawMoney:amount,bindAccId:bindAcc,drawPwd:drawPwd},
 				type:'post',
 				cache:false,
 				async:false,
@@ -54,7 +59,7 @@
 			<label class="control-label">通道:</label>
 			<div class="controls">
 				<select class="input-xlarge">
-					<option value="1008">通道1008</option>
+					<option value="1008">通道8</option>
 				</select>
 			</div>
 		</div>
@@ -98,7 +103,13 @@
 				</select>
 			</div>
 		</div>
-		
+		<div class="control-group">
+			<label class="control-label">提现密码:</label>
+			<div class="controls">
+				<input id="drawPwd" name="drawPwd" type="password" value="" maxlength="50" minlength="3" class="required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
 		
 		<div class="form-actions">
 			<shiro:hasPermission name="draw:drawApply:view"><input id="btnSubmit" class="btn btn-primary" type="button" value="申请提现" onclick="apply();"/>&nbsp;</shiro:hasPermission>

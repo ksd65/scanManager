@@ -356,6 +356,33 @@ public class UserController extends BaseController {
 		return "modules/sys/userModifyPwd";
 	}
 	
+	/**
+	 * 修改个人用户密码
+	 * @param oldPassword
+	 * @param newPassword
+	 * @param model
+	 * @return
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "modifyDrawPwd")
+	public String modifyDrawPwd(String oldPassword, String newPassword, Model model) {
+		User user = UserUtils.getUser();
+		if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)){
+			if(Global.isDemoMode()){
+				model.addAttribute("message", "演示模式，不允许操作！");
+				return "modules/sys/userModifyDrawPwd";
+			}
+			if (SystemService.validatePassword(oldPassword, user.getDrawPwd())){
+				systemService.updateDrawPwdById(user.getId(), user.getLoginName(), newPassword);
+				model.addAttribute("message", "修改提现密码成功");
+			}else{
+				model.addAttribute("message", "修改提现密码失败，旧提现密码错误");
+			}
+		}
+		model.addAttribute("user", user);
+		return "modules/sys/userModifyDrawPwd";
+	}
+	
 	@RequiresPermissions("user")
 	@ResponseBody
 	@RequestMapping(value = "treeData")

@@ -47,6 +47,9 @@ public class User extends DataEntity<User> {
 	private String oldLoginName;// 原登录名
 	private String newPassword;	// 新密码
 	
+	private String drawPwd;// 提现密码
+	private String newDrawPwd;// 新提现密码
+	
 	private String oldLoginIp;	// 上次登陆IP
 	private Date oldLoginDate;	// 上次登陆日期
 	private String oldMobile;// 原手机号
@@ -329,4 +332,22 @@ public class User extends DataEntity<User> {
 	public String toString() {
 		return id;
 	}
+
+	public String getDrawPwd() {
+		return drawPwd;
+	}
+
+	public void setDrawPwd(String drawPwd) {
+		this.drawPwd = drawPwd;
+	}
+
+	public String getNewDrawPwd() {
+		return newDrawPwd;
+	}
+
+	public void setNewDrawPwd(String newDrawPwd) {
+		this.newDrawPwd = newDrawPwd;
+	}
+	
+	
 }

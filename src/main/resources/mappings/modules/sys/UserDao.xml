@@ -80,6 +80,7 @@
 		a.update_by AS "updateBy.id",
 		a.update_date,
 		a.del_flag,
+		a.draw_pwd AS "drawPwd",
 		<!--  
 		c.id AS "company.id",
 		-->
@@ -353,6 +354,13 @@
 	<update id="updatePasswordById">
 		UPDATE sys_user SET 
 			password = #{password} 
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新用户提现密码 -->
+	<update id="updateDrawPwdById">
+		UPDATE sys_user SET 
+			draw_pwd = #{drawPwd} 
 		WHERE id = #{id}
 	</update>
 	

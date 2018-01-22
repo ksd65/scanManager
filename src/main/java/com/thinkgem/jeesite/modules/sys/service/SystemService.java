@@ -232,6 +232,18 @@ public class SystemService extends BaseService implements InitializingBean {
 	}
 	
 	@Transactional(readOnly = false)
+	public void updateDrawPwdById(String id, String loginName, String newPassword) {
+		User user = new User(id);
+		user.setDrawPwd(entryptPassword(newPassword));
+		userDao.updateDrawPwdById(user);
+		// 清除用户缓存
+		user.setLoginName(loginName);
+		UserUtils.clearCache(user);
+//		// 清除权限缓存
+//		systemRealm.clearAllCachedAuthorizationInfo();
+	}
+	
+	@Transactional(readOnly = false)
 	public void updateUserLoginInfo(User user) {
 		// 保存上次登录信息
 		user.setOldLoginIp(user.getLoginIp());
