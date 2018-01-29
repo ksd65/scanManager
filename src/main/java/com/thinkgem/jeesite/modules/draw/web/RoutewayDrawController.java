@@ -38,7 +38,6 @@ import com.thinkgem.jeesite.modules.mem.entity.Member;
 import com.thinkgem.jeesite.modules.mem.entity.MemberBindAcc;
 import com.thinkgem.jeesite.modules.mem.service.MemberBindAccService;
 import com.thinkgem.jeesite.modules.mem.service.MemberService;
-import com.thinkgem.jeesite.modules.sys.entity.BankSub;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
@@ -387,16 +386,15 @@ public class RoutewayDrawController extends BaseController {
 				memberBindAcc.setMember(member);
 				List<MemberBindAcc> accList = memberBindAccService.findList(memberBindAcc);
 				model.addAttribute("accList", accList);
-				System.out.println("==="+memberId);
 				
-				JSONObject result = new JSONObject();
+				/*JSONObject result = new JSONObject();
 				JSONObject reqData=new JSONObject();
 				reqData.put("routeCode", "1008");//先写死瑞付
 				reqData.put("memberId", memberId);
 				result=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/memberInfo/draw", CommonUtil.createSecurityRequstData(reqData)));
 				if("0000".equals(result.getString("returnCode"))){
 					model.addAttribute("balanceAccount", result);
-				}
+				}*/
 			}
 		}else{
 			model.addAttribute("message", "您没有提现权限");
@@ -406,10 +404,69 @@ public class RoutewayDrawController extends BaseController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(value ="queryRouteBalance")
+	public Map<String,Object> queryRouteBalance(Model model, HttpServletRequest request) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		try {
+			
+			Office office = UserUtils.getUser().getOffice();
+			Office office2 = officeService.get(office.getId());
+			if("3".equals(office2.getAgtType())){
+				Member mem = new Member();
+				mem.setOffice(office);
+				List<Member> list = memberService.findListByOfficeId(mem);
+				if(list!=null && list.size()>0){
+					String memberId = list.get(0).getId();
+					if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
+						memberId = "15";
+					}
+					
+					String routeCode = request.getParameter("routeCode");
+					if(StringUtils.isBlank(routeCode)){
+						result.put("returnCode", "0004");
+						result.put("returnMsg", "请先选择通道");
+						return result;
+					}
+					
+					JSONObject result1 = new JSONObject();
+					JSONObject reqData=new JSONObject();
+					reqData.put("routeCode", routeCode);
+					reqData.put("memberId", memberId);
+					result1=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/memberInfo/draw", CommonUtil.createSecurityRequstData(reqData)));
+					if("0000".equals(result1.getString("returnCode"))){
+						result.put("returnCode", "0000");
+						result.put("balanceAccount", result1);
+					}else{
+						result.put("returnCode", "0004");
+						result.put("returnMsg", "余额查询失败");
+					}
+				}
+			}else{
+				result.put("returnCode", "0004");
+				result.put("returnMsg", "您没有提现权限");
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			result.put("returnCode", "4004");
+			result.put("returnMsg", "请求失败");
+			return result;
+		}
+		return result;
+		
+	}
+	
+	@ResponseBody
 	@RequestMapping(value ="applySubmit")
 	public Map<String,Object> applySubmit(Model model, HttpServletRequest request) {
 		Map<String,Object> result = new HashMap<String,Object>();
 		try {
+			String routeCode = request.getParameter("routeCode");
+			if (routeCode == null || "".equals(routeCode)) {
+				result.put("returnCode", "0001");
+				result.put("returnMsg", "提现通道为空");
+				return result;
+			}
 			
 			String bindAccId = request.getParameter("bindAccId");
 			if (bindAccId == null || "".equals(bindAccId)) {
@@ -462,7 +519,7 @@ public class RoutewayDrawController extends BaseController {
 					
 					JSONObject res = new JSONObject();
 					JSONObject reqData=new JSONObject();
-					reqData.put("routeCode", "1008");//先写死瑞付
+					reqData.put("routeCode", routeCode);
 					reqData.put("memberId", memberId);
 					reqData.put("drawMoney", drawMoney);
 					reqData.put("bankName", bindAcc.getBankName());

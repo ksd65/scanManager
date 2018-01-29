@@ -9,6 +9,11 @@
 			
 		});
 		function apply(){
+			var routeCode = $("#routeCode").val();
+			if(routeCode==""){
+				alert("请选择通道");
+				return;
+			}
 			var amount = $("#amount").val();
 			if(amount==""){
 				alert("请输入提现金额");
@@ -26,7 +31,7 @@
 			}
 			$.ajax({
 				url:"${ctx }/draw/routewayDraw/applySubmit",
-				data:{drawMoney:amount,bindAccId:bindAcc,drawPwd:drawPwd},
+				data:{routeCode:routeCode,drawMoney:amount,bindAccId:bindAcc,drawPwd:drawPwd},
 				type:'post',
 				cache:false,
 				async:false,
@@ -45,6 +50,39 @@
 			});
 
 		}
+		
+		
+		function balance(){
+			var routeCode = $("#routeCode").val();
+			if(routeCode==""){
+				$("#balance").html("0");
+				$("#canDrawMoneyCount").html("0");
+				$("#drawFee").html("0");
+			}else{
+				$.ajax({
+					url:"${ctx }/draw/routewayDraw/queryRouteBalance",
+					data:{routeCode:routeCode},
+					type:'post',
+					cache:false,
+					async:false,
+					dataType:'json',
+					success:function(data) {
+						if(data.returnCode=="0000"){//请求成功
+							$("#balance").html(data.balanceAccount.resData.balance);
+							$("#canDrawMoneyCount").html(data.balanceAccount.resData.canDrawMoneyCount);
+							$("#drawFee").html(data.balanceAccount.resData.drawFee);
+						}else{
+							alert(data.returnMsg);
+						}
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {    
+				        alert("请求出错");
+				    }
+				});
+			}
+		}
+		
+		
 	</script>
 </head>
 <body>
@@ -58,28 +96,31 @@
 		<div class="control-group">
 			<label class="control-label">通道:</label>
 			<div class="controls">
-				<select class="input-xlarge">
-					<option value="1008">通道8</option>
+				<select id="routeCode" name="routeCode" class="input-medium" onchange="balance();">
+					<option value="">请选择</option>
+					<c:forEach items="${fns:getDictList('draw_route')}" var="mlist">
+						<option value="${mlist.value }">${mlist.label }</option>
+					</c:forEach>
 				</select>
 			</div>
 		</div>
 		
 		<div class="control-group">
 			<label class="control-label">总余额:</label>
-			<div class="controls">
-				${balanceAccount.resData.balance }
+			<div class="controls" id="balance">
+				0
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">可提现余额:</label>
-			<div class="controls">
-				${balanceAccount.resData.canDrawMoneyCount }
+			<div class="controls" id="canDrawMoneyCount">
+				0
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">提现手续费:</label>
-			<div class="controls">
-				${balanceAccount.resData.drawFee }
+			<div class="controls" id="drawFee">
+				0
 			</div>
 		</div>
 		<div class="control-group">
