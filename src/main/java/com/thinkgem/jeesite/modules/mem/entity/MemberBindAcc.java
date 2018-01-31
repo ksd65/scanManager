@@ -30,6 +30,7 @@ public class MemberBindAcc extends DataEntity<MemberBindAcc> {
 	private String subName;			// 
 	private String subId;			// 
 	private String mobilePhone;		// 预留手机号码
+	private String certNo;
 	private String orderNum;
 	private String jfState;
 	private String wjfState;
@@ -225,6 +226,17 @@ public class MemberBindAcc extends DataEntity<MemberBindAcc> {
 	public void setBindEndTime(String bindEndTime) {
 		this.bindEndTime = bindEndTime;
 	}
+
+
+	public String getCertNo() {
+		return certNo;
+	}
+
+
+	public void setCertNo(String certNo) {
+		this.certNo = certNo;
+	}
+	
 	
 	
 }

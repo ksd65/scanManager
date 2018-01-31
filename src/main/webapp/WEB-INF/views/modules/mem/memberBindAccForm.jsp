@@ -127,13 +127,20 @@
 			</div>
 		</div>
 		
-		
+		<div class="control-group">
+			<label class="control-label">持卡人身份证号码:</label>
+			<div class="controls">
+				<form:input path="certNo" htmlEscape="false" maxlength="50" class="required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
 		
 		<div class="control-group">
 			<label class="control-label">手机号:</label>
 			<div class="controls">
 				
-				<form:input path="mobilePhone" htmlEscape="false" maxlength="11" />
+				<form:input path="mobilePhone" htmlEscape="false" maxlength="11" class="required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		
