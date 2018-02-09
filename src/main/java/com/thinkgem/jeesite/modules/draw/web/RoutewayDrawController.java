@@ -314,6 +314,7 @@ public class RoutewayDrawController extends BaseController {
 		routewayDraw.setAuditBy(user.getId());
 		if("2".equals(auditResult)&&"1014".equals(routeCode)){//环迅不调用接口
 			routewayDraw.setRespType("S");
+			routewayDraw.setReqDate(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
 			routewayDraw.setRespDate(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
 		}
 		int count = routewayDrawService.audit(routewayDraw);
