@@ -4,6 +4,8 @@
 package com.thinkgem.jeesite.modules.draw.web;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -295,31 +297,45 @@ public class RoutewayDrawController extends BaseController {
 	public Map<String, Object> audit(HttpServletRequest request, HttpServletResponse response, Model model,String officeId){
 		Map<String,Object> data = new HashMap<String, Object>();
 		User user = UserUtils.getUser();
-		Office office = user.getOffice();
 		String id = request.getParameter("id");
 		String auditResult = request.getParameter("auditResult");
 		String auditRemark = request.getParameter("auditRemark");
+		RoutewayDraw drawT = routewayDrawService.get(id);
+		if(drawT==null){
+			data.put("result", "-1");
+			data.put("msg", "提现记录不存在 ");
+			return data;
+		}
+		String routeCode = drawT.getRouteCode();
 		RoutewayDraw routewayDraw = new RoutewayDraw();
 		routewayDraw.setId(id);
 		routewayDraw.setAuditStatus(auditResult);
 		routewayDraw.setRemarks(auditRemark);
 		routewayDraw.setAuditBy(user.getId());
+		if("2".equals(auditResult)&&"1014".equals(routeCode)){//环迅不调用接口
+			routewayDraw.setRespType("S");
+			routewayDraw.setRespDate(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+		}
 		int count = routewayDrawService.audit(routewayDraw);
 		if(count > 0){
 			if("2".equals(auditResult)){
-				routewayDraw = new RoutewayDraw();
-				routewayDraw.setId(id);
-				RoutewayDraw draw = routewayDrawService.get(routewayDraw);
-				JSONObject result = new JSONObject();
-				JSONObject reqData=new JSONObject();
-				reqData.put("drawId", id);
-				reqData.put("memberId", draw.getMemberId());
-				result=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/bankPay/draw", CommonUtil.createSecurityRequstData(reqData)));
-				if("0000".equals(result.getString("returnCode"))){
+				if("1014".equals(routeCode)){
 					data.put("result", "0");
 				}else{
-					data.put("result", "-1");
-					data.put("msg", "提现失败："+result.getString("returnMsg"));
+					routewayDraw = new RoutewayDraw();
+					routewayDraw.setId(id);
+					RoutewayDraw draw = routewayDrawService.get(routewayDraw);
+					JSONObject result = new JSONObject();
+					JSONObject reqData=new JSONObject();
+					reqData.put("drawId", id);
+					reqData.put("memberId", draw.getMemberId());
+					result=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/bankPay/draw", CommonUtil.createSecurityRequstData(reqData)));
+					if("0000".equals(result.getString("returnCode"))){
+						data.put("result", "0");
+					}else{
+						data.put("result", "-1");
+						data.put("msg", "提现失败："+result.getString("returnMsg"));
+					}
 				}
 			}
 		}else{
@@ -438,7 +454,7 @@ public class RoutewayDrawController extends BaseController {
 						result.put("balanceAccount", result1);
 					}else{
 						result.put("returnCode", "0004");
-						result.put("returnMsg", "余额查询失败");
+						result.put("returnMsg", result1.getString("returnMsg"));
 					}
 				}
 			}else{
@@ -528,6 +544,8 @@ public class RoutewayDrawController extends BaseController {
 					reqData.put("bankAccount", bindAcc.getAcc());
 					reqData.put("accountName", bindAcc.getName());
 					reqData.put("bankCode", bindAcc.getBankCode());
+					reqData.put("certNo", bindAcc.getCertNo());
+					reqData.put("mobilePhone", bindAcc.getMobilePhone());
 					res=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/memberInfo/drawCommit", CommonUtil.createSecurityRequstData(reqData)));
 					if("0000".equals(res.getString("returnCode"))){
 						result.put("returnCode", "0000");
