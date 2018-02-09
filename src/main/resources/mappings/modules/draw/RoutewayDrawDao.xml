@@ -213,6 +213,9 @@
 		<if test="respDate != null and respDate != ''">
 			resp_date = #{respDate},
 		</if>
+		<if test="reqDate != null and reqDate != ''">
+			req_date = #{reqDate},
+		</if>
 			audit_date = sysdate()
 		WHERE id = #{id}
 	</update>
