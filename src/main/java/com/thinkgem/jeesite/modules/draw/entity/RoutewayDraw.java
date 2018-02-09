@@ -73,6 +73,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String certNo;
 	private String tel;
 	private String bankCode;
+	private String routeCode;
 	public RoutewayDraw() {
 		super();
 	}
@@ -457,6 +458,14 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 
 	public void setBankCode(String bankCode) {
 		this.bankCode = bankCode;
+	}
+
+	public String getRouteCode() {
+		return routeCode;
+	}
+
+	public void setRouteCode(String routeCode) {
+		this.routeCode = routeCode;
 	}
 	
 	

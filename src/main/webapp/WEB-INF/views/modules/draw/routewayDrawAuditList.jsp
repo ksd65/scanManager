@@ -142,6 +142,8 @@
 				-->
 				<th>所属机构</th>
 				<th>商户编号</th>
+				<th>提现通道</th>
+				<th>银行名称</th>
 				<th>银行卡号</th>
 				<th>账户名称</th>
 				<!--  
@@ -197,11 +199,18 @@
 					${routewayDraw.memberCode}
 				</td>
 				<td>
-				${fns:replaceCertNoStar(routewayDraw.bankAccount) }
+					${fns:getDictLabel(routewayDraw.routeCode,'draw_route',routewayDraw.routeCode)}
 				</td>
 				
 				<td>
-				${fns:replaceNameStar(routewayDraw.accountName) }
+					${routewayDraw.bankName}
+				</td>
+				<td>
+				${routewayDraw.bankAccount}
+				</td>
+				
+				<td>
+				${routewayDraw.accountName }
 				</td>
 				<!--  
 				<td>

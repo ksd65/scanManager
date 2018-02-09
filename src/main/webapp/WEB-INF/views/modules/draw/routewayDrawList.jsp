@@ -165,6 +165,8 @@
 				-->
 				<th>所属机构</th>
 				<th>商户编号</th>
+				<th>提现通道</th>
+				<th>银行名称</th>
 				<th>银行卡号</th>
 				<th>账户名称</th>
 				<!--  
@@ -216,6 +218,12 @@
 				</td>
 				<td>
 					${routewayDraw.memberCode}
+				</td>
+				<td>
+					${fns:getDictLabel(routewayDraw.routeCode,'draw_route',routewayDraw.routeCode)}
+				</td>
+				<td>
+					${routewayDraw.bankName}
 				</td>
 				<td>
 				${fns:replaceCertNoStar(routewayDraw.bankAccount) }

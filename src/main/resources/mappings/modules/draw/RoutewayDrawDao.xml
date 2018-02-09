@@ -7,6 +7,7 @@
 		a.member_id AS "memberId",
 		a.member_code AS "memberCode",
 		a.merchant_code AS "merchantCode",
+		a.route_code AS "routeCode",
 		(a.drawAmount + a.drawFee + a.tradeFee)  AS "money",
 		a.order_code AS "orderCode",
 		a.pt_serial_no AS "ptSerialNo",
@@ -206,6 +207,12 @@
 			audit_status = #{auditStatus},
 			remarks = #{remarks,jdbcType=VARCHAR},
 			audit_by = #{auditBy},
+		<if test="respType != null and respType != ''">
+			resp_type = #{respType},
+		</if>
+		<if test="respDate != null and respDate != ''">
+			resp_date = #{respDate},
+		</if>
 			audit_date = sysdate()
 		WHERE id = #{id}
 	</update>

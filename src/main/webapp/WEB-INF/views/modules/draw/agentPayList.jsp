@@ -150,6 +150,7 @@
 			<!-- 	<th>手机号</th> -->
 				<th>所属机构</th>
 				<th>商户编号</th>
+				<th>银行名称</th>
 				<th>银行卡号</th>
 				<th>账户名称</th>
 				<th>申请代付金额</th>
@@ -180,7 +181,9 @@
 				<td>
 					${routewayDraw.memberCode}
 				</td>
-				  
+				<td>
+					${routewayDraw.bankName}
+				</td>  
 				<td>
 				${fns:replaceCertNoStar(routewayDraw.bankAccount) }
 				</td>
