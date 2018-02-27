@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.PayeeDao">
+    
+	<sql id="payeeColumns">
+		a.id,
+		a.pay_account AS "payAccount",
+		a.user_name AS "userName",
+		a.pay_type AS "payType",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	
+	<select id="get" resultType="Payee">
+		SELECT 
+			<include refid="payeeColumns"/>
+		FROM bu_payee a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByAccount" resultType="Payee" parameterType="Payee">
+		SELECT 
+			<include refid="payeeColumns"/>
+		FROM bu_payee a
+		WHERE a.pay_account = #{payAccount} AND a.pay_type = #{payType} AND a.del_flag = 0
+	</select>
+	
+	<select id="findList" resultType="Payee">
+		SELECT 
+			<include refid="payeeColumns"/>
+		FROM bu_payee a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND a.create_date >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+			<if test="payAccount != null and payAccount != ''">
+			 <![CDATA[ 	AND a.pay_account LIKE CONCAT('%', #{payAccount},'%') ]]>
+			</if>
+			<if test="userName != null and userName != ''">
+			 <![CDATA[ 	AND a.user_name LIKE CONCAT('%', #{userName},'%') ]]>
+			</if>
+			<if test="payType != null and payType != ''">
+				AND a.pay_type = #{payType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Payee">
+		SELECT 
+			<include refid="payeeColumns"/>
+		FROM bu_payee a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_payee(
+			pay_account,
+			user_name,
+			pay_type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{payAccount},
+			#{userName,jdbcType=VARCHAR},
+			#{payType,jdbcType=VARCHAR},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks,jdbcType=VARCHAR},
+			#{delFlag,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_payee SET 	
+			pay_account = #{payAccount},
+			user_name = #{userName},
+			pay_type = #{payType},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_payee SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

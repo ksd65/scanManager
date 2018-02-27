@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.PayQrCodeDao">
+    
+	<sql id="payQrCodeColumns">
+		a.id,
+		a.money AS "money",
+		a.qr_code_remark AS "qrCodeRemark",
+		a.payee_id AS "payeeId",
+		b.pay_account AS "payAccount",
+		b.user_name AS "userName",
+		a.qr_code AS "qrCode",
+		a.pay_type AS "payType",
+		a.file_path AS "filePath",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="payQrCodeJoins">
+		LEFT JOIN bu_payee b on b.id = a.payee_id
+	</sql>
+    
+	<select id="get" resultType="PayQrCode">
+		SELECT 
+			<include refid="payQrCodeColumns"/>
+		FROM bu_pay_qrcode a
+		<include refid="payQrCodeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PayQrCode">
+		SELECT 
+			<include refid="payQrCodeColumns"/>
+		FROM bu_pay_qrcode a
+		<include refid="payQrCodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginTime != null and beginTime != ''">
+				AND a.create_date >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+			<if test="payType != null and payType != ''">
+				AND a.pay_type = #{payType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="payeeId != null and payeeId != ''">
+				AND a.payee_id = #{payeeId}
+			</if>
+			<if test="qrCodeRemark != null and qrCodeRemark != ''">
+			 <![CDATA[ 	AND a.qr_code_remark LIKE CONCAT('%', #{qrCodeRemark},'%') ]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PayQrCode">
+		SELECT 
+			<include refid="payQrCodeColumns"/>
+		FROM bu_pay_qrcode a
+		<include refid="payQrCodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bu_pay_qrcode(
+			money,
+			qr_code_remark,
+			payee_id,
+			qr_code,
+			pay_type,
+			file_path,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{money},
+			#{qrCodeRemark,jdbcType=VARCHAR},
+			#{payeeId,jdbcType=INTEGER},
+			#{qrCode,jdbcType=VARCHAR},
+			#{payType,jdbcType=VARCHAR},
+			#{filePath,jdbcType=VARCHAR},
+			#{status,jdbcType=VARCHAR},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks,jdbcType=VARCHAR},
+			#{delFlag,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bu_pay_qrcode SET 
+			<if test="money != null and money != ''">	
+			money = #{money},
+			</if>
+			<if test="qrCodeRemark != null and qrCodeRemark != ''">
+			qr_code_remark = #{qrCodeRemark},
+			</if>
+			<if test="payeeId != null and payeeId != ''">
+			payee_id = #{payeeId},
+			</if>
+			<if test="qrCode != null and qrCode != ''">
+			qr_code = #{qrCode},
+			</if>
+			<if test="payType != null and payType != ''">
+			pay_type = #{payType},
+			</if>
+			<if test="filePath != null and filePath != ''">
+			file_path = #{filePath},
+			</if>
+			<if test="status != null and status != ''">
+			status = #{status},
+			</if>
+			<if test="remarks != null and remarks != ''">
+			remarks = #{remarks},
+			</if>
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bu_pay_qrcode SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

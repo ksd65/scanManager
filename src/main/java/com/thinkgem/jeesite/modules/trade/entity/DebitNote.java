@@ -57,7 +57,17 @@ public class DebitNote extends DataEntity<DebitNote> {
 	
 	private String agentNameLevel1;// 所属一级机构
 	
-
+	private String payQrCodeId;
+    
+    private String payAccount;
+    
+    private String payUserName;
+    
+    private String payeeId;
+    
+    private String qrorderDealStatus;
+    
+    private String remarks;
 	
 	public DebitNote() {
 		super();
@@ -303,6 +313,54 @@ public class DebitNote extends DataEntity<DebitNote> {
 
 	public void setRespType(String respType) {
 		this.respType = respType;
+	}
+
+	public String getPayQrCodeId() {
+		return payQrCodeId;
+	}
+
+	public void setPayQrCodeId(String payQrCodeId) {
+		this.payQrCodeId = payQrCodeId;
+	}
+
+	public String getPayAccount() {
+		return payAccount;
+	}
+
+	public void setPayAccount(String payAccount) {
+		this.payAccount = payAccount;
+	}
+
+	public String getPayUserName() {
+		return payUserName;
+	}
+
+	public void setPayUserName(String payUserName) {
+		this.payUserName = payUserName;
+	}
+
+	public String getPayeeId() {
+		return payeeId;
+	}
+
+	public void setPayeeId(String payeeId) {
+		this.payeeId = payeeId;
+	}
+
+	public String getQrorderDealStatus() {
+		return qrorderDealStatus;
+	}
+
+	public void setQrorderDealStatus(String qrorderDealStatus) {
+		this.qrorderDealStatus = qrorderDealStatus;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 	
 	

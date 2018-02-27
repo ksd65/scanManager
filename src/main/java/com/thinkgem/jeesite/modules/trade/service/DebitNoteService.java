@@ -51,5 +51,9 @@ public class DebitNoteService extends CrudService<DebitNoteDao, DebitNote> {
 		super.delete(tradeDetail);
 	}
 	
+	@Transactional(readOnly = false)
+	public int updateDealStatus(DebitNote debitNote){
+		return dao.updateDealStatus(debitNote);
+	}
 	
 }

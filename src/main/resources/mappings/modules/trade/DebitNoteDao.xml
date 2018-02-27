@@ -25,6 +25,12 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		
+		a.pay_qr_code_id AS "payQrCodeId",
+		a.payee_id AS "payeeId",
+		a.pay_account AS "payAccount",
+		a.pay_user_name AS "payUserName",
+		a.qrorder_deal_status AS "qrorderDealStatus",
+		
 		b.code AS "member.code",
 		b.name AS "member.name",
 		b.name AS "memberName",
@@ -74,7 +80,18 @@
 			<if test="settleType != null and settleType != ''">
 				AND a.settle_type = #{settleType}
 			</if>
-			  
+			<if test="routeId != null and routeId != ''">
+				AND a.route_id = #{routeId}
+			</if>
+			<if test="qrorderDealStatus != null and qrorderDealStatus != ''">
+				AND a.qrorder_deal_status = #{qrorderDealStatus}
+			</if>
+			<if test="payeeId != null and payeeId != ''">
+				AND a.payee_id = #{payeeId}
+			</if>
+			<if test="remarks != null and remarks != ''">
+			 <![CDATA[ 	AND a.remarks LIKE CONCAT('%', #{remarks},'%') ]]>
+			</if>
 			<if test="beginTime != null and beginTime != ''">
 				AND a.create_date >= #{beginTime}
 			</if>
@@ -119,6 +136,16 @@
 		</choose>
 	</select>
 	
+	
+	<update id="updateDealStatus" >
+		UPDATE bu_debit_note SET 	
+			qrorder_deal_status = #{qrorderDealStatus,jdbcType=VARCHAR},
+		<if test="status != null and status != ''">
+			status = #{status},
+		</if>
+		update_date = sysdate()
+		WHERE id = #{id}
+	</update>
 	
 	
 </mapper>

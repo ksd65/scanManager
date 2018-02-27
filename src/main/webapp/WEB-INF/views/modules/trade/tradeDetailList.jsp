@@ -160,7 +160,7 @@
 				  
 				<th>创建时间</th>
 				-->
-				<shiro:hasPermission name="trade:tradeDetail:edit"><th>操作</th></shiro:hasPermission>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -257,12 +257,12 @@
 				<td>
 					<fmt:formatDate value="${tradeDetail.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
-				
-				<shiro:hasPermission name="trade:tradeDetail:edit"><td>
-    				<a href="${ctx}/trade/tradeDetail/form?id=${tradeDetail.id}">修改</a>
-					<a href="${ctx}/trade/tradeDetail/delete?id=${tradeDetail.id}" onclick="return confirmx('确认要删除该交易明细吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
 				-->
+				<td>
+    				<a href="${ctx}/trade/tradeDetail/callback?orderCode=${tradeDetail.orderCode}">回调通知</a>
+				<!--	<a href="${ctx}/trade/tradeDetail/delete?id=${tradeDetail.id}" onclick="return confirmx('确认要删除该交易明细吗？', this.href)">删除</a>-->
+				</td>
+				
 			</tr>
 		</c:forEach>
 		</tbody>

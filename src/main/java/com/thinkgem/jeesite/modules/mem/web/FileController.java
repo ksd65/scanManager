@@ -58,7 +58,12 @@ public class FileController extends BaseController {
             }
             logger.info("chunk:[" + chunk + "] chunks:[" + chunks + "]");
             //检查文件目录，不存在则创建
-            String filePath = DateUtils.formatDate(new Date(),"yyyyMMdd") + File.separator + String.valueOf(request.getParameter("memberId"));
+            String filePath = "";
+            if(null != request.getParameter("memberId")&&!"".equals(request.getParameter("memberId"))){
+            	filePath = DateUtils.formatDate(new Date(),"yyyyMMdd") + File.separator + String.valueOf(request.getParameter("memberId"));
+            }else{
+            	filePath = DateUtils.formatDate(new Date(),"yyyyMMdd") + File.separator + "qrcode";
+            }
             String relativePath = Global.getUserfilesBaseDir() + File.separator + filePath;
             File folder = new File(relativePath);
             if (!folder.exists()) {
