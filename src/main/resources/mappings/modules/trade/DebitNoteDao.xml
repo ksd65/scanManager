@@ -83,6 +83,9 @@
 			<if test="routeId != null and routeId != ''">
 				AND a.route_id = #{routeId}
 			</if>
+			<if test="money != null and money != ''">
+				AND a.money = #{money}
+			</if>
 			<if test="qrorderDealStatus != null and qrorderDealStatus != ''">
 				AND a.qrorder_deal_status = #{qrorderDealStatus}
 			</if>

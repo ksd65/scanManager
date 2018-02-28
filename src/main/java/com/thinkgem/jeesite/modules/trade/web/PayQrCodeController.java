@@ -44,6 +44,7 @@ public class PayQrCodeController extends BaseController {
 	private PayQrCodeService payQrCodeService;
 	
 	
+	
 	@ModelAttribute
 	public PayQrCode get(@RequestParam(required=false) String id) {
 		PayQrCode entity = null;

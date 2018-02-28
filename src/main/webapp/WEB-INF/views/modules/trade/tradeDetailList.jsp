@@ -259,7 +259,7 @@
 				</td>
 				-->
 				<td>
-    				<a href="${ctx}/trade/tradeDetail/callback?orderCode=${tradeDetail.orderCode}">回调通知</a>
+    				<a href="${ctx}/trade/tradeDetail/callback?orderCode=${tradeDetail.orderCode}">手动回调</a>
 				<!--	<a href="${ctx}/trade/tradeDetail/delete?id=${tradeDetail.id}" onclick="return confirmx('确认要删除该交易明细吗？', this.href)">删除</a>-->
 				</td>
 				

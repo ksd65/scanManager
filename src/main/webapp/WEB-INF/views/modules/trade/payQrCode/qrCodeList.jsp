@@ -64,11 +64,15 @@ $(document).ready(function() {
 					<form:options items="${fns:getDictList('qr_pay_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			
 			 <li><label>收款人：</label>
-				<form:select path="payeeId" class="input-large" id="payeeId" >
+				<form:select path="payeeId" class="input-medium" id="payeeId" >
 					<form:option value="" label="请选择"/>
 					
 				</form:select>
+			</li>
+			<li><label>交易金额：</label>
+				<form:input path="money" htmlEscape="false" maxlength="10" class="input-medium"/>
 			</li>
 			<li><label>收款备注：</label>
 				<form:input path="qrCodeRemark" htmlEscape="false" maxlength="40" class="input-medium"/>

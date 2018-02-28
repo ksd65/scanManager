@@ -49,6 +49,9 @@
 			<if test="payType != null and payType != ''">
 				AND a.pay_type = #{payType}
 			</if>
+			<if test="money != null and money != ''">
+				AND a.money = #{money}
+			</if>
 			<if test="status != null and status != ''">
 				AND a.status = #{status}
 			</if>

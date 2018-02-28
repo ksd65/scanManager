@@ -6,7 +6,6 @@ package com.thinkgem.jeesite.modules.trade.web;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,11 +32,9 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.trade.entity.DebitNote;
 import com.thinkgem.jeesite.modules.trade.entity.PayQrCode;
 import com.thinkgem.jeesite.modules.trade.entity.PayQrCodeTemp;
-import com.thinkgem.jeesite.modules.trade.entity.Payee;
 import com.thinkgem.jeesite.modules.trade.service.DebitNoteService;
 import com.thinkgem.jeesite.modules.trade.service.PayQrCodeService;
 import com.thinkgem.jeesite.modules.trade.service.PayQrCodeTempService;
-import com.thinkgem.jeesite.modules.trade.service.PayeeService;
 
 /**
  * 交易明细查询Controller
@@ -53,9 +50,6 @@ public class DebitNoteController extends BaseController {
 	
 	@Autowired
 	private OfficeService officeService;
-	
-	@Autowired
-	private PayeeService payeeService;
 	
 	@Autowired
 	private PayQrCodeTempService payQrCodeTempService;
@@ -167,7 +161,6 @@ public class DebitNoteController extends BaseController {
 		debitNote.setEndTime(endTime+" 23:59:59");
 		
 		debitNote.setRouteId("1024");//个人扫码
-		debitNote.setTxnMethod("001");
 		debitNote.setQrorderDealStatus("0");//待处理
 		debitNote.setRespType("0");//未支付
 		
@@ -179,9 +172,6 @@ public class DebitNoteController extends BaseController {
 		
 		model.addAttribute("debitNote", debitNote);
 		
-		Payee payee = new Payee();
-		List<Payee> payeeList = payeeService.findList(payee);
-		model.addAttribute("payeeList", payeeList);
 		return "modules/trade/debitNoteQrList";
 	}
 	
