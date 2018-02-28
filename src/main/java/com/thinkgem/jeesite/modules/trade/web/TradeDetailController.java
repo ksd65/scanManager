@@ -535,24 +535,27 @@ public class TradeDetailController extends BaseController {
 	}
 	//手动回调通知
 	@RequestMapping(value = "callback")
-	public String callback(TradeDetail tradeDetail, RedirectAttributes redirectAttributes) {
-		
-		if(StringUtils.isBlank(tradeDetail.getOrderCode())){
-			addMessage(redirectAttributes, "订单号为空");
-			return "redirect:"+Global.getAdminPath()+"/trade/tradeDetail/list?first=1";
+	@ResponseBody
+	public Map<String, Object> callback(HttpServletRequest request, HttpServletResponse response) {
+		Map<String,Object> data = new HashMap<String, Object>();
+		String orderCode = request.getParameter("orderCode");
+		if(StringUtils.isBlank(orderCode)){
+			data.put("result", "-1");
+			data.put("msg", "订单号为空 ");
+			return data;
 		}
 		
 		JSONObject result = new JSONObject();
 		JSONObject reqData=new JSONObject();
-		reqData.put("orderCode", tradeDetail.getOrderCode());
+		reqData.put("orderCode", orderCode);
 		result=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/cashierDesk/callBack", CommonUtil.createSecurityRequstData(reqData)));
 		if(!"0000".equals(result.getString("returnCode"))){
-			addMessage(redirectAttributes, "操作失败："+result.getString("returnMsg"));
-			return "redirect:"+Global.getAdminPath()+"/trade/tradeDetail/list?first=1";
+			data.put("result", "-1");
+			data.put("msg", "操作失败："+result.getString("returnMsg"));
+			return data;
 		}
-			
-		addMessage(redirectAttributes, "通知成功");
-		return "redirect:"+Global.getAdminPath()+"/trade/tradeDetail/list?first=1";
+		data.put("result", "0");
+		return data;
 	}
 	
 	

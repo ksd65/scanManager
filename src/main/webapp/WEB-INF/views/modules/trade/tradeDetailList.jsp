@@ -259,7 +259,7 @@
 				</td>
 				-->
 				<td>
-    				<a href="${ctx}/trade/tradeDetail/callback?orderCode=${tradeDetail.orderCode}">手动回调</a>
+    				<a href="javascript:notify('${tradeDetail.orderCode}')">手动回调</a>
 				<!--	<a href="${ctx}/trade/tradeDetail/delete?id=${tradeDetail.id}" onclick="return confirmx('确认要删除该交易明细吗？', this.href)">删除</a>-->
 				</td>
 				
@@ -332,6 +332,29 @@ function getSumData(){
         }
     });
 	
+}
+
+function notify(orderCode){
+	
+	$.ajax({
+		url:"${ctx }/trade/tradeDetail/callback",
+		data:{orderCode:orderCode},
+		type:'post',
+		cache:false,
+		async:false,
+		dataType:'json',
+		success:function(data) {
+			if(data.result=="0"){//请求成功
+				alert("通知成功");
+			}else{
+				alert(data.msg);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {    
+	        alert("请求出错");
+	    }
+	});
+
 }
 </script>
 </body>
