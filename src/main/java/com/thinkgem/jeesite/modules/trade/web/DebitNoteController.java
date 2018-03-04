@@ -219,4 +219,102 @@ public class DebitNoteController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/trade/debitNote/qrOrderList?repage";
 	}
 	
+	@RequiresPermissions("trade:debitNote:qrOrderAdd")
+	@RequestMapping(value = {"qrOrderAddList"})
+	public String qrOrderAddList(DebitNote debitNote, HttpServletRequest request, HttpServletResponse response, Model model,String officeId) {
+		// 当前用户代理商
+		Office office = UserUtils.getUser().getOffice();
+
+		// 选择代理商
+		if (StringUtils.isNotBlank(officeId)) {
+			Office office2 = officeService.get(officeId);
+			if (office2 != null) {
+				office = office2;
+			}
+		}
+
+		debitNote.setOffice(office);
+		
+		
+		String beginTime = debitNote.getBeginTime();
+		if(StringUtils.isEmpty(beginTime)){
+			beginTime = DateUtils.getDate("yyyy-MM-dd");
+		}
+		
+		String endTime = debitNote.getEndTime();
+		if(StringUtils.isEmpty(endTime)){
+			endTime = DateUtils.getDate("yyyy-MM-dd");
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		try {
+			Date date1 = format.parse(beginTime+" 00:00:00");
+			Date date2 = format.parse(endTime+" 00:00:00");
+			double d=DateUtils.getDistanceOfTwoDate(date1, date2);
+			if(d+1>7){
+				model.addAttribute("message", "查询日期跨度不能超过7天");
+				return "modules/trade/debitNoteList";
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		debitNote.setBeginTime(beginTime+" 00:00:00");
+		debitNote.setEndTime(endTime+" 23:59:59");
+		
+		debitNote.setRouteId("1024");//个人扫码
+		debitNote.setQrorderDealStatus("1");//待处理
+		debitNote.setRespType("0");//未支付
+		
+		Page<DebitNote> page = debitNoteService.findPage(new Page<DebitNote>(request, response), debitNote);
+		model.addAttribute("page", page);
+		
+		debitNote.setBeginTime(beginTime);
+		debitNote.setEndTime(endTime);
+		
+		model.addAttribute("debitNote", debitNote);
+		
+		return "modules/trade/debitNoteQrAddList";
+	}
+	
+	@RequiresPermissions("trade:debitNote:qrOrderAdd")
+	@RequestMapping(value = "dealAdd")
+	public String dealAdd(DebitNote debitNote, RedirectAttributes redirectAttributes) {
+		String status = debitNote.getStatus();
+		
+		DebitNote note = debitNoteService.get(debitNote.getId());
+		if(note == null){
+			addMessage(redirectAttributes, "订单不存在");
+			return "redirect:"+Global.getAdminPath()+"/trade/debitNote/qrOrderAddList?repage";
+		}
+		
+		if(!"0".equals(note.getStatus())&&!"1".equals(note.getQrorderDealStatus())){
+			addMessage(redirectAttributes, "订单状态不正确");
+			return "redirect:"+Global.getAdminPath()+"/trade/debitNote/qrOrderAddList?repage";
+		}
+		
+		if("2".equals(status)){//支付失败
+			debitNote.setQrorderDealStatus("1");
+			debitNoteService.updateDealStatus(debitNote);
+		}else if("1".equals(status)){//支付成功
+			
+			JSONObject result = new JSONObject();
+			JSONObject reqData=new JSONObject();
+			reqData.put("orderCode", note.getOrderCode());
+			reqData.put("dealAddFlag", "1");//补处理标识
+			result=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/cashierDesk/grsmSuccess", CommonUtil.createSecurityRequstData(reqData)));
+			if(!"0000".equals(result.getString("returnCode"))){
+				addMessage(redirectAttributes, "操作失败："+result.getString("returnMsg"));
+				return "redirect:"+Global.getAdminPath()+"/trade/debitNote/qrOrderAddList?repage";
+			}
+			
+		}
+		
+		addMessage(redirectAttributes, "操作成功");
+		return "redirect:"+Global.getAdminPath()+"/trade/debitNote/qrOrderAddList?repage";
+	}
+	
 }

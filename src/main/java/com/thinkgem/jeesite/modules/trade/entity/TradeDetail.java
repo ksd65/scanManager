@@ -64,6 +64,9 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	private String beginTime;
 	private String endTime;
 	
+	private String respBeginTime;
+	private String respEndTime;
+	
 	
 	private String memberTradeRate;		// 商户费率
 	private String memberDrawFee;		// 商户提现费
@@ -634,6 +637,22 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 
 	public void setOrderNumOuter(String orderNumOuter) {
 		this.orderNumOuter = orderNumOuter;
+	}
+
+	public String getRespBeginTime() {
+		return respBeginTime;
+	}
+
+	public void setRespBeginTime(String respBeginTime) {
+		this.respBeginTime = respBeginTime;
+	}
+
+	public String getRespEndTime() {
+		return respEndTime;
+	}
+
+	public void setRespEndTime(String respEndTime) {
+		this.respEndTime = respEndTime;
 	}
 	
 	

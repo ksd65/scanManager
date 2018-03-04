@@ -21,7 +21,7 @@
 			}
 			if(n) $("#pageNo").val(n);
 			if(s) $("#pageSize").val(s);
-			$("#searchForm").attr("action","${ctx}/trade/debitNote/qrOrderList");
+			$("#searchForm").attr("action","${ctx}/trade/debitNote/qrOrderAddList");
 			$("#searchForm").submit();
         	return false;
         }
@@ -64,9 +64,9 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/trade/debitNote/qrOrderList">待处理订单列表</a></li>
+		<li class="active"><a href="${ctx}/trade/debitNote/qrOrderAddList">成功订单补录列表</a></li>
 	</ul>
-	<form:form id="searchForm" modelAttribute="debitNote" action="${ctx}/trade/debitNote/qrOrderList" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="debitNote" action="${ctx}/trade/debitNote/qrOrderAddList" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<input id="officeid" type="hidden" value="${debitNote.office.id }"/>
@@ -141,6 +141,7 @@
 			    <th>交易方式 </th> 
 				<th>交易类型 </th>
 				<th>收款备注</th>
+				<th>交易状态</th>
 				<th>订单时间</th>
 				<shiro:hasPermission name="trade:debitNote:qrOrder"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -189,14 +190,21 @@
 					
 				</td>
 				<td>
+					<c:choose>
+						<c:when test="${debitNote.status=='0' }"><font color="red">未支付</font></c:when>
+						<c:when test="${debitNote.status=='1' }"><font color="blue">支付成功</font></c:when>
+						<c:when test="${debitNote.status=='3' }"><font color="red">不确定</font></c:when>
+						<c:otherwise><font color="red">支付失败</font></c:otherwise>
+					</c:choose>
+					
+				</td>
+				<td>
 					<fmt:formatDate value="${debitNote.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				
-				<shiro:hasPermission name="trade:debitNote:qrOrder"><td>
+				<shiro:hasPermission name="trade:debitNote:qrOrderAdd"><td>
 					
-    				<a href="${ctx}/trade/debitNote/deal?id=${debitNote.id}&status=1" onclick="return confirmx('确认该订单支付成功吗？', this.href)">支付成功</a>
-    				&nbsp;&nbsp;<a href="${ctx}/trade/debitNote/deal?id=${debitNote.id}&status=2" onclick="return confirmx('确认该订单支付失败吗？', this.href)">支付失败</a>
-    				&nbsp;&nbsp;<a href="${ctx}/trade/debitNote/deal?id=${debitNote.id}&status=0" onclick="return confirmx('确认该订单未支付吗？', this.href)">未支付释放码</a>
+    				<a href="${ctx}/trade/debitNote/dealAdd?id=${debitNote.id}&status=1" onclick="return confirmx('确认该订单支付成功吗？', this.href)">支付成功</a>
     				
 				</td></shiro:hasPermission>
 			</tr>

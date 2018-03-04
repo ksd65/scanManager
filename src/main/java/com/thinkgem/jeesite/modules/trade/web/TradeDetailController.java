@@ -72,15 +72,27 @@ public class TradeDetailController extends BaseController {
 	 */
 	@RequestMapping(value = "getSumData")
 	@ResponseBody
-	public Map<String, Object> getSumData(String officeId,String memberName,String mobilePhone,String beginTime,String endTime,String respType,String settleType,String txnType){
+	public Map<String, Object> getSumData(String officeId,String memberName,String mobilePhone,String beginTime,String endTime,String respType,String settleType,String txnType,String respBeginTime,String respEndTime){
 		Map<String, Object> data = new HashMap<String, Object>();
 		
 		TradeDetail tradeDetail = new TradeDetail();
 		//tradeDetail.setMemberCode(memberCode);
 		tradeDetail.setMemberName(memberName);
 		tradeDetail.setMobilePhone(mobilePhone);
-		tradeDetail.setBeginTime(beginTime);
-		tradeDetail.setEndTime(endTime);
+		if(StringUtils.isNoneBlank(beginTime)){
+			tradeDetail.setBeginTime(beginTime);
+		}
+		if(StringUtils.isNoneBlank(endTime)){
+			tradeDetail.setEndTime(endTime);
+		}
+		if(StringUtils.isNoneBlank(respBeginTime)){
+			tradeDetail.setRespBeginTime(DateUtils.formatDate(DateUtils.parseDate(respBeginTime), "yyyyMMddHHmmss"));
+		}
+		if(StringUtils.isNoneBlank(respEndTime)){
+			tradeDetail.setRespEndTime(DateUtils.formatDate(DateUtils.parseDate(respEndTime), "yyyyMMddHHmmss"));;
+		}
+		
+		
 		tradeDetail.setRespType(respType);
 		tradeDetail.setSettleType(settleType);
 		tradeDetail.setTxnType(txnType);
@@ -176,12 +188,21 @@ public class TradeDetailController extends BaseController {
 		String first = request.getParameter("first");
 
 		if ("1".equals(first)) {
-			tradeDetail.setBeginTime(DateUtils.getDate("yyyyMMdd"));
-			tradeDetail.setEndTime(DateUtils.getDate("yyyyMMdd"));
 			if ("his".equals(request.getParameter("his"))) {
 				tradeDetail.setBeginTime(DateUtils.getBeforeDate(31, "yyyyMMdd"));
 				tradeDetail.setEndTime(DateUtils.getBeforeDate(31, "yyyyMMdd"));
+			}else{
+				tradeDetail.setRespBeginTime(DateUtils.getDate("yyyy-MM-dd")+" 00:00:00");
+				tradeDetail.setRespEndTime(DateUtils.getDate("yyyy-MM-dd")+" 23:59:59");
 			}
+		}
+		String respBeginTime = "";
+		String respEndTime = "";
+		if (!"his".equals(request.getParameter("his"))) {
+			respBeginTime = tradeDetail.getRespBeginTime();
+			respEndTime = tradeDetail.getRespEndTime();
+			tradeDetail.setRespBeginTime(DateUtils.formatDate(DateUtils.parseDate(respBeginTime), "yyyyMMddHHmmss"));
+			tradeDetail.setRespEndTime(DateUtils.formatDate(DateUtils.parseDate(respEndTime), "yyyyMMddHHmmss"));;
 		}
 		//默认显示当天数据
 		/*
@@ -214,6 +235,10 @@ public class TradeDetailController extends BaseController {
 			tradeDetail.setEndTime("");
 		}
 		*/
+		if (!"his".equals(request.getParameter("his"))) {
+			tradeDetail.setRespBeginTime(respBeginTime);
+			tradeDetail.setRespEndTime(respEndTime);
+		}
 		model.addAttribute("tradeDetail", tradeDetail);
 		return retPage;
 	}

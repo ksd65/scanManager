@@ -18,16 +18,13 @@
 			
 		});
 		function page(n,s){
-			
-			var beginTime = $("#beginTime").val();
-			beginTime = beginTime.substr(0,4)+"-"+beginTime.substr(4,2)+"-"+beginTime.substr(6,2);
-			var endTime = $("#endTime").val();
-			endTime = endTime.substr(0,4)+"-"+endTime.substr(4,2)+"-"+endTime.substr(6,2);
+			var beginTime = $("#respBeginTime").val();
+			var endTime = $("#respEndTime").val();
 			var day1 = new Date(beginTime);
 			var day2 = new Date(endTime);
 			var days=Math.floor((day2-day1)/(24*3600*1000));
 			if(days+1>7){
-				alert("查询日期跨度不能超过7天");
+				alert("查询时间跨度不能超过7天");
 				return false;
 			}
 			if(n) $("#pageNo").val(n);
@@ -68,14 +65,14 @@
 			 <li><label>平台流水号：</label>
 				<form:input path="ptSerialNo" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li> --%>
-			<li><label>交易日期：</label>
-				<input id="beginTime" name="beginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="${tradeDetail.beginTime}"
-					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true,maxDate:'#F{$dp.$D(\'endTime\');}',minDate:'%y-%M-{%d-30}'});"/>
+			<li><label>交易时间：</label>
+				<input id="respBeginTime" name="respBeginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="${tradeDetail.respBeginTime}"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:00:00',isShowClear:true,maxDate:'#F{$dp.$D(\'respEndTime\');}',minDate:'%y-%M-{%d-30}'});"/>
 			<span>到</span>
-				<input id="endTime" name="endTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="${tradeDetail.endTime}"
-					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true,maxDate:'%y-%M-%d',minDate:'#F{$dp.$D(\'beginTime\');}'});"/>
+				<input id="respEndTime" name="respEndTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="${tradeDetail.respEndTime}"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:59:59',isShowClear:true,maxDate:'%y-%M-%d',minDate:'#F{$dp.$D(\'respBeginTime\');}'});"/>
 			</li>
 			<li><label>交易类型：</label>
 				<form:select id="txnType" path="txnType" class="input-medium">
@@ -154,7 +151,7 @@
 				<th>应答描述</th>
 				
 				<th>借贷记类型 </th>-->
-				<th>支付时间</th>
+				<th>订单时间</th>
 				<!--<th>对账日期</th>
 				<th>接口类型</th>
 				  
@@ -311,8 +308,8 @@ function getSumData(){
 	//var memberCode = $("#memberCode").val();
 	var memberName = $("#memberName").val();
 	var mobilePhone = "";
-	var beginTime = $("#beginTime").val();
-	var endTime = $("#endTime").val();
+	var respBeginTime = $("#respBeginTime").val();
+	var respEndTime = $("#respEndTime").val();
 	var respType = "";
 	var settleType = "";
 	var txnType = $("#txnType").val();
@@ -321,7 +318,7 @@ function getSumData(){
         type: "post",
         async: false,
         url: "${ctx}/trade/tradeDetail/getSumData",
-        data: "officeId="+officeId+"&memberName="+memberName+"&mobilePhone="+mobilePhone+"&beginTime="+beginTime+"&endTime="+endTime+"&respType="+respType+"&settleType="+settleType+"&txnType="+txnType,
+        data: "officeId="+officeId+"&memberName="+memberName+"&mobilePhone="+mobilePhone+"&respBeginTime="+respBeginTime+"&respEndTime="+respEndTime+"&respType="+respType+"&settleType="+settleType+"&txnType="+txnType,
         success: function(data) {
 			$("#sumCount").text(data.sumCount);
 			$("#sumMoney").text(data.sumMoney);

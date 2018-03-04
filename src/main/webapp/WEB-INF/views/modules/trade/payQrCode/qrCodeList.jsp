@@ -31,11 +31,18 @@ $(document).ready(function() {
 			success:function(data) {
 				
 				var list = data.payeeList;
+				var payeeid = '${payQrCode.payeeId}';
+				var ids = "";
 				for(var i=0;i<list.length;i++){
-					subHtml = subHtml+ "<option value=\""+list[i].id+"\">"+list[i].payAccount+"("+list[i].userName+")"+"</option>";	
+					var sel = ""
+					if(list[i].id==payeeid){
+						sel = "selected=\"selected\"";
+						ids = payeeid;
+					}
+					subHtml = subHtml+ "<option value='"+list[i].id+"' "+sel+">"+list[i].payAccount+"("+list[i].userName+")"+"</option>";	
 				}
-				
 				$("#payeeId").html(subHtml);
+				$("#payeeId").change();
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {    
 		        alert("请求出错");
@@ -51,6 +58,7 @@ $(document).ready(function() {
 		<li><a href="${ctx}/trade/payQrCode/form">收款码添加</a></li>
 		
 	</ul>
+	
 	<form:form id="searchForm" modelAttribute="payQrCode"
 		action="${ctx}/trade/payQrCode/" method="post"
 		class="breadcrumb form-search">
@@ -66,7 +74,7 @@ $(document).ready(function() {
 			</li>
 			
 			 <li><label>收款人：</label>
-				<form:select path="payeeId" class="input-medium" id="payeeId" >
+			 	<form:select path="payeeId" class="input-medium" id="payeeId" >
 					<form:option value="" label="请选择"/>
 					
 				</form:select>
