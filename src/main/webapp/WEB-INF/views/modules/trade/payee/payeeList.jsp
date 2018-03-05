@@ -6,7 +6,16 @@
 <meta name="decorator" content="default" />
 <script type="text/javascript">
 $(document).ready(function() {
-	
+	$(".save").click(function(){
+	    var id = $("#memberId").val();
+	    if(id == ""||id==null||id=="null"){
+	    	if($("#updateFlag").val()=="0"){
+	    		alert("请选择商户");
+		    	return;
+	    	}
+	    }
+	    $("#m-form").submit();
+	})
 	
 });
 	function page(n, s) {
@@ -15,6 +24,37 @@ $(document).ready(function() {
 		$("#pageSize").val(s);
 		$("#searchForm").submit();
 		return false;
+	}
+	function grantMem(pid){
+		$("#payeeId").val(pid);
+		$("#updateFlag").val("0");
+		$("#memberId").find("option:selected").attr("selected",false);
+		$.ajax({
+			url:"${ctx }/trade/payee/getMemberPayeeList",
+			data:{payeeId:pid},
+			type:'post',
+			cache:false, 
+			async:false,
+			dataType:'json',
+			success:function(data) {
+				
+				var list = data.memberList;
+				for(var i=0;i<list.length;i++){
+					$("#memberId").find("option[value='"+list[i].memberId+"']").attr("selected",true);
+				}
+				$("#memberId").change();
+				if(list.length>0){
+					$("#updateFlag").val("1");
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {    
+		        alert("请求出错");
+		    }
+		});
+		
+		
+		
+		$('#dataModal').modal('toggle').modal('show');
 	}
 </script>
 </head>
@@ -80,11 +120,58 @@ $(document).ready(function() {
 					<td><fmt:formatDate value="${payee.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 					<shiro:hasPermission name="trade:payee:view"><td>
 					<a href="${ctx}/trade/payee/delete?id=${payee.id}" onclick="return confirmx('确认要删除该收款人吗？', this.href)">删除</a>
+					<a href="javascript:grantMem('${payee.id}')" >授权专用商户</a>
     			</td></shiro:hasPermission>
 				</tr>
 			</c:forEach>
 		</tbody>
 	</table>
 	<div class="pagination">${page}</div>
+	
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">
+					</button>
+					<h4 class="modal-title" id="myModalLabel">授权专用商户</h4>
+				</div>
+				<div class="modal-body">
+					<div style='text-align: center;'>
+						<form action="${ctx}/trade/payee/grant" id="m-form" method="post">
+							<input type="hidden" id="payeeId" name="payeeId" value="">
+							<input type="hidden" id="updateFlag" name="updateFlag" value="0">
+							<table class="table table-striped table-bordered table-condensed">
+								<tbody>
+								<tr>
+									<td style="text-align: center;">
+										商户
+									</td>
+									<td style="text-align: center;">
+										<select id="memberId" name="memberId"  style="width: 200px;" multiple="multiple">
+											<c:forEach items="${memberList}" var="status">
+												<option value="${status.id}">${status.name}</option>
+											</c:forEach>
+										</select>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="save btn btn-primary">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" >关闭</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	
+	
 </body>
 </html>

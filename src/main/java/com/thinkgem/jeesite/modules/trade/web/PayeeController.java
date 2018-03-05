@@ -24,7 +24,11 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.mem.entity.Member;
+import com.thinkgem.jeesite.modules.mem.service.MemberService;
+import com.thinkgem.jeesite.modules.trade.entity.MemberPayee;
 import com.thinkgem.jeesite.modules.trade.entity.Payee;
+import com.thinkgem.jeesite.modules.trade.service.MemberPayeeService;
 import com.thinkgem.jeesite.modules.trade.service.PayeeService;
 
 
@@ -35,7 +39,11 @@ public class PayeeController extends BaseController {
 	@Autowired
 	private PayeeService payeeService;
 
+	@Autowired
+	private MemberService memberService;
 	
+	@Autowired
+	private MemberPayeeService memberPayeeService;
 	
 	@ModelAttribute
 	public Payee get(@RequestParam(required=false) String id) {
@@ -69,6 +77,11 @@ public class PayeeController extends BaseController {
 		}
 		model.addAttribute("page", page);
 		model.addAttribute("payee",payee);
+		
+		Member member = new Member();
+		List<Member> list = memberService.findList(member);
+		model.addAttribute("memberList",list);
+		
 		return "modules/trade/payee/payeeList";
 	}
 
@@ -133,6 +146,54 @@ public class PayeeController extends BaseController {
 			
 			List<Payee> payeeList = payeeService.findList(payee);
 			result.put("payeeList", payeeList);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			result.put("returnCode", "4004");
+			result.put("returnMsg", "请求失败");
+			return result;
+		}
+		return result;
+	}
+	
+	@RequiresPermissions("trade:payee:view")
+	@RequestMapping(value = "grant")
+	public String grant(MemberPayee memberPayee, Model model, RedirectAttributes redirectAttributes) {
+		
+		if(StringUtils.isBlank(memberPayee.getPayeeId())){
+			addMessage(redirectAttributes, "收款人为空");
+			return "redirect:"+Global.getAdminPath()+"/trade/payee/?repage";
+		}
+		
+		memberPayeeService.deleteByPayeeId(memberPayee);
+		String memberIds = memberPayee.getMemberId();
+		if(!StringUtils.isBlank(memberIds)){
+			String[] arr = memberIds.split(",");
+			if(arr!=null && arr.length>0){
+				for(String memberId:arr){
+					MemberPayee payee = new MemberPayee();
+					payee.setMemberId(memberId);
+					payee.setPayeeId(memberPayee.getPayeeId());
+					memberPayeeService.save(payee);
+				}
+			}
+		}
+		
+		
+		addMessage(redirectAttributes, "收款人授权专用商户成功");
+		return "redirect:"+Global.getAdminPath()+"/trade/payee/?repage";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value ="getMemberPayeeList")
+	public Map<String,Object> getMemberPayeeList(Model model, HttpServletRequest request) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		try {
+			MemberPayee memberPayee = new MemberPayee();
+			memberPayee.setPayeeId(request.getParameter("payeeId"));
+			
+			List<MemberPayee> payeeList = memberPayeeService.findList(memberPayee);
+			result.put("memberList", payeeList);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
