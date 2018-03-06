@@ -83,6 +83,13 @@ $(document).ready(function() {
 					<form:options items="${fns:getDictList('qr_pay_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label>状态：</label>
+				<form:select id="status" path="status" class="input-medium">
+					<form:option value="" label="所有"/>
+					<form:option value="0" label="启用"/>
+					<form:option value="1" label="禁用"/>
+				</form:select>
+			</li>
 			<li><label>创建时间：</label>
 				<input id="beginTime" name="beginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${payee.beginTime}"
@@ -106,6 +113,7 @@ $(document).ready(function() {
 				<th>收款账号</th>
 				<th>收款人姓名</th>
 				<th>收款类型</th>
+				<th>状态</th>
 				<th>创建时间</th>
 				
 				<shiro:hasPermission name="trade:payee:view"><th>操作</th></shiro:hasPermission>
@@ -117,9 +125,19 @@ $(document).ready(function() {
 					<td>${payee.payAccount}</td>
 					<td>${payee.userName }</td>
 					<td>${fns:getDictLabel(payee.payType,'qr_pay_type',payee.payType)}</td>
+					<td>
+						<c:if test="${payee.status=='0' }">启用</c:if>
+						<c:if test="${payee.status=='1' }">禁用</c:if>
+					</td>
 					<td><fmt:formatDate value="${payee.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 					<shiro:hasPermission name="trade:payee:view"><td>
 					<a href="${ctx}/trade/payee/delete?id=${payee.id}" onclick="return confirmx('确认要删除该收款人吗？', this.href)">删除</a>
+					<c:if test="${payee.status=='0' }">
+					<a href="${ctx}/trade/payee/update?id=${payee.id}&status=1" onclick="return confirmx('确认要禁用该收款人吗？', this.href)">禁用</a>
+					</c:if>
+					<c:if test="${payee.status=='1' }">
+					<a href="${ctx}/trade/payee/update?id=${payee.id}&status=0" onclick="return confirmx('确认要启用该收款人吗？', this.href)">启用</a>
+					</c:if>
 					<a href="javascript:grantMem('${payee.id}')" >授权专用商户</a>
     			</td></shiro:hasPermission>
 				</tr>

@@ -44,4 +44,9 @@ public class PayeeService extends CrudService<PayeeDao, Payee> {
 		super.delete(payee);
 	}
 	
+	@Transactional(readOnly = false)
+	public int update(Payee payee) {
+		return dao.update(payee);
+	}
+	
 }

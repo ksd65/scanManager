@@ -131,6 +131,19 @@ public class PayeeController extends BaseController {
 	}
 	
 	
+	@RequiresPermissions("trade:payee:view")
+	@RequestMapping(value = "update")
+	public String update(Payee payee, RedirectAttributes redirectAttributes) {
+		payeeService.update(payee);
+		if("1".equals(payee.getStatus())){
+			addMessage(redirectAttributes, "禁用收款人成功");
+		}else if("0".equals(payee.getStatus())){
+			addMessage(redirectAttributes, "启用收款人成功");
+		}
+		return "redirect:"+Global.getAdminPath()+"/trade/payee/?repage";
+	}
+	
+	
 	@ResponseBody
 	@RequestMapping(value ="getPayeeList")
 	public Map<String,Object> getPayeeList(Model model, HttpServletRequest request) {

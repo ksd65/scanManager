@@ -133,7 +133,7 @@ public class DebitNoteController extends BaseController {
 		
 		String beginTime = debitNote.getBeginTime();
 		if(StringUtils.isEmpty(beginTime)){
-			beginTime = DateUtils.getDate("yyyy-MM-dd");
+			beginTime = DateUtils.getBeforeDate(3,"yyyy-MM-dd");
 		}
 		
 		String endTime = debitNote.getEndTime();
@@ -238,7 +238,7 @@ public class DebitNoteController extends BaseController {
 		
 		String beginTime = debitNote.getBeginTime();
 		if(StringUtils.isEmpty(beginTime)){
-			beginTime = DateUtils.getDate("yyyy-MM-dd");
+			beginTime = DateUtils.getBeforeDate(3,"yyyy-MM-dd");
 		}
 		
 		String endTime = debitNote.getEndTime();

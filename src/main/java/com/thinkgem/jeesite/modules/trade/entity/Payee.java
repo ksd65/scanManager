@@ -11,6 +11,7 @@ public class Payee extends DataEntity<Payee>{
 	private String payAccount;			// 收款账号
 	private String userName;		// 
 	private String payType;
+	private String status;
 	
 	private Office office;			// 机构
 	private Member member;			// 商户
@@ -86,6 +87,12 @@ public class Payee extends DataEntity<Payee>{
 	}
 	public void setOldPayAccount(String oldPayAccount) {
 		this.oldPayAccount = oldPayAccount;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	
