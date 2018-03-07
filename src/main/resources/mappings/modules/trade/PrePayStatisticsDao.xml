@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.PrePayStatisticsDao">
+    
+	<sql id="prePayStatisticsColumns">
+		a.id,
+		a.member_id AS "memberId",
+		a.trade_rate AS "tradeRate",
+		a.pre_money AS "preMoney",
+		a.his_trade_money AS "hisTradeMoney",
+		a.his_use_pre_money AS "hisUsePreMoney",
+		a.today_trade_money AS "todayTradeMoney",
+		a.trade_money AS "tradeMoney",
+		a.undeal_money AS "undealMoney",
+		a.undeal_pre_money AS "undealPreMoney",
+		a.today_use_pre_money AS "todayUsePreMoney",
+		a.use_pre_money AS "usePreMoney",
+		a.left_pre_money AS "leftPreMoney",
+		a.left_trade_money AS "leftTradeMoney",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		b.code AS "member.code",
+		b.name AS "member.name",
+		b.name AS "memberName",
+		o.name AS "office.name"
+	</sql>
+	
+	<sql id="prePayStatisticsJoins">
+		LEFT JOIN bu_member_info b ON b.id = a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+	</sql>
+	
+	<sql id="prePayStatisticsQuery">
+		SELECT t.id, t.member_id,t.trade_rate,t.pre_money,t.his_trade_money,t.his_use_pre_money, 
+		IFNULL(s.today_trade_money,0) today_trade_money, 
+		(t.his_trade_money + IFNULL(s.today_trade_money,0))trade_money,
+		IFNULL(u.undeal_money,0) undeal_money,
+		IFNULL(u.undeal_pre_money,0) undeal_pre_money,
+		IFNULL(s.today_use_pre_money,0) today_use_pre_money,
+		(t.his_use_pre_money+IFNULL(s.today_use_pre_money,0)) use_pre_money,
+		(t.pre_money-t.his_use_pre_money-IFNULL(s.today_use_pre_money,0)-IFNULL(u.undeal_pre_money,0))left_pre_money,
+		((t.pre_money-t.his_use_pre_money-IFNULL(s.today_use_pre_money,0)-IFNULL(u.undeal_pre_money,0))/t.trade_rate)left_trade_money,
+		t.create_by,t.create_date,t.update_by,t.update_date,t.del_flag FROM bu_pre_pay_statistics t
+		LEFT JOIN
+		(SELECT a.member_id,	SUM(money) today_trade_money,SUM(money*member_trade_rate) today_use_pre_money
+		FROM `bu_trade_detail` `a`
+		WHERE  a.txn_date=#{txnDate} and a.pre_type='1' GROUP BY a.member_id) s ON t.member_id = s.member_id
+		LEFT JOIN(
+		SELECT a.member_id, SUM(money) undeal_money ,SUM(money*trade_rate) undeal_pre_money
+		FROM bu_debit_note a 
+		WHERE a.`status`='0' AND a.pre_type='1' AND a.qrorder_deal_status='0' GROUP BY a.member_id)u ON t.member_id = u.member_id
+	</sql>
+    
+	<select id="get" resultType="PrePayStatistics">
+		SELECT 
+			<include refid="prePayStatisticsColumns"/>
+		FROM bu_pay_qrcode a
+		<include refid="prePayStatisticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PrePayStatistics">
+		SELECT 
+			<include refid="prePayStatisticsColumns"/>
+		FROM (
+			<include refid="prePayStatisticsQuery"/>
+		) a
+		<include refid="prePayStatisticsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="memberName != null and memberName != ''">
+				AND b.name like concat('%',#{memberName},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+</mapper>
