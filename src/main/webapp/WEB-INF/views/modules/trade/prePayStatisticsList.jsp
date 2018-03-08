@@ -49,6 +49,7 @@
 				<th>商户名称</th>
 				<th>商户费率</th>
 				<th>预收款</th>
+				<th>剩余预收款</th>
 				<th>成功交易金额</th>
 				<th>待处理金额</th>
 				<th>剩余可交易金额</th>
@@ -68,6 +69,9 @@
 				</td>
 				<td>
 					${prePayStatistics.preMoney}
+				</td>
+				<td>
+					<fmt:formatNumber type="number" value="${prePayStatistics.leftPreMoney}" pattern="0.00" maxFractionDigits="2"/>
 				</td>
 				<td>
 					${prePayStatistics.tradeMoney}
