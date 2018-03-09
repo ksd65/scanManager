@@ -14,24 +14,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.mem.entity.Member;
 import com.thinkgem.jeesite.modules.mem.entity.MemberBindAcc;
 import com.thinkgem.jeesite.modules.mem.service.MemberBindAccService;
 import com.thinkgem.jeesite.modules.mem.service.MemberService;
+import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.Bank;
 import com.thinkgem.jeesite.modules.sys.entity.BankSub;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
-import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.AreaService;
 import com.thinkgem.jeesite.modules.sys.service.BankService;
 import com.thinkgem.jeesite.modules.sys.service.BankSubService;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
@@ -61,6 +59,9 @@ public class MemberBindAccController extends BaseController {
 	
 	@Autowired
 	private BankSubService bankSubService;
+	
+	@Autowired
+	private AreaService areaService;
 	
 	@ModelAttribute
 	public MemberBindAcc get(@RequestParam(required=false) String id) {
@@ -153,6 +154,14 @@ public class MemberBindAccController extends BaseController {
 				BankSub bankSub =  bankSubService.get(new BankSub(memberBindAcc.getSubName().split("_")[0]));
 				if(bankSub!=null){
 					memberBindAcc.setSubName(bankSub.getSubName());
+				}
+				Area area = areaService.get(new Area(memberBindAcc.getAreaId()));
+				if(area != null){
+					memberBindAcc.setCity(area.getName());
+					Area area1 = areaService.get(new Area(area.getParentId()));
+					if(area1 != null){
+						memberBindAcc.setProvince(area1.getName());
+					}
 				}
 				
 			}

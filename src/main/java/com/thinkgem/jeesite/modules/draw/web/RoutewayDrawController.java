@@ -547,6 +547,8 @@ public class RoutewayDrawController extends BaseController {
 					reqData.put("bankCode", bindAcc.getBankCode());
 					reqData.put("certNo", bindAcc.getCertNo());
 					reqData.put("mobilePhone", bindAcc.getMobilePhone());
+					reqData.put("province", bindAcc.getProvince());
+					reqData.put("city", bindAcc.getCity());
 					res=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/memberInfo/drawCommit", CommonUtil.createSecurityRequstData(reqData)));
 					if("0000".equals(res.getString("returnCode"))){
 						result.put("returnCode", "0000");
