@@ -55,6 +55,7 @@
 
 		}
 		function areaTreeselectCallBack(){
+			$("#area_id").val($("#areaId").val());
 			getBankSubList();
 		}
 		function setSubId(){
@@ -73,6 +74,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="memberBindAcc" action="${ctx}/mem/memberBindAcc/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="areaId" id="area_id"/>
 		<sys:message content="${message}"/>
 		
 		<div class="control-group">

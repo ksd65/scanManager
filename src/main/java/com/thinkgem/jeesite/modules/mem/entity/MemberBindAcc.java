@@ -30,6 +30,9 @@ public class MemberBindAcc extends DataEntity<MemberBindAcc> {
 	private String subName;			// 
 	private String subId;			// 
 	private String mobilePhone;		// 预留手机号码
+	private String areaId;
+	private String province;
+	private String city;
 	private String certNo;
 	private String orderNum;
 	private String jfState;
@@ -235,6 +238,36 @@ public class MemberBindAcc extends DataEntity<MemberBindAcc> {
 
 	public void setCertNo(String certNo) {
 		this.certNo = certNo;
+	}
+
+
+	public String getAreaId() {
+		return areaId;
+	}
+
+
+	public void setAreaId(String areaId) {
+		this.areaId = areaId;
+	}
+
+
+	public String getProvince() {
+		return province;
+	}
+
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+
+	public String getCity() {
+		return city;
+	}
+
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 	
 	
