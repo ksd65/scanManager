@@ -189,7 +189,9 @@
 				</td>
 				
 				<td>
+				<c:if test="${routewayDraw.accountName!=null && routewayDraw.accountName!='' }">
 				${fns:replaceNameStar(routewayDraw.accountName) }
+				</c:if>
 				</td>
 				
 				<td>
