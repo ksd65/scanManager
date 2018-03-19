@@ -19,6 +19,7 @@
 		a.drawamount AS "drawamount",
 		a.member_trade_rate AS "memberRate",
 		a.drawfee AS "drawfee",
+		a.drawRate AS "drawRate",
 		a.tradefee AS "tradefee",
 		a.settle_date AS "settleDate",
 		a.create_by AS "createBy.id",
@@ -109,7 +110,7 @@
 					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
 			</if>
 			<if test="memberName != null and memberName != ''">
-				AND b.name = #{memberName}
+				<![CDATA[ 	AND b.name LIKE CONCAT('%', #{memberName},'%') ]]>
 			</if>
 			<if test="mobilePhone != null and mobilePhone != ''">
 				AND b.mobile_phone = #{mobilePhone}
@@ -129,6 +130,118 @@
 			</otherwise>
 		</choose>
 	</select>
+	
+	<select id="countSumMoney" resultType="java.lang.Double">
+		SELECT
+			SUM(a.money)
+		FROM bu_routeway_draw a
+		<include refid="routewayDrawJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberCode != null and memberCode != ''">
+				AND a.member_code = #{memberCode}
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				AND a.merchant_code = #{merchantCode}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+				AND a.pt_serial_no = #{ptSerialNo}
+			</if>
+			<if test="orderNumOuter != null and orderNumOuter != ''">
+				AND a.order_num_outer = #{orderNumOuter}
+			</if>
+			<if test="drawType != null and drawType != ''">
+				AND a.draw_type = #{drawType}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			<if test="applyBeginTime != null and applyBeginTime != ''">
+				AND a.create_date >= #{applyBeginTime}
+			</if>
+			<if test="applyEndTime != null and applyEndTime != ''">
+				AND a.create_date &lt;= #{applyEndTime}
+			</if>
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="memberName != null and memberName != ''">
+				<![CDATA[ 	AND b.name LIKE CONCAT('%', #{memberName},'%') ]]>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+		</where>	
+	</select>
+	
+	<select id="countRecord" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM bu_routeway_draw a
+		<include refid="routewayDrawJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberCode != null and memberCode != ''">
+				AND a.member_code = #{memberCode}
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				AND a.merchant_code = #{merchantCode}
+			</if>
+			<if test="ptSerialNo != null and ptSerialNo != ''">
+				AND a.pt_serial_no = #{ptSerialNo}
+			</if>
+			<if test="orderNumOuter != null and orderNumOuter != ''">
+				AND a.order_num_outer = #{orderNumOuter}
+			</if>
+			<if test="drawType != null and drawType != ''">
+				AND a.draw_type = #{drawType}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			<if test="applyBeginTime != null and applyBeginTime != ''">
+				AND a.create_date >= #{applyBeginTime}
+			</if>
+			<if test="applyEndTime != null and applyEndTime != ''">
+				AND a.create_date &lt;= #{applyEndTime}
+			</if>
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="office != null and office.id != null and office.id !=''">
+				AND (o.id=#{office.id} or o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+			</if>
+			<if test="memberName != null and memberName != ''">
+				<![CDATA[ 	AND b.name LIKE CONCAT('%', #{memberName},'%') ]]>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND b.mobile_phone = #{mobilePhone}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+		</where>		
+	</select>
+	
+	
 	
 	<select id="findAllList" resultType="RoutewayDraw">
 		SELECT 

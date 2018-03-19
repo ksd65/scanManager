@@ -70,7 +70,12 @@
 						if(data.returnCode=="0000"){//请求成功
 							$("#balance").html(data.balanceAccount.resData.balance);
 							$("#canDrawMoneyCount").html(data.balanceAccount.resData.canDrawMoneyCount);
-							$("#drawFee").html(data.balanceAccount.resData.drawFee);
+							if(routeCode == "1026"){
+								$("#drawFee").html("提现金额的"+data.balanceAccount.resData.drawRate+"% 加上"+data.balanceAccount.resData.drawFee+"元");
+							}else{
+								$("#drawFee").html(data.balanceAccount.resData.drawFee);
+							}
+							
 						}else{
 							alert(data.returnMsg);
 						}

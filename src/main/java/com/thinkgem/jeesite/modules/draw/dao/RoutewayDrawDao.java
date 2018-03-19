@@ -17,4 +17,8 @@ public interface RoutewayDrawDao extends CrudDao<RoutewayDraw> {
 	
 	int audit(RoutewayDraw routewayDraw);
 	
+	public Double countSumMoney(RoutewayDraw routewayDraw);
+    
+    public Integer countRecord(RoutewayDraw routewayDraw);
+	
 }

@@ -152,6 +152,7 @@
 				<th>申请时间</th>
 				<th>申请提现金额</th>
 				<th>实际提现金额</th>
+				<th>提现费率</th>
 				<th>提现手续费</th>
 				<th>审核状态</th>
 				<th>审核备注</th>
@@ -225,6 +226,9 @@
 				</td>
 				<td>
 					${routewayDraw.drawamount}
+				</td>
+				<td>
+					${routewayDraw.drawRate}
 				</td>
 				<td>
 					${routewayDraw.drawfee}

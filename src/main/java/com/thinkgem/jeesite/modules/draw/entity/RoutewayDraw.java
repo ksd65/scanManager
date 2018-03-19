@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import com.thinkgem.jeesite.modules.mem.entity.Member;
@@ -36,6 +35,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String respMsg;		// 应答描述
 	private String drawamount;		// 实际提现金额
 	private String drawfee;		// 提现手续费
+	private String drawRate;		// 提现费率
 	private String tradefee;		// 交易手续费
 	private String settleDate;		// 对账日期
 	private Office office;			// 机构
@@ -466,6 +466,14 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 
 	public void setRouteCode(String routeCode) {
 		this.routeCode = routeCode;
+	}
+
+	public String getDrawRate() {
+		return drawRate;
+	}
+
+	public void setDrawRate(String drawRate) {
+		this.drawRate = drawRate;
 	}
 	
 	

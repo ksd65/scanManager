@@ -30,7 +30,7 @@
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
             var memberName = $("#memberName").val();
-            var mobilePhone = $("#mobilePhone").val();
+            var orderNumOuter = $("#orderNumOuter").val();
             var ptSerialNo = $("#ptSerialNo").val();
             var respType = $("#respType").val();
 
@@ -38,8 +38,8 @@
                 type: "post",
                 async: false,
                 url: "${ctx}/draw/routewayDraw/getSumData",
-                data: "officeId="+officeId+"&beginTime="+beginTime+"&endTime="+endTime+"&memberName="+memberName+"&mobilePhone="+mobilePhone+
-				"&ptSerialNo="+ptSerialNo+"&respType="+respType,
+                data: "officeId="+officeId+"&beginTime="+beginTime+"&endTime="+endTime+"&memberName="+memberName+
+				"&ptSerialNo="+ptSerialNo+"&respType="+respType+"&orderNumOuter="+orderNumOuter,
                 success: function(data) {
                     $("#sumCount").text(data.sumCount);
                     $("#sumMoney").text(data.sumMoney);
@@ -71,13 +71,15 @@
 					<table id="contentTable" class="table table-striped table-bordered table-condensed">
 						<thead>
 						<tr>
-							<th style="text-align: center;">交易总比数</th>
-							<th style="text-align: center;">交易总金额</th>
+							<th style="text-align: center;">代付总比数</th>
+							<th style="text-align: center;">代付结果</th>
+							<th style="text-align: center;">代付总金额</th>
 						</tr>
 						</thead>
 						<tbody>
 						<tr>
 							<td id="sumCount" style="text-align: center;"></td>
+							<td style="text-align: center;">成功</td>
 							<td id="sumMoney" style="text-align: center;"></td>
 						</tr>
 						</tbody>
@@ -111,16 +113,16 @@
 			</li>
 			-->
 			<li><label>商户名称：</label>
-				<form:input path="memberName" htmlEscape="false" maxlength="32" class="input-medium"/>
+				<form:input id="memberName"  path="memberName" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
 		<!--	<li><label>手机号：</label>
 				<form:input path="mobilePhone" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>  -->
 			<li><label>商户订单号：</label>
-				<form:input path="orderNumOuter" htmlEscape="false" maxlength="32" class="input-medium"/>
+				<form:input id="orderNumOuter" path="orderNumOuter" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
 			<li><label>平台流水号：</label>
-				<form:input path="ptSerialNo" htmlEscape="false" maxlength="32" class="input-medium"/>
+				<form:input id="ptSerialNo" path="ptSerialNo" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
 			<li><label>订单日期：</label>
 				<input id="beginTime" name="beginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
@@ -132,12 +134,13 @@
 					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
 			</li>
 			<li><label>代付结果：</label>
-				<form:select path="respType" class="input-medium">
+				<form:select id="respType" path="respType" class="input-medium">
 					<form:option value="" label="所有"/>
 					<form:options items="${fns:getDictList('resp_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" onclick="return page();"/>
+			<input id="btnSumData" class="btn btn-primary" type="button" onclick="getSumData();" value="统计"/>
 			</li>
 			
 		</ul>
