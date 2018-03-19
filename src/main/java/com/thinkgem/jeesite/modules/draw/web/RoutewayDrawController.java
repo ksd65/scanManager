@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.draw.web;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -205,36 +206,38 @@ public class RoutewayDrawController extends BaseController {
 	@ResponseBody
 	public Map<String, Object> getSumData(RoutewayDraw routewayDraw, HttpServletRequest request, HttpServletResponse response, Model model,String officeId){
 		Map<String,Object> data = new HashMap<String, Object>();
-		User user = UserUtils.getUser();
-		Office office = user.getOffice();
-
+		
+		Office office = UserUtils.getUser().getOffice();
+		// 选择代理商
 		if(StringUtils.isNotBlank(officeId)){
-			office = officeService.get(officeId);
+			Office office2 = officeService.get(officeId);
+			if(office2 != null){
+				office = office2;
+			}
 		}
-		routewayDraw.setOffice(office);
-
+		
+		routewayDraw.setOffice(office);	
+		routewayDraw.setDrawType("2");//代付
+		routewayDraw.setRespType("S");//成功
+		//默认显示当天数据
 		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
 			routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
 		}
-
+		
 		if(StringUtils.isEmpty(routewayDraw.getEndTime())){
 			routewayDraw.setEndTime(DateUtils.getDate("yyyyMMdd"));
 		}
-
-		BigDecimal sumMoney = new BigDecimal("0.00");
+		
 		int sumCount = 0;
-		List<RoutewayDraw> list = routewayDrawService.findList(routewayDraw);
-		if(list.size() > 0){
-			for(RoutewayDraw t:list){
-				sumCount++;
-				if(!StringUtils.isEmpty(t.getDrawamount())){
-					sumMoney = sumMoney.add(new BigDecimal(t.getDrawamount()));
-				}
-			}
-		}
+		//	BigDecimal b_sumMoney = new BigDecimal("0.00");
+		sumCount = routewayDrawService.countRecord(routewayDraw);
+		Double money = routewayDrawService.countSumMoney(routewayDraw);
+		money = money ==null ? 0:money;
+		DecimalFormat df = new DecimalFormat("0.00");
+		
 
 		data.put("sumCount", sumCount);
-		data.put("sumMoney", sumMoney.doubleValue());
+		data.put("sumMoney", df.format(money.doubleValue()));
 		return data;
 	}
 	
