@@ -53,6 +53,7 @@
 		b.account_name as "memberBank.accountName",
 		b.account_number as "memberBank.accountNumber",
 		b.create_date as "memberBank.createDate",
+		o.id AS "office.id",
 		o.name AS "office.name",
 		o.agt_type AS "office.agtType",
 		o.parent_ids AS "office.parentIds",
@@ -495,6 +496,12 @@
 	<update id="disable">
 		UPDATE bu_member_info SET 
 			status = 1
+		WHERE id = #{id}
+	</update>
+	
+	<update id="enable">
+		UPDATE bu_member_info SET 
+			status = 0
 		WHERE id = #{id}
 	</update>
 </mapper>

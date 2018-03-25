@@ -121,7 +121,8 @@ public class Member extends DataEntity<Member> {
 	private String deskPic;	// 收银台照片
 	private String insidePic;	// 店内照片
 	private String staffPic;	// 员工照片
-
+	private String busLicenceNbr;		// 营业执照号码
+	
 	public String getLevel() {
 		return level;
 	}
@@ -849,5 +850,15 @@ public class Member extends DataEntity<Member> {
 	public void setMlWjfRate(String mlWjfRate) {
 		this.mlWjfRate = mlWjfRate;
 	}
+
+	public String getBusLicenceNbr() {
+		return busLicenceNbr;
+	}
+
+	public void setBusLicenceNbr(String busLicenceNbr) {
+		this.busLicenceNbr = busLicenceNbr;
+	}
+	
+	
 	
 }

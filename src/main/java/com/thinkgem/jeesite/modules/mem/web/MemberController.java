@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,14 +19,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.CommonUtil;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.HttpUtil;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.mem.entity.Member;
+import com.thinkgem.jeesite.modules.mem.entity.MemberPayType;
+import com.thinkgem.jeesite.modules.mem.service.MemberPayTypeService;
 import com.thinkgem.jeesite.modules.mem.service.MemberService;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -42,6 +49,9 @@ public class MemberController extends BaseController {
 
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+	private MemberPayTypeService memberPayTypeService;
 	
 	@Autowired
 	private OfficeService officeService;
@@ -107,11 +117,27 @@ public class MemberController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/mem/member/?repage";
 	}
 
-	@RequiresPermissions("mem:member:edit")
+	@RequiresPermissions("mem:member:audit")
 	@RequestMapping(value = "disable")
 	public String disable(Member member, RedirectAttributes redirectAttributes) {
 		memberService.disable(member);
 		addMessage(redirectAttributes, "禁用成功");
+		return "redirect:"+Global.getAdminPath()+"/mem/member/?repage";
+	}
+	
+	@RequiresPermissions("mem:member:audit")
+	@RequestMapping(value = "enable")
+	public String enable(Member member, RedirectAttributes redirectAttributes) {
+		memberService.enable(member);
+		addMessage(redirectAttributes, "启用成功");
+		return "redirect:"+Global.getAdminPath()+"/mem/member/?repage";
+	}
+	
+	@RequiresPermissions("mem:member:audit")
+	@RequestMapping(value = "audit")
+	public String audit(Member member, RedirectAttributes redirectAttributes) {
+		memberService.enable(member);
+		addMessage(redirectAttributes, "审核成功");
 		return "redirect:"+Global.getAdminPath()+"/mem/member/?repage";
 	}
 	
@@ -225,4 +251,125 @@ public class MemberController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/mem/member/?repage";
 	}
 
+	@RequiresPermissions("mem:member:edit")
+	@RequestMapping(value = "toRegist")
+	public String toRegist(Member member, Model model) {
+		model.addAttribute("member", member);
+		return "modules/mem/memberRegist";
+	}
+	
+	@RequiresPermissions("mem:member:edit")
+	@RequestMapping(value = "saveMem")
+	@ResponseBody
+	public Map<String,Object> saveMem(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		JSONObject reqData=new JSONObject();
+		reqData.put("name", request.getParameter("name"));
+		reqData.put("shortName", request.getParameter("shortName"));
+		reqData.put("contact", request.getParameter("contact"));
+		reqData.put("mobilePhone", request.getParameter("mobilePhone"));
+		reqData.put("certNbr", request.getParameter("certNbr"));
+		reqData.put("busLicenceNbr", request.getParameter("busLicenceNbr"));
+		reqData.put("email", request.getParameter("email"));
+		reqData.put("officeId", request.getParameter("officeId"));
+		reqData.put("remarks", request.getParameter("remarks"));
+		reqData.put("tradeInfo", request.getParameter("tradeInfo"));
+		JSONObject res=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/memberInfo/toRegister", CommonUtil.createSecurityRequstData(reqData)));
+		if("0000".equals(res.getString("returnCode"))){
+			result.put("returnCode", "0000");
+			result.put("returnMsg", "商户进件成功");
+		}else{
+			result.put("returnCode", "0001");
+			result.put("returnMsg", res.getString("returnMsg"));
+		}
+		return result;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "keyinfo")
+	public Map<String,Object> keyinfo(Member member, Model model) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		Office office =  officeService.get(member.getOffice().getId());
+		if(office!=null){
+			result.put("returnCode", "0000");
+			result.put("privateKey", office.getPrivateKeyRsa());
+			result.put("publicKey", office.getPublicKeyRsa());
+		}
+		return result;
+	}
+	
+	@RequiresPermissions("mem:member:edit")
+	@RequestMapping(value = "toEdit")
+	public String toEdit(String id,Model model){
+		Member member = memberService.get(id);
+		model.addAttribute("member",member);
+		
+		MemberPayType memberPayType = new MemberPayType();
+		memberPayType.setMemberId(id);
+		List<MemberPayType> list = memberPayTypeService.findList(memberPayType);
+		if(list!=null && list.size()>0){
+			for(MemberPayType mp:list){
+				mp.setTxnType(transPayType(mp.getPayType()));
+			}
+		}
+		model.addAttribute("paytype",list);
+		return "modules/mem/memberInfo";
+	}
+	
+	private String transPayType(String txnType){
+		Map<String,String> obj = new HashMap<String, String>();
+		obj.put("WX","1");
+		obj.put("ZFB","2");
+		obj.put("QQ","3");
+		obj.put("JD","5");
+		obj.put("YL","8");
+		obj.put("KJ","9");
+		return obj.get(txnType);
+	}
+	
+	@RequiresPermissions("mem:member:edit")
+	@RequestMapping(value = "updateMem")
+	@ResponseBody
+	public Map<String,Object> updateMem(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		JSONObject reqData=new JSONObject();
+		reqData.put("memberId", request.getParameter("memberId"));
+		reqData.put("name", request.getParameter("name"));
+		reqData.put("shortName", request.getParameter("shortName"));
+		reqData.put("contact", request.getParameter("contact"));
+		reqData.put("mobilePhone", request.getParameter("mobilePhone"));
+		reqData.put("certNbr", request.getParameter("certNbr"));
+		reqData.put("busLicenceNbr", request.getParameter("busLicenceNbr"));
+		reqData.put("email", request.getParameter("email"));
+		reqData.put("remarks", request.getParameter("remarks"));
+		reqData.put("tradeInfo", request.getParameter("tradeInfo"));
+		JSONObject res=JSONObject.fromObject(HttpUtil.sendPostRequest(Global.getConfig("pospService")+"/api/memberInfo/updateMember", CommonUtil.createSecurityRequstData(reqData)));
+		if("0000".equals(res.getString("returnCode"))){
+			result.put("returnCode", "0000");
+			result.put("returnMsg", "商户修改成功");
+		}else{
+			result.put("returnCode", "0001");
+			result.put("returnMsg", res.getString("returnMsg"));
+		}
+		return result;
+	}
+	
+	@RequiresPermissions("mem:member:view")
+	@RequestMapping(value = "toDetail")
+	public String toDetail(Member member, Model model) {
+		Member member1 = memberService.get(member.getId());
+		model.addAttribute("member",member1);
+		
+		MemberPayType memberPayType = new MemberPayType();
+		memberPayType.setMemberId(member.getId());
+		List<MemberPayType> list = memberPayTypeService.findList(memberPayType);
+		if(list!=null && list.size()>0){
+			for(MemberPayType mp:list){
+				mp.setTxnType(transPayType(mp.getPayType()));
+			}
+		}
+		model.addAttribute("paytype",list);
+		return "modules/mem/memberDetail1";
+	}
+	
 }

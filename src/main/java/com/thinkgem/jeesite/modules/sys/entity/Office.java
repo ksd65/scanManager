@@ -53,6 +53,9 @@ public class Office extends TreeEntity<Office> {
 	
 	private String qrcodePath;		// 二维码图片地址
 	
+	private String privateKeyRsa;	
+	private String publicKeyRsa;	
+	
 	public Office(){
 		super();
 //		this.sort = 30;
@@ -319,5 +322,22 @@ public class Office extends TreeEntity<Office> {
 	public void setQrcodePath(String qrcodePath) {
 		this.qrcodePath = qrcodePath;
 	}
+
+	public String getPrivateKeyRsa() {
+		return privateKeyRsa;
+	}
+
+	public void setPrivateKeyRsa(String privateKeyRsa) {
+		this.privateKeyRsa = privateKeyRsa;
+	}
+
+	public String getPublicKeyRsa() {
+		return publicKeyRsa;
+	}
+
+	public void setPublicKeyRsa(String publicKeyRsa) {
+		this.publicKeyRsa = publicKeyRsa;
+	}
+	
 	
 }

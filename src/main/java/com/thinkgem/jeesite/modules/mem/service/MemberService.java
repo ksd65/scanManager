@@ -60,10 +60,15 @@ public class MemberService extends CrudService<MemberDao, Member> {
 		return dao.findListByOfficeId(member);
 	}
 
-	//审核通过
+	//禁用
 	@Transactional(readOnly = false)
 	public void disable(Member member) {
 		dao.disable(member);
+	}
+	
+	@Transactional(readOnly = false)
+	public void enable(Member member) {
+		dao.enable(member);
 	}
 
 	@Transactional(readOnly = false)

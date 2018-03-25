@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.mem.dao.MemberPayTypeDao">
+    
+	<sql id="memberPayTypeColumns">
+		a.id,
+		a.member_id AS "memberId",
+		a.pay_method AS "payMethod",
+		a.pay_type AS "payType",
+		a.route_code AS "routeCode",
+		a.aisle_type AS "aisleType",
+		a.merchant_code AS "merchantCode",
+		a.t0_draw_fee AS "t0DrawFee",
+		a.t0_draw_rate AS "t0DrawRate",
+		a.t0_trade_rate AS "t0TradeRate",
+		a.t1_draw_fee AS "t1DrawFee",
+		a.t1_draw_rate AS "t1DrawRate",
+		a.t1_trade_rate AS "t1TradeRate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<select id="get" resultType="MemberPayType">
+		SELECT 
+			<include refid="memberPayTypeColumns"/>
+		FROM bu_member_paytype a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MemberPayType">
+		SELECT 
+			<include refid="memberPayTypeColumns"/>
+		FROM bu_member_paytype a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberId != null and memberId != ''">
+				AND a.member_id = #{memberId}
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MemberPayType">
+		SELECT 
+			<include refid="memberPayTypeColumns"/>
+		FROM bu_member_paytype a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="delete">
+		UPDATE bu_member_paytype SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
