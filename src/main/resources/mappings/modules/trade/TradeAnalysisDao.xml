@@ -16,9 +16,9 @@
 		k.count10,
 		k.count11,
 		k.count1 AS "successCount",
-		(k.count0+k.count2+k.count3+k.count4+k.count5+k.count6+k.count7+k.count8+k.count9+k.count10+k.count11) AS "failCount",
+		(k.count0+k.count2+k.count3+k.count4+k.count5+k.count6+k.count7+k.count8+k.count9+k.count10+k.count11+k.count12) AS "failCount",
 		(k.count0+k.count2+k.count10) AS "routeFailCount",
-		ROUND(k.count1/(k.count0+count1+k.count2+k.count3+k.count4+k.count5+k.count6+k.count7+k.count8+k.count9+k.count10+k.count11)*100,2) AS "platSuccessPer",
+		ROUND(k.count1/(k.count0+count1+k.count2+k.count3+k.count4+k.count5+k.count6+k.count7+k.count8+k.count9+k.count10+k.count11+k.count12)*100,2) AS "platSuccessPer",
 		ROUND(k.count1/(k.count0+count1+k.count2+k.count10)*100,2) AS "rountSuccessPer"
 	</sql>
 	
@@ -34,7 +34,8 @@
 		MAX(CASE s.`status` WHEN '8' THEN IFNULL(counts,0) ELSE 0 END) count8,
 		MAX(CASE s.`status` WHEN '9' THEN IFNULL(counts,0) ELSE 0 END) count9,
 		MAX(CASE s.`status` WHEN '10' THEN IFNULL(counts,0) ELSE 0 END) count10,
-		MAX(CASE s.`status` WHEN '11' THEN IFNULL(counts,0) ELSE 0 END) count11
+		MAX(CASE s.`status` WHEN '11' THEN IFNULL(counts,0) ELSE 0 END) count11,
+		MAX(CASE s.`status` WHEN '12' THEN IFNULL(counts,0) ELSE 0 END) count12
 	</sql>
 	
 	
