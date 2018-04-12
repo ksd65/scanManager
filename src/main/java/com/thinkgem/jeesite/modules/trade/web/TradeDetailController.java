@@ -292,6 +292,14 @@ public class TradeDetailController extends BaseController {
 				}
 			}
 			
+			
+			
+			if(StringUtils.isNoneBlank(tradeDetail.getRespBeginTime())){
+				tradeDetail.setRespBeginTime(DateUtils.formatDate(DateUtils.parseDate(tradeDetail.getRespBeginTime()), "yyyyMMddHHmmss"));
+			}
+			if(StringUtils.isNoneBlank(tradeDetail.getRespEndTime())){
+				tradeDetail.setRespEndTime(DateUtils.formatDate(DateUtils.parseDate(tradeDetail.getRespEndTime()), "yyyyMMddHHmmss"));;
+			}
 			tradeDetail.setOffice(office);
 			
             String fileName = "交易数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
