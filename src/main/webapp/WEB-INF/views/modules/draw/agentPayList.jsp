@@ -124,7 +124,23 @@
 			<li><label>平台流水号：</label>
 				<form:input id="ptSerialNo" path="ptSerialNo" htmlEscape="false" maxlength="32" class="input-medium"/>
 			</li>
-			<li><label>订单日期：</label>
+			<li><label>审核状态：</label>
+				<form:select path="auditStatus" class="input-medium">
+					<form:option value="" label="所有"/>
+					<form:options items="${fns:getDictList('draw_audit_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>申请日期：</label>
+				<input id="applyBeginTime" name="applyBeginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="${routewayDraw.applyBeginTime}"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+			<span>到</span>
+				<input id="applyEndTime" name="applyEndTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="${routewayDraw.applyEndTime}"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+			</li>
+			
+			<li><label>代付日期：</label>
 				<input id="beginTime" name="beginTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="${routewayDraw.beginTime}"
 					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
@@ -156,9 +172,12 @@
 				<th>银行名称</th>
 				<th>银行卡号</th>
 				<th>账户名称</th>
+				<th>申请时间</th>
 				<th>申请代付金额</th>
 				<th>实际代付金额</th>
 				<th>代付手续费</th>
+				<th>审核状态</th>
+				<th>审核备注</th>
 				<th>商户订单号</th>
 				<th>平台流水号</th>
 				<th>代付日期</th>
@@ -196,7 +215,9 @@
 				${fns:replaceNameStar(routewayDraw.accountName) }
 				</c:if>
 				</td>
-				
+				<td>
+					<fmt:formatDate value="${routewayDraw.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
 				<td>
 					${routewayDraw.drawMoney}
 				</td>
@@ -205,6 +226,14 @@
 				</td>
 				<td>
 					${routewayDraw.drawfee}
+				</td>
+				<td>
+					<c:if test="${routewayDraw.auditStatus=='1'}">待审核</c:if>
+					<c:if test="${routewayDraw.auditStatus=='2'}">通过</c:if>
+					<c:if test="${routewayDraw.auditStatus=='3'}">不通过</c:if>
+				</td>
+				<td>
+					${routewayDraw.remarks}
 				</td>
 				<td>
 					${routewayDraw.orderNumOuter}

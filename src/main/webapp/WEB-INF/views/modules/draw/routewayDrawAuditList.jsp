@@ -143,6 +143,7 @@
 				<th>所属机构</th>
 				<th>商户编号</th>
 				<th>提现通道</th>
+				<th>类型</th>
 				<th>银行名称</th>
 				<th>银行卡号</th>
 				<th>账户名称</th>
@@ -202,7 +203,10 @@
 				<td>
 					${fns:getDictLabel(routewayDraw.routeCode,'draw_route',routewayDraw.routeCode)}
 				</td>
-				
+				<td>
+					<c:if test="${routewayDraw.drawType=='1' }">提现</c:if>
+					<c:if test="${routewayDraw.drawType=='2' }">代付</c:if>
+				</td>
 				<td>
 					${routewayDraw.bankName}
 				</td>
