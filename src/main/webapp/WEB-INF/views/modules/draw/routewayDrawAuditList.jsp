@@ -26,6 +26,7 @@
 	</script>
 	<script type="text/javascript">
 	function audit(id){
+		$("#auditBtn").removeAttr("disabled");
 		$("#drawId").val(id);
 		$("input[name='auditResult']:first").attr('checked', 'checked');
 		$("#auditRemark").val("");
@@ -45,9 +46,10 @@
     			return;
     		}
     	}
+    	$("#auditBtn").attr("disabled","disabled");
     	$.ajax({
             type: "post",
-            async: false,
+            async: true,
             url: "${ctx}/draw/routewayDraw/audit",
             data: {id:drawId,auditResult:auditResult,auditRemark:auditRemark},
             success: function(data) {
@@ -343,7 +345,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="save btn btn-primary" onclick="doAudit()">提交</button>
+					<button type="button" class="save btn btn-primary" id="auditBtn" onclick="doAudit()">提交</button>
 					<button type="button" class="btn btn-primary" data-dismiss="modal" >关闭</button>
 				</div>
 			</div><!-- /.modal-content -->
