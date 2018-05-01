@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.trade.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,7 +97,7 @@ public class TradeDetailService extends CrudService<TradeDetailDao, TradeDetail>
 		return tradeDetailPage;
 	}
 	
-	public Double countSumMoney(TradeDetail tradeDetail) {
+	public Map<String,Object> countSumMoney(TradeDetail tradeDetail) {
 		return dao.countSumMoney(tradeDetail);
 	}
 	

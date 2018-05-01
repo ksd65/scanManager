@@ -289,6 +289,7 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 		this.memberDrawFee = memberDrawFee;
 	}
 
+	@ExcelField(title="结算金额", align=2, sort=56)
 	public String getMemberSettleMoney() {
 		return memberSettleMoney;
 	}

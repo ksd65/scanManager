@@ -130,8 +130,8 @@
 				<th>交易金额</th>
 				
 				<th>商户费率</th>
-				<!--<th>商户提现费</th>
-				 <th>结算金额</th> -->
+				<!--<th>商户提现费</th>-->
+				 <th>结算金额</th> 
 				
 			<!-- 	<th>结算方式</th> -->
 				<th>交易订单号</th>
@@ -186,10 +186,10 @@
 				</td>
 				<%-- <td>
 					${tradeDetail.memberDrawFee}
-				</td>
+				</td>--%>
 				<td>
 					${tradeDetail.memberSettleMoney}
-				</td> --%>
+				</td> 
 				
 			<!-- 	<td>
 					${fns:getDictLabel(tradeDetail.settleType,'settle_type',tradeDetail.settleType)}
@@ -284,12 +284,14 @@
 			<tr>
 				<th style="text-align: center;">交易总笔数</th>
 				<th style="text-align: center;">交易总金额</th>
+				<th style="text-align: center;">结算总金额</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td id="sumCount" style="text-align: center;"></td>
 				<td id="sumMoney" style="text-align: center;"></td>
+				<td id="sumSettleMoney" style="text-align: center;"></td>
 			</tr>
 		</tbody>
 	</table>
@@ -322,7 +324,7 @@ function getSumData(){
         success: function(data) {
 			$("#sumCount").text(data.sumCount);
 			$("#sumMoney").text(data.sumMoney);
-			
+			$("#sumSettleMoney").text(data.sumSettleMoney);
 			$('#sumDataModal').modal('toggle').modal('show');
         },error:function(){
         	top.$.jBox.tip("网络异常");

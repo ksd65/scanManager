@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.trade.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
@@ -23,7 +24,7 @@ public interface TradeDetailDao extends CrudDao<TradeDetail> {
 
     public List<TradeDetail> findHisList(TradeDetail tradeDetail);
     
-    public Double countSumMoney(TradeDetail tradeDetail);
+    public Map<String,Object> countSumMoney(TradeDetail tradeDetail);
     
     public Integer countRecord(TradeDetail tradeDetail);
     

@@ -71,7 +71,7 @@
 		`d`.`money` AS `money`,
 		`d`.`member_trade_rate` AS `member_trade_rate`,
 		`d`.`member_draw_fee` AS `member_draw_fee`,
-		`d`.`member_settle_money` AS `member_settle_money`,
+		 convert(d.money*(1-d.member_trade_rate),decimal(10,2)) AS `member_settle_money`,  
 		`d`.`d0_money` AS `d0_money`,
 		`d`.`d0_member_fee` AS `d0_member_fee`,
 		`d`.`d0_member_draw` AS `d0_member_draw`,
@@ -282,9 +282,9 @@
 	</select>
 	
 	
-	<select id="countSumMoney" resultType="java.lang.Double">
+	<select id="countSumMoney" resultType="java.util.Map">
 		SELECT
-			SUM(a.money)
+			SUM(a.money) AS sum_money,SUM(a.money*(1-a.member_trade_rate)) AS sum_settle_money
 			FROM
 				`bu_trade_detail` `a`
 			LEFT JOIN bu_member_info b ON b.id = a.member_id

@@ -111,9 +111,15 @@ public class TradeDetailController extends BaseController {
 		int sumCount = 0;
 	//	BigDecimal b_sumMoney = new BigDecimal("0.00");
 		sumCount = tradeDetailService.countRecord(tradeDetail);
-		Double money = tradeDetailService.countSumMoney(tradeDetail);
+		Map<String,Object> map = tradeDetailService.countSumMoney(tradeDetail);
+		Double money = null,settleMoney = null;
+		if(map!=null){
+			money = ((BigDecimal)map.get("sum_money")).doubleValue();
+			settleMoney = ((BigDecimal)map.get("sum_settle_money")).doubleValue();
+		}
 		money = money ==null ? 0:money;
-		DecimalFormat df = new DecimalFormat("#.00");
+		settleMoney = settleMoney ==null ? 0:settleMoney;
+		DecimalFormat df = new DecimalFormat("0.00");
 	/*	List<TradeDetail> list = tradeDetailService.findList(tradeDetail);
 		if(list.size() > 0){
 			for(TradeDetail t:list){
@@ -124,6 +130,7 @@ public class TradeDetailController extends BaseController {
 		
 		data.put("sumCount", sumCount);
 		data.put("sumMoney", df.format(money.doubleValue()));
+		data.put("sumSettleMoney", df.format(settleMoney.doubleValue()));
 		return data;
 	}
 	
