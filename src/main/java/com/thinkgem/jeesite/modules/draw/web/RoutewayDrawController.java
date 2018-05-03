@@ -39,13 +39,16 @@ import com.thinkgem.jeesite.modules.draw.entity.RoutewayDraw;
 import com.thinkgem.jeesite.modules.draw.service.RoutewayDrawService;
 import com.thinkgem.jeesite.modules.mem.entity.Member;
 import com.thinkgem.jeesite.modules.mem.entity.MemberBindAcc;
+import com.thinkgem.jeesite.modules.mem.entity.MemberDrawRoute;
 import com.thinkgem.jeesite.modules.mem.service.MemberBindAccService;
+import com.thinkgem.jeesite.modules.mem.service.MemberDrawRouteService;
 import com.thinkgem.jeesite.modules.mem.service.MemberService;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.trade.service.TradeDailyTotalService;
 
 /**
  * 通道提现查询Controller
@@ -67,6 +70,12 @@ public class RoutewayDrawController extends BaseController {
 	
 	@Autowired
 	private MemberBindAccService memberBindAccService;
+	
+	@Autowired
+	private TradeDailyTotalService tradeDailyTotalService;
+	
+	@Autowired
+	private MemberDrawRouteService memberDrawRouteService;
 	
 	@ModelAttribute
 	public RoutewayDraw get(@RequestParam(required=false) String id) {
@@ -256,7 +265,8 @@ public class RoutewayDrawController extends BaseController {
 		}
 		
 		routewayDraw.setOffice(office);	
-		routewayDraw.setDrawType("1");//提现
+	//	routewayDraw.setDrawType("1");//提现
+		routewayDraw.setNotRouteCode("1027");//排除易生
 		//默认显示当天数据
 		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
 			//routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
@@ -280,6 +290,15 @@ public class RoutewayDrawController extends BaseController {
 		}
 		
 		Page<RoutewayDraw> page = routewayDrawService.findPage(new Page<RoutewayDraw>(request, response), routewayDraw); 
+		List<RoutewayDraw> list = page.getList();
+		if(list!=null && list.size()>0){
+			for(int i=0;i<list.size();i++){
+				RoutewayDraw draw = list.get(i);
+				if("1".equals(draw.getAuditStatus())){//待审核
+					getMoney(draw);
+				}
+			}
+		}
 		model.addAttribute("page", page);
 		if(StringUtils.isNotEmpty(applyBeginTime)){
 			routewayDraw.setApplyBeginTime(applyBeginTime);
@@ -309,6 +328,11 @@ public class RoutewayDrawController extends BaseController {
 			data.put("msg", "提现记录不存在 ");
 			return data;
 		}
+		if(!"1".equals(drawT.getAuditStatus())){
+			data.put("result", "-1");
+			data.put("msg", "提现记录已审核 ");
+			return data;
+		}
 		String routeCode = drawT.getRouteCode();
 		RoutewayDraw routewayDraw = new RoutewayDraw();
 		routewayDraw.setId(id);
@@ -320,6 +344,9 @@ public class RoutewayDrawController extends BaseController {
 			routewayDraw.setReqDate(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
 			routewayDraw.setRespDate(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
 		}
+		routewayDraw.setRouteCode(routeCode);
+		routewayDraw.setMemberId(drawT.getMemberId());
+		getMoney(routewayDraw);
 		int count = routewayDrawService.audit(routewayDraw);
 		if(count > 0){
 			if("2".equals(auditResult)){
@@ -366,18 +393,32 @@ public class RoutewayDrawController extends BaseController {
 		routewayDraw.setOffice(office);	
 		routewayDraw.setDrawType("2");//代付
 		//默认显示当天数据
-		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
-			routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));
+		String applyBeginTime = routewayDraw.getApplyBeginTime();
+		if(StringUtils.isNotEmpty(applyBeginTime)){
+			routewayDraw.setApplyBeginTime(applyBeginTime+" 00:00:00");
+		}else{
+			routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd")+" 00:00:00");
 		}
-		
-		if(StringUtils.isEmpty(routewayDraw.getEndTime())){
-			routewayDraw.setEndTime(DateUtils.getDate("yyyyMMdd"));
+		String applyEndTime = routewayDraw.getApplyEndTime();
+		if(StringUtils.isNotEmpty(applyEndTime)){
+			routewayDraw.setApplyEndTime(applyEndTime+" 23:59:59");
+		}else{
+			routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd")+" 23:59:59");
 		}
-		
 			
 		Page<RoutewayDraw> page = routewayDrawService.findPage(new Page<RoutewayDraw>(request, response), routewayDraw); 
 		model.addAttribute("page", page);
 		
+		if(StringUtils.isNotEmpty(applyBeginTime)){
+			routewayDraw.setApplyBeginTime(applyBeginTime);
+		}else{
+			routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd"));
+		}
+		if(StringUtils.isNotEmpty(applyEndTime)){
+			routewayDraw.setApplyEndTime(applyEndTime);
+		}else{
+			routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd"));
+		}
 		
 		model.addAttribute("routewayDraw", routewayDraw);
 		return "modules/draw/agentPayList";
@@ -575,5 +616,55 @@ public class RoutewayDrawController extends BaseController {
 			return result;
 		}
 		return result;
+	}
+	
+	private void getMoney(RoutewayDraw draw){
+		Map<String,Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("memberId", draw.getMemberId());
+		paramMap.put("routeCode", draw.getRouteCode());
+		Double sumTradeMoney = tradeDailyTotalService.sumTradeMoney(paramMap);
+		sumTradeMoney = sumTradeMoney == null ? 0 : sumTradeMoney;
+		Double sumSettleMoney = tradeDailyTotalService.sumSettleMoney(paramMap);
+		sumSettleMoney = sumSettleMoney == null ? 0 : sumSettleMoney;
+
+		paramMap.put("txnDate", DateUtils.getDate("yyyyMMdd"));
+		Double todayTradeMoney = tradeDailyTotalService.tradeMoney(paramMap);
+		todayTradeMoney = todayTradeMoney == null ? 0 : todayTradeMoney;
+
+		Double todaySettleMoney = tradeDailyTotalService.settleMoney(paramMap);
+		todaySettleMoney = todaySettleMoney == null ? 0 : todaySettleMoney;
+
+		DecimalFormat df = new DecimalFormat("0.00");
+		Double tradeMoney =  new BigDecimal(sumTradeMoney).add(new BigDecimal(todayTradeMoney)).doubleValue();
+		draw.setTradeMoney(df.format(tradeMoney));
+		
+		Double settleMoney =  new BigDecimal(sumSettleMoney).add(new BigDecimal(todaySettleMoney)).doubleValue();
+		draw.setSettleMoney(df.format(settleMoney));
+		
+		RoutewayDraw tmp = new RoutewayDraw();
+		tmp.setMemberId(draw.getMemberId());
+		tmp.setRouteCode(draw.getRouteCode());
+		tmp.setAuditStatus("2");
+		tmp.setRespType("S");
+		Double drawedMoney = routewayDrawService.countSumMoney(tmp);
+		drawedMoney = drawedMoney == null ? 0 : drawedMoney;
+		draw.setDrawedMoney(df.format(drawedMoney));
+		
+		MemberDrawRoute tmp1 = new MemberDrawRoute();
+		tmp1.setMemberId(draw.getMemberId());
+		tmp1.setRouteCode(draw.getRouteCode());
+		List<MemberDrawRoute> routeList = memberDrawRouteService.findList(tmp1);
+		if(routeList == null || routeList.size()==0){
+			tmp1.setMemberId("0");
+			tmp1.setRouteCode(draw.getRouteCode());
+			routeList = memberDrawRouteService.findList(tmp1);
+		}
+		if(routeList != null && routeList.size()>0){
+			MemberDrawRoute drawRoute  = routeList.get(0);
+			
+			Double canDrawToday = new BigDecimal(todaySettleMoney).multiply(new BigDecimal(drawRoute.getD0Percent())).doubleValue();//当天可提现的金额
+			Double canDrawMoney = new BigDecimal(sumSettleMoney).subtract(new BigDecimal(drawedMoney)).add(new BigDecimal(canDrawToday)).doubleValue();
+			draw.setCanDrawMoney(df.format(canDrawMoney));
+		}
 	}
 }
