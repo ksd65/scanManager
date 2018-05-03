@@ -650,6 +650,10 @@ public class RoutewayDrawController extends BaseController {
 		drawedMoney = drawedMoney == null ? 0 : drawedMoney;
 		draw.setDrawedMoney(df.format(drawedMoney));
 		
+		tmp.setRespType("R");
+		Double drawedMoneyR = routewayDrawService.countSumMoney(tmp);
+		drawedMoneyR = drawedMoneyR == null ? 0 : drawedMoneyR;
+		
 		MemberDrawRoute tmp1 = new MemberDrawRoute();
 		tmp1.setMemberId(draw.getMemberId());
 		tmp1.setRouteCode(draw.getRouteCode());
@@ -663,7 +667,7 @@ public class RoutewayDrawController extends BaseController {
 			MemberDrawRoute drawRoute  = routeList.get(0);
 			
 			Double canDrawToday = new BigDecimal(todaySettleMoney).multiply(new BigDecimal(drawRoute.getD0Percent())).doubleValue();//当天可提现的金额
-			Double canDrawMoney = new BigDecimal(sumSettleMoney).subtract(new BigDecimal(drawedMoney)).add(new BigDecimal(canDrawToday)).doubleValue();
+			Double canDrawMoney = new BigDecimal(sumSettleMoney).subtract(new BigDecimal(drawedMoney)).subtract(new BigDecimal(drawedMoneyR)).add(new BigDecimal(canDrawToday)).doubleValue();
 			draw.setCanDrawMoney(df.format(canDrawMoney));
 		}
 	}
