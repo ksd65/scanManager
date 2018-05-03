@@ -153,10 +153,16 @@
 				<th>通道商户编号</th>
 				-->
 				<th>申请时间</th>
+				
+				<th>交易总金额</th>
+				<th>可提现总金额</th>
+				<th>已提现金额</th>
 				<th>申请提现金额</th>
 				<th>实际提现金额</th>
 				<th>提现费率</th>
 				<th>提现手续费</th>
+				<th>剩余可提现金额</th>
+				
 				<th>审核状态</th>
 				<th>审核备注</th>
 				<th>平台流水号</th>
@@ -227,6 +233,19 @@
 				<td>
 					<fmt:formatDate value="${routewayDraw.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
+				
+				<td>
+					${routewayDraw.tradeMoney}
+				</td>
+				
+				<td>
+					${routewayDraw.settleMoney}
+				</td>
+				
+				<td>
+					${routewayDraw.drawedMoney}
+				</td>
+				
 				<td>
 					${routewayDraw.drawMoney}
 				</td>
@@ -238,6 +257,9 @@
 				</td>
 				<td>
 					${routewayDraw.drawfee}
+				</td>
+				<td>
+					${routewayDraw.canDrawMoney}
 				</td>
 				<td>
 					<c:if test="${routewayDraw.auditStatus=='1'}">待审核</c:if>

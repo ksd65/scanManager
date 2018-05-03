@@ -75,6 +75,12 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String bankCode;
 	private String routeCode;
 	private String notRouteCode;
+	
+	private String tradeMoney;//交易总金额
+	private String settleMoney;//可提现金额
+	private String drawedMoney;//已提现金额
+	private String canDrawMoney;//剩余可提现金额
+	
 	public RoutewayDraw() {
 		super();
 	}
@@ -483,6 +489,38 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 
 	public void setNotRouteCode(String notRouteCode) {
 		this.notRouteCode = notRouteCode;
+	}
+
+	public String getTradeMoney() {
+		return tradeMoney;
+	}
+
+	public void setTradeMoney(String tradeMoney) {
+		this.tradeMoney = tradeMoney;
+	}
+
+	public String getSettleMoney() {
+		return settleMoney;
+	}
+
+	public void setSettleMoney(String settleMoney) {
+		this.settleMoney = settleMoney;
+	}
+
+	public String getDrawedMoney() {
+		return drawedMoney;
+	}
+
+	public void setDrawedMoney(String drawedMoney) {
+		this.drawedMoney = drawedMoney;
+	}
+
+	public String getCanDrawMoney() {
+		return canDrawMoney;
+	}
+
+	public void setCanDrawMoney(String canDrawMoney) {
+		this.canDrawMoney = canDrawMoney;
 	}
 	
 	
