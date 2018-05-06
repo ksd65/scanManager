@@ -56,7 +56,7 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.memberId = memberId;
 	}
 	
-	@ExcelField(title="商户编号", align=2, sort=10)
+	@ExcelField(title="商户编号", align=2, sort=20)
 	@Length(min=0, max=32, message="商户编号长度必须介于 0 和 32 之间")
 	public String getMemberCode() {
 		return memberCode;
@@ -66,7 +66,7 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.memberCode = memberCode;
 	}
 	
-	@ExcelField(title="商户名称", align=2, sort=20)
+	@ExcelField(title="商户名称", align=2, sort=30)
 	public String getMemberName() {
 		return memberName;
 	}
@@ -75,7 +75,6 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.memberName = memberName;
 	}
 
-	@ExcelField(title="手机号", align=2, sort=30)
 	public String getMobilePhone() {
 		return mobilePhone;
 	}
@@ -94,8 +93,6 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.agentNameLevel1 = agentNameLevel1;
 	}
 	
-	
-	@ExcelField(title="所属机构", align=2, sort=40)
 	public String getOfficeName() {
 		if(office == null){
 			return officeName;
@@ -154,6 +151,7 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.routeName = routeName;
 	}
 
+	@ExcelField(title="交易通道", align=2, sort=50, dictType="route_code")
 	public String getRouteCode() {
 		return routeCode;
 	}
@@ -161,7 +159,8 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 	public void setRouteCode(String routeCode) {
 		this.routeCode = routeCode;
 	}
-
+	
+	@ExcelField(title="代付日期", align=2, sort=10)
 	public String getTxnDate() {
 		return txnDate;
 	}
@@ -179,7 +178,7 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.agentOfficeId = agentOfficeId;
 	}
 
-	
+	@ExcelField(title="代理商名称", align=2, sort=40)
 	public String getAgentName() {
 		return agentName;
 	}
@@ -188,6 +187,7 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.agentName = agentName;
 	}
 
+	@ExcelField(title="代付（提现）金额", align=2, sort=60)
 	public String getMoney() {
 		return money;
 	}
@@ -196,6 +196,7 @@ public class RoutewayDrawProfit extends DataEntity<RoutewayDrawProfit> {
 		this.money = money;
 	}
 
+	@ExcelField(title="代付（提现）收益", align=2, sort=70)
 	public String getProfit() {
 		return profit;
 	}

@@ -13,7 +13,7 @@ import com.thinkgem.jeesite.modules.mem.entity.Member;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 
 
-public class TradeProfit extends DataEntity<TradeProfit> {
+public class AgentTradeProfitExcel extends DataEntity<AgentTradeProfitExcel> {
 	
 	private static final long serialVersionUID = 1L;
 	private String memberId;		// 商户ID
@@ -55,11 +55,11 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 	
 
 	
-	public TradeProfit() {
+	public AgentTradeProfitExcel() {
 		super();
 	}
 
-	public TradeProfit(String id){
+	public AgentTradeProfitExcel(String id){
 		super(id);
 	}
 	
@@ -72,7 +72,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.memberId = memberId;
 	}
 	
-	@ExcelField(title="商户编号", align=2, sort=20)
 	@Length(min=0, max=32, message="商户编号长度必须介于 0 和 32 之间")
 	public String getMemberCode() {
 		return memberCode;
@@ -82,7 +81,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.memberCode = memberCode;
 	}
 	
-	@ExcelField(title="商户名称", align=2, sort=30)
 	public String getMemberName() {
 		return memberName;
 	}
@@ -124,7 +122,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 	}
 
 		
-	@ExcelField(title="交易类型", align=2, sort=50, dictType="txn_type")
 	@Length(min=1, max=1, message="交易类型长度必须介于 1 和 1 之间")
 	public String getTxnType() {
 		return txnType;
@@ -134,8 +131,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.txnType = txnType;
 	}
 
-    @ExcelField(title="通道商户编码", align=2, sort=70)
-	@Length(min=0, max=32, message="通道商户编号长度必须介于 0 和 32 之间")
+    @Length(min=0, max=32, message="通道商户编号长度必须介于 0 和 32 之间")
 	public String getMerchantCode() {
 		return merchantCode;
 	}
@@ -179,7 +175,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.endTime = endTime;
 	}
 
-	@ExcelField(title="交易方式", align=2, sort=40, dictType="txn_method")
 	public String getTxnMethod() {
 		return txnMethod;
 	}
@@ -204,7 +199,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.routeName = routeName;
 	}
 
-	@ExcelField(title="交易通道", align=2, sort=50, dictType="route_code")
+	@ExcelField(title="交易通道", align=2, sort=30, dictType="route_code")
 	public String getRouteCode() {
 		return routeCode;
 	}
@@ -222,7 +217,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.txnDate = txnDate;
 	}
 
-    @ExcelField(title="交易金额", align=2, sort=80)
+    @ExcelField(title="交易金额", align=2, sort=40)
     public String getTradeMoney() {
 		return tradeMoney;
 	}
@@ -231,7 +226,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.tradeMoney = tradeMoney;
 	}
 
-	@ExcelField(title="商户应收", align=2, sort=140)
 	public String getSettleMoney() {
 		return settleMoney;
 	}
@@ -240,7 +234,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.settleMoney = settleMoney;
 	}
 
-	@ExcelField(title="平台成本扣率", align=2, sort=170)
 	public String getPlatTradeRate() {
 		return platTradeRate;
 	}
@@ -249,7 +242,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.platTradeRate = platTradeRate;
 	}
 
-	@ExcelField(title="代理商成本扣率", align=2, sort=180)
 	public String getAgentTradeRate() {
 		return agentTradeRate;
 	}
@@ -258,7 +250,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.agentTradeRate = agentTradeRate;
 	}
 
-	@ExcelField(title="商户成本扣率", align=2, sort=190)
 	public String getMemberTradeRate() {
 		return memberTradeRate;
 	}
@@ -267,7 +258,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.memberTradeRate = memberTradeRate;
 	}
 
-	@ExcelField(title="上游佣金", align=2, sort=120)
 	public String getPlatCost() {
 		return platCost;
 	}
@@ -276,6 +266,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.platCost = platCost;
 	}
 
+	@ExcelField(title="分润成本", align=2, sort=50)
 	public String getAgentCost() {
 		return agentCost;
 	}
@@ -284,7 +275,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.agentCost = agentCost;
 	}
 
-	@ExcelField(title="商户付佣", align=2, sort=130)
 	public String getMemberCost() {
 		return memberCost;
 	}
@@ -293,6 +283,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.memberCost = memberCost;
 	}
 
+	@ExcelField(title="分润比例", align=2, sort=60)
 	public String getDrawPer() {
 		return drawPer;
 	}
@@ -301,7 +292,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.drawPer = drawPer;
 	}
 
-    @ExcelField(title="平台佣金", align=2, sort=90)
     public String getPlatProfit() {
 		return platProfit;
 	}
@@ -310,7 +300,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.platProfit = platProfit;
 	}
 
-	@ExcelField(title="代理商佣金", align=2, sort=110)
+	@ExcelField(title="应得分润", align=2, sort=70)
 	public String getAgentProfit() {
 		return agentProfit;
 	}
@@ -335,7 +325,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.agentOfficeId = agentOfficeId;
 	}
 
-	@ExcelField(title="平台佣金扣率", align=2, sort=150)
 	public String getPlatProfitRate() {
 		return platProfitRate;
 	}
@@ -344,7 +333,6 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.platProfitRate = platProfitRate;
 	}
 
-	@ExcelField(title="代理商佣金扣率", align=2, sort=160)
 	public String getAgentProfitRate() {
 		return agentProfitRate;
 	}
@@ -352,7 +340,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 	public void setAgentProfitRate(String agentProfitRate) {
 		this.agentProfitRate = agentProfitRate;
 	}
-	@ExcelField(title="代理商名称", align=2, sort=100)
+	@ExcelField(title="代理商名称", align=2, sort=20)
 	public String getAgentName() {
 		return agentName;
 	}

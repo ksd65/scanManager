@@ -17,16 +17,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.trade.entity.AgentMemberTradeProfitExcel;
+import com.thinkgem.jeesite.modules.trade.entity.AgentTradeProfitExcel;
 import com.thinkgem.jeesite.modules.trade.entity.RoutewayDrawProfit;
 import com.thinkgem.jeesite.modules.trade.entity.TradeDetail;
 import com.thinkgem.jeesite.modules.trade.entity.TradeProfit;
@@ -129,6 +134,48 @@ public class TradeProfitController extends BaseController {
 		return data;
 	}
 	
+	@RequiresPermissions("trade:profit:plat")
+    @RequestMapping(value = "platExport", method=RequestMethod.POST)
+    public String platExportFile(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes,String officeId) {
+		try {
+			// 当前用户代理商
+			Office office = UserUtils.getUser().getOffice();
+			
+			// 选择代理商
+			if(StringUtils.isNotBlank(officeId)){
+				Office office2 = officeService.get(officeId);
+				if(office2 != null){
+					office = office2;
+				}
+			}
+			
+			tradeProfit.setOffice(office);
+			
+			String beginTime = tradeProfit.getBeginTime();
+			if(StringUtils.isEmpty(beginTime)){
+				beginTime = DateUtils.getBeforeDate(8,"yyyyMMdd");
+			}
+			
+			String endTime = tradeProfit.getEndTime();
+			if(StringUtils.isEmpty(endTime)){
+				endTime = DateUtils.getBeforeDate(1,"yyyyMMdd");
+			}
+			tradeProfit.setBeginTime(beginTime);
+			tradeProfit.setEndTime(endTime);
+			
+			
+			
+            String fileName = "平台交易利润数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            
+            List<TradeProfit> list = tradeProfitService.platProfit(tradeProfit);
+    		new ExportExcel("平台交易利润数据", TradeProfit.class).setDataList(list).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导出交易数据失败！失败信息："+e.getMessage());
+		}
+		return "redirect:" + adminPath + "/trade/profit/plat?repage";
+    }
+	
 	@RequiresPermissions("trade:profit:agent")
 	@RequestMapping(value = {"agentMember"})
 	public String agentMember(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -168,6 +215,56 @@ public class TradeProfitController extends BaseController {
 		model.addAttribute("tradeProfit", tradeProfit);
 		return "modules/trade/profit/agentMemberProfit";
 	}
+	
+	
+	@RequiresPermissions("trade:profit:agent")
+    @RequestMapping(value = "agentMemberExport", method=RequestMethod.POST)
+    public String agentMemberExportFile(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes,String officeId) {
+		try {
+			// 当前用户代理商
+			Office office = UserUtils.getUser().getOffice();
+			
+			tradeProfit.setOffice(office);
+			
+			boolean dataFlag = false;
+			List<Role> roleList = UserUtils.getUser().getRoleList();
+			if(roleList!=null&&roleList.size()>0){
+				for(Role role:roleList){
+					if("1".equals(role.getDataScope())){//查看所有数据
+						dataFlag = true;
+						break;
+					}
+				}
+			}
+			if(!dataFlag){
+				tradeProfit.setAgentOfficeId(office.getId());
+			}
+			
+			String beginTime = tradeProfit.getBeginTime();
+			if(StringUtils.isEmpty(beginTime)){
+				beginTime = DateUtils.getBeforeDate(8,"yyyyMMdd");
+			}
+			
+			String endTime = tradeProfit.getEndTime();
+			if(StringUtils.isEmpty(endTime)){
+				endTime = DateUtils.getBeforeDate(1,"yyyyMMdd");
+			}
+			tradeProfit.setBeginTime(beginTime);
+			tradeProfit.setEndTime(endTime);
+			
+			
+			
+            String fileName = "代理商分润数据（按商户）"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            
+            List<TradeProfit> list = tradeProfitService.agentMemberProfit(tradeProfit);
+    		new ExportExcel("代理商分润数据（按商户）", AgentMemberTradeProfitExcel.class).setDataList(list).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导出交易数据失败！失败信息："+e.getMessage());
+		}
+		return "redirect:" + adminPath + "/trade/profit/agentMember?repage";
+    }
+	
 	
 	@RequiresPermissions("trade:profit:agent")
 	@RequestMapping(value = "getAgentSumData")
@@ -248,6 +345,54 @@ public class TradeProfitController extends BaseController {
 		return "modules/trade/profit/agentProfit";
 	}
 	
+	@RequiresPermissions("trade:profit:agent")
+    @RequestMapping(value = "agentExport", method=RequestMethod.POST)
+    public String agentExportFile(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes,String officeId) {
+		try {
+			// 当前用户代理商
+			Office office = UserUtils.getUser().getOffice();
+			
+			tradeProfit.setOffice(office);
+			
+			boolean dataFlag = false;
+			List<Role> roleList = UserUtils.getUser().getRoleList();
+			if(roleList!=null&&roleList.size()>0){
+				for(Role role:roleList){
+					if("1".equals(role.getDataScope())){//查看所有数据
+						dataFlag = true;
+						break;
+					}
+				}
+			}
+			if(!dataFlag){
+				tradeProfit.setAgentOfficeId(office.getId());
+			}
+			
+			String beginTime = tradeProfit.getBeginTime();
+			if(StringUtils.isEmpty(beginTime)){
+				beginTime = DateUtils.getBeforeDate(8,"yyyyMMdd");
+			}
+			
+			String endTime = tradeProfit.getEndTime();
+			if(StringUtils.isEmpty(endTime)){
+				endTime = DateUtils.getBeforeDate(1,"yyyyMMdd");
+			}
+			tradeProfit.setBeginTime(beginTime);
+			tradeProfit.setEndTime(endTime);
+			
+			
+			
+            String fileName = "代理商分润数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            
+            List<TradeProfit> list = tradeProfitService.agentProfit(tradeProfit);
+    		new ExportExcel("代理商分润数据", AgentTradeProfitExcel.class).setDataList(list).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导出交易数据失败！失败信息："+e.getMessage());
+		}
+		return "redirect:" + adminPath + "/trade/profit/agent?repage";
+    }
+	
 	@RequiresPermissions("trade:profit:plat")
 	@RequestMapping(value = {"platDraw"})
 	public String platDraw(RoutewayDrawProfit routewayDrawProfit, HttpServletRequest request, HttpServletResponse response, Model model,String officeId) {
@@ -313,5 +458,44 @@ public class TradeProfitController extends BaseController {
 		data.put("money", df.format(money.doubleValue()));
 		data.put("profit", df.format(profit.doubleValue()));
 		return data;
+	}
+	
+	@RequiresPermissions("trade:profit:plat")
+	@RequestMapping(value = {"platDrawExport"})
+	public String platDrawExport(RoutewayDrawProfit routewayDrawProfit, HttpServletRequest request, HttpServletResponse response, Model model,RedirectAttributes redirectAttributes,String officeId) {
+		// 当前用户代理商
+		Office office = UserUtils.getUser().getOffice();
+		try{
+			// 选择代理商
+			if (StringUtils.isNotBlank(officeId)) {
+				Office office2 = officeService.get(officeId);
+				if (office2 != null) {
+					office = office2;
+				}
+			}
+	
+			routewayDrawProfit.setOffice(office);
+			
+			String beginTime = routewayDrawProfit.getBeginTime();
+			if(StringUtils.isEmpty(beginTime)){
+				beginTime = DateUtils.getBeforeDate(8,"yyyyMMdd");
+			}
+			
+			String endTime = routewayDrawProfit.getEndTime();
+			if(StringUtils.isEmpty(endTime)){
+				endTime = DateUtils.getBeforeDate(1,"yyyyMMdd");
+			}
+			routewayDrawProfit.setBeginTime(beginTime);
+			routewayDrawProfit.setEndTime(endTime);
+			
+			String fileName = "平台代付收益数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+	        
+	        List<RoutewayDrawProfit> list = tradeProfitService.platDrawProfit(routewayDrawProfit);
+			new ExportExcel("平台代付收益数据", RoutewayDrawProfit.class).setDataList(list).write(response, fileName).dispose();
+			return null;
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导出交易数据失败！失败信息："+e.getMessage());
+		}
+		return "redirect:" + adminPath + "/trade/profit/platDraw?repage";
 	}
 }

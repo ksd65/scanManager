@@ -5,7 +5,18 @@
 	<title>交易订单查询</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
-		
+		$(document).ready(function() {
+			$("#btnExport").click(function(){
+				top.$.jBox.confirm("确认要导出代理商分润数据（按商户）吗？","系统提示",function(v,h,f){
+					if(v=="ok"){
+						$("#searchForm").attr("action","${ctx}/trade/profit/agentMemberExport");
+						$("#searchForm").submit();
+					}
+				},{buttonsFocus:1});
+				top.$('.jbox-body .jbox-icon').css('top','55px');
+			});
+			
+		});
 		function page(n,s){
 			var beginTime = $("#beginTime").val();
 			var endTime = $("#endTime").val();
@@ -47,6 +58,7 @@
 			</li>
 			
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" onclick="return page();"/>
+							<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
 							<input id="btnSumData" class="btn btn-primary" type="button" onclick="getSumData();" value="统计"/>
 			
 			<li class="clearfix"></li>
