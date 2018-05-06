@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.TradeProfitDao">
+    
+	
+	
+	<select id="platProfit" resultType="TradeProfit">
+		SELECT t.member_id AS memberId,t.txn_date AS txnDate, t.route_code AS routeCode,
+		t.merchant_code AS merchantCode,t.txn_method AS txnMethod,t.txn_type AS txnType, 
+		convert(t.trade_money,decimal(10,2)) AS tradeMoney,(t.agent_cost-t.plat_cost) AS platProfit,(t.member_cost-t.agent_cost) AS agentProfit ,
+		t.plat_cost AS platCost,t.member_cost AS memberCost,(t.trade_money-t.member_cost) AS settleMoney,
+		convert(t.plat_trade_rate,decimal(10,4)) AS platTradeRate,convert(t.agent_trade_rate,decimal(10,4)) AS agentTradeRate,convert(t.member_trade_rate,decimal(10,4)) AS memberTradeRate,
+		convert((t.agent_trade_rate-t.plat_trade_rate),decimal(10,4)) AS platProfitRate,convert((t.member_trade_rate-t.agent_trade_rate),decimal(10,4)) AS agentProfitRate ,
+		m.`name` AS memberName,m.`code` AS memberCode,o.`name` AS "office.name",o1.`name` AS agentName
+		FROM bu_trade_profit t
+		LEFT JOIN bu_member_info m ON m.id=t.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		LEFT JOIN sys_office o1 ON o1.id = t.agent_office_id
+		WHERE 1=1
+		 <if test="memberCode != null and memberCode != ''">
+			AND m.code = #{memberCode}
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			AND t.txn_date>= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.txn_date &lt;= #{endTime}
+		</if>
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t.merchant_code = #{merchantCode}
+		</if>
+		<if test="txnType != null and txnType != ''">
+			AND t.txn_type = #{txnType}
+		</if>
+		<if test="txnMethod != null and txnMethod != ''">
+			AND t.txn_method = #{txnMethod}
+		</if>
+		<if test="routeCode != null and routeCode != ''">
+			AND t.route_code = #{routeCode}
+		</if>
+		<if test="office != null and office.id != null and office.id !=''">
+			AND (o.id=#{office.id} or o.parent_ids LIKE 
+				<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+				<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+				<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND m.name LIKE concat('%',#{memberName},'%')
+		</if>
+		ORDER BY t.txn_date DESC,t.member_id DESC
+	
+	</select>
+	
+	<select id="platProfitSum" resultType="java.util.Map">
+	SELECT	convert(SUM(t.trade_money),decimal(10,2)) AS tradeMoney,
+        convert(SUM(t.agent_cost-t.plat_cost),decimal(10,2)) AS platProfit,
+        convert(SUM(t.member_cost-t.agent_cost),decimal(10,2)) AS agentProfit ,
+		convert(SUM(t.plat_cost),decimal(10,2)) AS platCost,
+        convert(SUM(t.member_cost),decimal(10,2)) AS memberCost,
+        convert(SUM(t.trade_money-t.member_cost),decimal(10,2)) AS settleMoney
+		FROM bu_trade_profit t
+		LEFT JOIN bu_member_info m ON m.id=t.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		WHERE 1=1
+		 <if test="memberCode != null and memberCode != ''">
+			AND m.code = #{memberCode}
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			AND t.txn_date>= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.txn_date &lt;= #{endTime}
+		</if>
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t.merchant_code = #{merchantCode}
+		</if>
+		<if test="txnType != null and txnType != ''">
+			AND t.txn_type = #{txnType}
+		</if>
+		<if test="txnMethod != null and txnMethod != ''">
+			AND t.txn_method = #{txnMethod}
+		</if>
+		<if test="routeCode != null and routeCode != ''">
+			AND t.route_code = #{routeCode}
+		</if>
+		<if test="office != null and office.id != null and office.id !=''">
+			AND (o.id=#{office.id} or o.parent_ids LIKE 
+				<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+				<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+				<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND m.name LIKE concat('%',#{memberName},'%')
+		</if>
+	</select>
+	
+	<select id="agentMemberProfit" resultType="TradeProfit">
+		SELECT a.member_id AS memberId,a.txn_date AS txnDate, a.route_code AS routeCode,a.agent_office_id AS agentOfficeId,
+		convert(a.trade_money,decimal(10,2)) AS tradeMoney,a.agent_cost AS agentCost,a.agent_profit AS agentProfit,
+		a.draw_per*100 drawPer,m.`name` AS memberName,m.`code` AS memberCode,s.`name` AS agentName ,o.`name` AS "office.name"
+		FROM(
+			SELECT t.member_id,t.txn_date, t.route_code,t.agent_office_id,
+			sum(t.trade_money) AS trade_money,SUM(t.agent_cost) AS agent_cost,SUM(t.agent_profit) AS agent_profit,t.draw_per
+			FROM bu_trade_profit t 
+			where 1=1
+			<if test="beginTime != null and beginTime != ''">
+				AND t.txn_date>= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.txn_date &lt;= #{endTime}
+			</if>
+			<if test="routeCode != null and routeCode != ''">
+				AND t.route_code = #{routeCode}
+			</if>
+			<if test="agentOfficeId != null and agentOfficeId != ''">
+				AND t.agent_office_id = #{agentOfficeId}
+			</if>
+			GROUP BY t.txn_date,t.route_code,t.member_id) a 
+		LEFT JOIN sys_office s ON s.id=a.agent_office_id
+		LEFT JOIN bu_member_info m ON m.id=a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		where 1=1
+		 <if test="memberCode != null and memberCode != ''">
+			AND m.code = #{memberCode}
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND m.name LIKE concat('%',#{memberName},'%')
+		</if>
+		<if test="agentName != null and agentName != ''">
+			AND s.name LIKE concat('%',#{agentName},'%')
+		</if>
+		ORDER BY a.txn_date DESC,a.agent_office_id DESC,a.member_id DESC
+	
+	</select>
+	
+	<select id="agentProfitSum" resultType="java.util.Map">
+		SELECT 
+		convert(SUM(a.trade_money),decimal(10,2)) AS tradeMoney,
+		convert(SUM(a.agent_cost),decimal(10,2)) AS agentCost,
+		convert(SUM(a.agent_profit),decimal(10,2)) AS agentProfit
+		FROM(
+			SELECT t.member_id,t.txn_date, t.route_code,t.agent_office_id,
+			sum(t.trade_money) AS trade_money,SUM(t.agent_cost) AS agent_cost,SUM(t.agent_profit) AS agent_profit,t.draw_per
+			FROM bu_trade_profit t 
+			where 1=1
+			<if test="beginTime != null and beginTime != ''">
+				AND t.txn_date>= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.txn_date &lt;= #{endTime}
+			</if>
+			<if test="routeCode != null and routeCode != ''">
+				AND t.route_code = #{routeCode}
+			</if>
+			<if test="agentOfficeId != null and agentOfficeId != ''">
+				AND t.agent_office_id = #{agentOfficeId}
+			</if>
+			GROUP BY t.txn_date,t.route_code,t.member_id) a 
+		LEFT JOIN sys_office s ON s.id=a.agent_office_id
+		LEFT JOIN bu_member_info m ON m.id=a.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		where 1=1
+		 <if test="memberCode != null and memberCode != ''">
+			AND m.code = #{memberCode}
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND m.name LIKE concat('%',#{memberName},'%')
+		</if>
+		<if test="agentName != null and agentName != ''">
+			AND s.name LIKE concat('%',#{agentName},'%')
+		</if>
+		
+	</select>
+	
+	<select id="agentProfit" resultType="TradeProfit">
+		SELECT a.txn_date AS txnDate, a.route_code AS routeCode,a.agent_office_id AS agentOfficeId,
+		convert(a.trade_money,decimal(10,2)) AS tradeMoney,a.agent_cost AS agentCost,a.agent_profit AS agentProfit,
+		a.draw_per*100 drawPer,s.`name` AS agentName 
+		FROM(
+			SELECT t.txn_date, t.route_code,t.agent_office_id,
+			sum(t.trade_money) AS trade_money,SUM(t.agent_cost) AS agent_cost,SUM(t.agent_profit) AS agent_profit,t.draw_per
+			FROM bu_trade_profit t 
+			where 1=1
+			<if test="beginTime != null and beginTime != ''">
+				AND t.txn_date>= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.txn_date &lt;= #{endTime}
+			</if>
+			<if test="routeCode != null and routeCode != ''">
+				AND t.route_code = #{routeCode}
+			</if>
+			<if test="agentOfficeId != null and agentOfficeId != ''">
+				AND t.agent_office_id = #{agentOfficeId}
+			</if>
+			GROUP BY t.txn_date,t.route_code,t.agent_office_id) a 
+		LEFT JOIN sys_office s ON s.id=a.agent_office_id
+		where 1=1
+		<if test="agentName != null and agentName != ''">
+			AND s.name LIKE concat('%',#{agentName},'%')
+		</if>
+		ORDER BY a.txn_date DESC,a.agent_office_id DESC
+	
+	</select>
+	
+	<select id="platDrawProfit" resultType="RoutewayDrawProfit">
+		SELECT t.member_id AS memberId,t.txn_date AS txnDate, t.route_code AS routeCode,
+		t.agent_office_id AS agentOfficeId,convert(t.money,decimal(10,2)) AS money,convert(t.profit,decimal(10,2)) AS profit,
+ 		m.`name` AS memberName,m.`code` AS memberCode,o.`name` AS "office.name",o1.`name` AS agentName
+		FROM bu_routeway_draw_profit t
+		LEFT JOIN bu_member_info m ON m.id=t.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		LEFT JOIN sys_office o1 ON o1.id = t.agent_office_id
+		WHERE 1=1
+		 <if test="memberCode != null and memberCode != ''">
+			AND m.code = #{memberCode}
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			AND t.txn_date>= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.txn_date &lt;= #{endTime}
+		</if>
+		<if test="routeCode != null and routeCode != ''">
+			AND t.route_code = #{routeCode}
+		</if>
+		<if test="office != null and office.id != null and office.id !=''">
+			AND (o.id=#{office.id} or o.parent_ids LIKE 
+				<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+				<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+				<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND m.name LIKE concat('%',#{memberName},'%')
+		</if>
+		ORDER BY t.txn_date DESC,t.member_id DESC
+	
+	</select>
+	
+	<select id="platDrawProfitSum" resultType="java.util.Map">
+	SELECT 
+		convert(SUM(t.money),decimal(10,2)) AS money,convert(SUM(t.profit),decimal(10,2)) AS profit
+ 		FROM bu_routeway_draw_profit t
+		LEFT JOIN bu_member_info m ON m.id=t.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		WHERE 1=1
+		 <if test="memberCode != null and memberCode != ''">
+			AND m.code = #{memberCode}
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			AND t.txn_date>= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.txn_date &lt;= #{endTime}
+		</if>
+		<if test="routeCode != null and routeCode != ''">
+			AND t.route_code = #{routeCode}
+		</if>
+		<if test="office != null and office.id != null and office.id !=''">
+			AND (o.id=#{office.id} or o.parent_ids LIKE 
+				<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+				<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+				<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND m.name LIKE concat('%',#{memberName},'%')
+		</if>
+	</select>
+	
+</mapper>
