@@ -87,19 +87,20 @@
 				<th>交易方式 </th>
 				<th>交易类型 </th>
 				<th>交易通道 </th>
+				<th>代理商名称 </th>
+				<th>代理商成本扣率 </th>
+				
 				<th>通道商户编码</th>
 				<th>交易金额</th>
+				<th>平台佣金扣率 </th>
 				<th>平台佣金</th>
-				<th>代理商名称 </th>
+				<th>代理商佣金扣率 </th>
 				<th>代理商佣金 </th>
+				<th>平台成本扣率 </th>
 				<th>上游佣金 </th>
+				<th>商户成本扣率</th>
 				<th>商户付佣 </th>
 				<th>商户应收 </th>
-				<th>平台佣金扣率 </th>
-				<th>代理商佣金扣率 </th>
-				<th>平台成本扣率 </th>
-				<th>代理商成本扣率 </th>
-				<th>商户成本扣率</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -123,6 +124,14 @@
 				<td>
 					${fns:getDictLabel(tradeProfit.routeCode,'route_code',tradeProfit.routeCode)}
 				</td>
+				
+				<td>
+					${tradeProfit.agentName}
+				</td>
+				
+				<td>
+					${tradeProfit.agentTradeRate}
+				</td>
 				 
 				<td>
 					${tradeProfit.merchantCode}
@@ -131,16 +140,25 @@
 					${tradeProfit.tradeMoney}
 				</td>
 				<td>
+					${tradeProfit.platProfitRate}
+				</td>
+				<td>
 					${tradeProfit.platProfit}
 				</td>
 				<td>
-					${tradeProfit.agentName}
+					${tradeProfit.agentProfitRate}
 				</td>
 				<td>
 					${tradeProfit.agentProfit}
 				</td>
 				<td>
+					${tradeProfit.platTradeRate}
+				</td>
+				<td>
 					${tradeProfit.platCost}
+				</td>
+				<td>
+					${tradeProfit.memberTradeRate}
 				</td>
 				<td>
 					${tradeProfit.memberCost}
@@ -149,21 +167,6 @@
 					${tradeProfit.settleMoney}
 				</td>
 				
-				<td>
-					${tradeProfit.platProfitRate}
-				</td>
-				<td>
-					${tradeProfit.agentProfitRate}
-				</td>
-				<td>
-					${tradeProfit.platTradeRate}
-				</td>
-				<td>
-					${tradeProfit.agentTradeRate}
-				</td>
-				<td>
-					${tradeProfit.memberTradeRate}
-				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

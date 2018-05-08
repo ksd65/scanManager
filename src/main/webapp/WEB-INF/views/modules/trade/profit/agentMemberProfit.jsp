@@ -74,8 +74,8 @@
 				<th>代理商名称 </th>
 				<th>交易通道 </th>
 				<th>交易金额</th>
-				<th>分润成本</th>
-				<th>分润比例 </th>
+			<!-- 	<th>分润成本</th>
+				<th>分润比例 </th> -->
 				<th>应得分润 </th>
 			</tr>
 		</thead>
@@ -101,12 +101,12 @@
 				<td>
 					${tradeProfit.tradeMoney}
 				</td>
-				<td>
+			<!-- 	<td>
 					${tradeProfit.agentCost}
 				</td>
 				<td>
 					${tradeProfit.drawPer}%
-				</td>
+				</td> -->
 				<td>
 					${tradeProfit.agentProfit}
 				</td>

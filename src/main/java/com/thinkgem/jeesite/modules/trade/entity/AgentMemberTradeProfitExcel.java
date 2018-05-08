@@ -268,7 +268,7 @@ public class AgentMemberTradeProfitExcel extends DataEntity<AgentMemberTradeProf
 		this.platCost = platCost;
 	}
 
-	@ExcelField(title="分润成本", align=2, sort=50)
+	//@ExcelField(title="分润成本", align=2, sort=50)
 	public String getAgentCost() {
 		return agentCost;
 	}
@@ -285,7 +285,7 @@ public class AgentMemberTradeProfitExcel extends DataEntity<AgentMemberTradeProf
 		this.memberCost = memberCost;
 	}
 
-	@ExcelField(title="分润比例", align=2, sort=60)
+	//@ExcelField(title="分润比例", align=2, sort=60)
 	public String getDrawPer() {
 		return drawPer;
 	}
