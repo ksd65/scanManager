@@ -96,6 +96,10 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 	
 	private String orderNumOuter;
 	
+	private String parentAgentName;
+	
+	private String topAgentName;
+	
 	public TradeDetail() {
 		super();
 	}
@@ -654,6 +658,24 @@ public class TradeDetail extends DataEntity<TradeDetail> {
 
 	public void setRespEndTime(String respEndTime) {
 		this.respEndTime = respEndTime;
+	}
+
+	@ExcelField(title="上级代理商", align=2, sort=40)
+	public String getParentAgentName() {
+		return parentAgentName;
+	}
+
+	public void setParentAgentName(String parentAgentName) {
+		this.parentAgentName = parentAgentName;
+	}
+
+	@ExcelField(title="一级代理商", align=2, sort=40)
+	public String getTopAgentName() {
+		return topAgentName;
+	}
+
+	public void setTopAgentName(String topAgentName) {
+		this.topAgentName = topAgentName;
 	}
 	
 	

@@ -127,6 +127,8 @@
 				<!--<th>手机号</th>
 				<th>所属一级机构</th>-->
 				<th>所属机构</th>
+				<th>上级代理商</th>
+				<th>一级代理商</th>
 				<th>交易金额</th>
 				
 				<th>商户费率</th>
@@ -177,6 +179,13 @@
 				</td>--%>
 				<td>
 					${tradeDetail.office.name}
+				</td>
+				
+				<td>
+					${tradeDetail.parentAgentName }
+				</td>
+				<td>
+					${tradeDetail.topAgentName }
 				</td>
 				<td>
 					${tradeDetail.money}

@@ -59,7 +59,10 @@
 		b.mobile_phone AS "mobilePhone",
 		a.interface_type AS "interfaceType",
 		
-		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1"
+		oi.PARENT_ID_LEVEL_1_NAME as "agentNameLevel1",
+		(SELECT s1.name FROM sys_office s1 where s1.id=o.parent_id) AS "parentAgentName",
+		(SELECT s1.name FROM sys_office s1 where s1.id= SUBSTRING_INDEX(SUBSTRING_INDEX(o.parent_ids,',',2),',',-1) ) AS "topAgentName"
+		
 	</sql>
 	
 	<sql id="bu_trade_detail">
