@@ -272,6 +272,7 @@ public class SystemService extends BaseService implements InitializingBean {
 	 */
 	public static boolean validatePassword(String plainPassword, String password) {
 		String plain = Encodes.unescapeHtml(plainPassword);
+		System.out.println("plainPassword===="+plainPassword+"       password======"+password);
 		byte[] salt = Encodes.decodeHex(password.substring(0,16));
 		byte[] hashPassword = Digests.sha1(plain.getBytes(), salt, HASH_INTERATIONS);
 		return password.equals(Encodes.encodeHex(salt)+Encodes.encodeHex(hashPassword));
