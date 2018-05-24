@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.PayTypeRuleDao">
+    
+	
+	<sql id="payTypeRuleJoins">
+		LEFT JOIN bu_member_info b ON b.id = t.member_id
+		LEFT JOIN bu_epay_code  c ON c.pay_code = b.pay_code
+		LEFT JOIN sys_office o ON o.id = c.office_id
+		left join v_agent_level_info oi on oi.id = c.office_id
+	</sql>
+	
+	<select id="getDisTinctPayTypeRule" resultType="PayTypeRule">
+		SELECT t.member_id AS "memberId",IFNULL(b.`name`,'默认商户') AS "memberName",b.code AS "memberCode",t.pay_method AS "payMethod",t.pay_type AS "payType" from bu_paytype_rule t
+		<include refid="payTypeRuleJoins"/>
+ 		where t.del_flag='0'
+ 		<if test="payType != null and payType != ''">
+			AND t.pay_type = #{payType}
+		</if>
+		<if test="payMethod != null and payMethod != ''">
+			AND t.pay_method = #{payMethod}
+		</if>
+		<if test="office != null and office.id != null and office.id !=''">
+			AND (o.id=#{office.id} or o.parent_ids LIKE 
+				<if test="dbName == 'oracle'">'%'||#{office.id}||'%')</if>
+				<if test="dbName == 'mssql'">'%'+#{office.id}+'%')</if>
+				<if test="dbName == 'mysql'">concat('%',#{office.id},'%'))</if>
+		</if>
+ 		 GROUP BY t.member_id,t.pay_method,t.pay_type
+ 		 <choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY t.member_id
+			</otherwise>
+		</choose>
+	</select>
+    
+	<select id="getRuleList" resultType="PayTypeRule">
+		SELECT t.route_code AS "routeCode",t.aisle_type  AS "aisleType",t.merchant_code AS "merchantCode",t.rule_rate AS "ruleRate" from bu_paytype_rule t
+ 		where t.member_id=#{memberId} and t.pay_method=#{payMethod} and t.pay_type=#{payType} and t.del_flag='0'
+	</select>
+	
+	
+	
+	<insert id="insert">
+		INSERT INTO bu_paytype_rule(
+			pay_method,
+			pay_type,
+			member_id,
+			rule_type,
+			min_money,
+			max_money,
+			begin_time,
+			end_time,
+			route_code,
+			aisle_type,
+			merchant_code,
+			rule_rate,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{payMethod,jdbcType=VARCHAR},
+			#{payType,jdbcType=VARCHAR},
+			#{memberId,jdbcType=INTEGER},
+			#{ruleType,jdbcType=VARCHAR},
+			#{minMoney,jdbcType=DECIMAL},
+			#{maxMoney,jdbcType=DECIMAL},
+			#{beginTime,jdbcType=VARCHAR},
+			#{endTime,jdbcType=VARCHAR},
+			#{routeCode,jdbcType=VARCHAR},
+			#{aisleType,jdbcType=VARCHAR},
+			#{merchantCode,jdbcType=VARCHAR},
+			#{ruleRate,jdbcType=DECIMAL},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	
+	<update id="delete">
+		UPDATE bu_paytype_rule SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByType">
+		UPDATE bu_paytype_rule SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE member_id = #{memberId} and pay_method = #{payMethod} and pay_type = #{payType}
+	</update>
+	
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.trade.dao.RuleMerchantDao">
+    
+	<select id="getRoute" resultType="RuleMerchant">
+		SELECT t.route_code AS "routeCode",t.route_name AS "routeName",t.aisle_type AS "aisleType" from bu_rule_merchant t where t.del_flag='0' GROUP BY t.route_code
+	</select>
+    
+	<select id="getRouteMerchant" resultType="RuleMerchant">
+		SELECT t.route_code AS "routeCode",t.aisle_type AS "aisleType",t.merchant_code AS "merchantCode",t.merchant_name AS "merchantName"
+		FROM bu_rule_merchant t where t.route_code=#{routeCode} and t.del_flag='0'
+	</select>
+	
+	
+	
+</mapper>
