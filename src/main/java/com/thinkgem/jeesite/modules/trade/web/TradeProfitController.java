@@ -35,6 +35,7 @@ import com.thinkgem.jeesite.modules.trade.entity.AgentTradeProfitExcel;
 import com.thinkgem.jeesite.modules.trade.entity.RoutewayDrawProfit;
 import com.thinkgem.jeesite.modules.trade.entity.TradeDetail;
 import com.thinkgem.jeesite.modules.trade.entity.TradeProfit;
+import com.thinkgem.jeesite.modules.trade.entity.TradeRealProfitExcel;
 import com.thinkgem.jeesite.modules.trade.service.TradeProfitService;
 
 /**
@@ -90,6 +91,44 @@ public class TradeProfitController extends BaseController {
 		return "modules/trade/profit/platProfit";
 	}
 	
+	
+	@RequiresPermissions("trade:profit:plat")
+	@RequestMapping(value = {"realPlat"})
+	public String realPlat(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, Model model,String officeId) {
+		// 当前用户代理商
+		Office office = UserUtils.getUser().getOffice();
+
+		// 选择代理商
+		if (StringUtils.isNotBlank(officeId)) {
+			Office office2 = officeService.get(officeId);
+			if (office2 != null) {
+				office = office2;
+			}
+		}
+
+		tradeProfit.setOffice(office);
+		
+		String beginTime = tradeProfit.getBeginTime();
+		if(StringUtils.isEmpty(beginTime)){
+			beginTime = DateUtils.getBeforeDate(8,"yyyyMMdd");
+		}
+		
+		String endTime = tradeProfit.getEndTime();
+		if(StringUtils.isEmpty(endTime)){
+			endTime = DateUtils.getBeforeDate(1,"yyyyMMdd");
+		}
+		tradeProfit.setBeginTime(beginTime);
+		tradeProfit.setEndTime(endTime);
+		
+		Page<TradeProfit> page = tradeProfitService.platProfitPage(new Page<TradeProfit>(request, response), tradeProfit);
+		model.addAttribute("page", page);
+		
+		model.addAttribute("tradeProfit", tradeProfit);
+		return "modules/trade/profit/platProfitReal";
+	}
+	
+	
+	
 	@RequiresPermissions("trade:profit:plat")
 	@RequestMapping(value = "getPlatSumData")
 	@ResponseBody
@@ -135,6 +174,69 @@ public class TradeProfitController extends BaseController {
 	}
 	
 	@RequiresPermissions("trade:profit:plat")
+	@RequestMapping(value = "getPlatSumDataReal")
+	@ResponseBody
+	public Map<String, Object> getPlatSumDataReal(TradeProfit tradeProfit,String officeId){
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		// 当前用户代理商
+		Office office = UserUtils.getUser().getOffice();
+		// 选择代理商
+		if(StringUtils.isNotBlank(officeId)){
+			Office office2 = officeService.get(officeId);
+			if(office2 != null){
+				office = office2;
+			}
+		}
+		tradeProfit.setOffice(office);		
+		
+		Map<String,Object> map = tradeProfitService.platProfitSum(tradeProfit);
+		Double tradeMoney = null,settleMoney = null,platProfit = null , agentProfit = null , platCost = null , memberCost = null;
+		if(map!=null){
+			tradeMoney = ((BigDecimal)map.get("tradeMoney")).doubleValue();
+			settleMoney = ((BigDecimal)map.get("settleMoney")).doubleValue();
+			platProfit = ((BigDecimal)map.get("realPlatProfit")).doubleValue();
+			agentProfit = ((BigDecimal)map.get("agentProfit")).doubleValue();
+			platCost = ((BigDecimal)map.get("realPlatCost")).doubleValue();
+			memberCost = ((BigDecimal)map.get("memberCost")).doubleValue();
+		}
+		tradeMoney = tradeMoney ==null ? 0:tradeMoney;
+		settleMoney = settleMoney ==null ? 0:settleMoney;
+		platProfit = platProfit ==null ? 0:platProfit;
+		agentProfit = agentProfit ==null ? 0:agentProfit;
+		platCost = platCost ==null ? 0:platCost;
+		memberCost = memberCost ==null ? 0:memberCost;
+		DecimalFormat df = new DecimalFormat("0.00");
+	
+		data.put("tradeMoney", df.format(tradeMoney.doubleValue()));
+		data.put("settleMoney", df.format(settleMoney.doubleValue()));
+		data.put("platProfit", df.format(platProfit.doubleValue()));
+		data.put("agentProfit", df.format(agentProfit.doubleValue()));
+		data.put("platCost", df.format(platCost.doubleValue()));
+		data.put("memberCost", df.format(memberCost.doubleValue()));
+		
+		
+		
+		if(StringUtils.isBlank(officeId)||"1".equals(officeId)){
+			Office office2 = officeService.get("a0b189ba2f7b4565a69e0e483d5b027d");//小郑
+			if(office2 != null){
+				tradeProfit.setOffice(office2);		
+				
+				Map<String,Object> map1 = tradeProfitService.platProfitSum(tradeProfit);
+				Double xiaozhengProfit = null;
+				if(map1!=null){
+					xiaozhengProfit = ((BigDecimal)map1.get("agentProfit")).doubleValue();
+				}
+				xiaozhengProfit = xiaozhengProfit ==null ? 0:xiaozhengProfit;
+				
+				data.put("xiaozhengProfit", df.format(xiaozhengProfit.doubleValue()));
+			}
+		}
+		
+		return data;
+	}
+	
+	@RequiresPermissions("trade:profit:plat")
     @RequestMapping(value = "platExport", method=RequestMethod.POST)
     public String platExportFile(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes,String officeId) {
 		try {
@@ -174,6 +276,48 @@ public class TradeProfitController extends BaseController {
 			addMessage(redirectAttributes, "导出交易数据失败！失败信息："+e.getMessage());
 		}
 		return "redirect:" + adminPath + "/trade/profit/plat?repage";
+    }
+	
+	@RequiresPermissions("trade:profit:plat")
+    @RequestMapping(value = "platRealExport", method=RequestMethod.POST)
+    public String platRealExport(TradeProfit tradeProfit, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes,String officeId) {
+		try {
+			// 当前用户代理商
+			Office office = UserUtils.getUser().getOffice();
+			
+			// 选择代理商
+			if(StringUtils.isNotBlank(officeId)){
+				Office office2 = officeService.get(officeId);
+				if(office2 != null){
+					office = office2;
+				}
+			}
+			
+			tradeProfit.setOffice(office);
+			
+			String beginTime = tradeProfit.getBeginTime();
+			if(StringUtils.isEmpty(beginTime)){
+				beginTime = DateUtils.getBeforeDate(8,"yyyyMMdd");
+			}
+			
+			String endTime = tradeProfit.getEndTime();
+			if(StringUtils.isEmpty(endTime)){
+				endTime = DateUtils.getBeforeDate(1,"yyyyMMdd");
+			}
+			tradeProfit.setBeginTime(beginTime);
+			tradeProfit.setEndTime(endTime);
+			
+			
+			
+            String fileName = "平台交易实际利润数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            
+            List<TradeProfit> list = tradeProfitService.platProfit(tradeProfit);
+    		new ExportExcel("平台交易实际利润数据", TradeRealProfitExcel.class).setDataList(list).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导出交易数据失败！失败信息："+e.getMessage());
+		}
+		return "redirect:" + adminPath + "/trade/profit/platReal?repage";
     }
 	
 	@RequiresPermissions("trade:profit:agent")

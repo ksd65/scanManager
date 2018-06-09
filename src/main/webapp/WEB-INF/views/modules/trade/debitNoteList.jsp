@@ -160,7 +160,7 @@
 				</td>
 				<td>
 					<c:choose>
-						<c:when test="${debitNote.status=='2'||debitNote.status=='10'||debitNote.status=='11'||debitNote.status=='12' }">
+						<c:when test="${debitNote.status=='2'||debitNote.status=='10'||debitNote.status=='11'||debitNote.status=='12'||debitNote.status=='18'||debitNote.status=='19'||debitNote.status=='6' }">
 							${debitNote.respMsg}
 						</c:when>
 						<c:otherwise>

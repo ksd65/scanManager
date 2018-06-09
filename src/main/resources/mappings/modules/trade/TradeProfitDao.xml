@@ -7,10 +7,13 @@
 	<select id="platProfit" resultType="TradeProfit">
 		SELECT t.member_id AS memberId,t.txn_date AS txnDate, t.route_code AS routeCode,
 		t.merchant_code AS merchantCode,t.txn_method AS txnMethod,t.txn_type AS txnType, 
-		convert(t.trade_money,decimal(10,2)) AS tradeMoney,(t.agent_cost-t.plat_cost) AS platProfit,(t.member_cost-t.agent_cost) AS agentProfit ,
-		t.plat_cost AS platCost,t.member_cost AS memberCost,(t.trade_money-t.member_cost) AS settleMoney,
-		convert(t.plat_trade_rate,decimal(10,4)) AS platTradeRate,convert(t.agent_trade_rate,decimal(10,4)) AS agentTradeRate,convert(t.member_trade_rate,decimal(10,4)) AS memberTradeRate,
-		convert((t.agent_trade_rate-t.plat_trade_rate),decimal(10,4)) AS platProfitRate,convert((t.member_trade_rate-t.agent_trade_rate),decimal(10,4)) AS agentProfitRate ,
+		convert(t.trade_money,decimal(10,2)) AS tradeMoney,(t.agent_cost-t.plat_cost) AS platProfit,
+		(t.agent_cost-t.real_plat_cost) AS realPlatProfit,(t.member_cost-t.agent_cost) AS agentProfit ,
+		t.plat_cost AS platCost,t.real_plat_cost AS realPlatCost,t.member_cost AS memberCost,(t.trade_money-t.member_cost) AS settleMoney,
+		convert(t.plat_trade_rate,decimal(10,4)) AS platTradeRate,convert(t.real_plat_trade_rate,decimal(10,4)) AS realPlatTradeRate,convert(t.agent_trade_rate,decimal(10,4)) AS agentTradeRate,convert(t.member_trade_rate,decimal(10,4)) AS memberTradeRate,
+		convert((t.agent_trade_rate-t.plat_trade_rate),decimal(10,4)) AS platProfitRate,
+		convert((t.agent_trade_rate-t.real_plat_trade_rate),decimal(10,4)) AS realPlatProfitRate,
+		convert((t.member_trade_rate-t.agent_trade_rate),decimal(10,4)) AS agentProfitRate ,
 		m.`name` AS memberName,m.`code` AS memberCode,o.`name` AS "office.name",o1.`name` AS agentName
 		FROM bu_trade_profit t
 		LEFT JOIN bu_member_info m ON m.id=t.member_id
@@ -58,7 +61,9 @@
         convert(SUM(t.member_cost-t.agent_cost),decimal(10,2)) AS agentProfit ,
 		convert(SUM(t.plat_cost),decimal(10,2)) AS platCost,
         convert(SUM(t.member_cost),decimal(10,2)) AS memberCost,
-        convert(SUM(t.trade_money-t.member_cost),decimal(10,2)) AS settleMoney
+        convert(SUM(t.trade_money-t.member_cost),decimal(10,2)) AS settleMoney,
+        convert(SUM(t.agent_cost-t.real_plat_cost),decimal(10,2)) AS realPlatProfit,
+		convert(SUM(t.real_plat_cost),decimal(10,2)) AS realPlatCost
 		FROM bu_trade_profit t
 		LEFT JOIN bu_member_info m ON m.id=t.member_id
 		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code

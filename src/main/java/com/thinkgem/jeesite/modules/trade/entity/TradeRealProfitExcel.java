@@ -13,7 +13,7 @@ import com.thinkgem.jeesite.modules.mem.entity.Member;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 
 
-public class TradeProfit extends DataEntity<TradeProfit> {
+public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 	
 	private static final long serialVersionUID = 1L;
 	private String memberId;		// 商户ID
@@ -59,11 +59,11 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 	
 
 	
-	public TradeProfit() {
+	public TradeRealProfitExcel() {
 		super();
 	}
 
-	public TradeProfit(String id){
+	public TradeRealProfitExcel(String id){
 		super(id);
 	}
 	
@@ -244,7 +244,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.settleMoney = settleMoney;
 	}
 
-	@ExcelField(title="平台成本扣率", align=2, sort=150)
+	
 	public String getPlatTradeRate() {
 		return platTradeRate;
 	}
@@ -271,7 +271,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.memberTradeRate = memberTradeRate;
 	}
 
-	@ExcelField(title="上游佣金", align=2, sort=160)
+	
 	public String getPlatCost() {
 		return platCost;
 	}
@@ -305,7 +305,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.drawPer = drawPer;
 	}
 
-    @ExcelField(title="平台佣金", align=2, sort=120)
+    
     public String getPlatProfit() {
 		return platProfit;
 	}
@@ -339,7 +339,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.agentOfficeId = agentOfficeId;
 	}
 
-	@ExcelField(title="平台佣金扣率", align=2, sort=110)
+	
 	public String getPlatProfitRate() {
 		return platProfitRate;
 	}
@@ -365,6 +365,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.agentName = agentName;
 	}
 
+	@ExcelField(title="平台成本扣率", align=2, sort=150)
 	public String getRealPlatTradeRate() {
 		return realPlatTradeRate;
 	}
@@ -373,6 +374,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.realPlatTradeRate = realPlatTradeRate;
 	}
 
+	@ExcelField(title="平台佣金", align=2, sort=120)
 	public String getRealPlatProfit() {
 		return realPlatProfit;
 	}
@@ -381,6 +383,7 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 		this.realPlatProfit = realPlatProfit;
 	}
 
+	@ExcelField(title="上游佣金", align=2, sort=160)
 	public String getRealPlatCost() {
 		return realPlatCost;
 	}
@@ -388,7 +391,8 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 	public void setRealPlatCost(String realPlatCost) {
 		this.realPlatCost = realPlatCost;
 	}
-
+	
+	@ExcelField(title="平台佣金扣率", align=2, sort=110)
 	public String getRealPlatProfitRate() {
 		return realPlatProfitRate;
 	}
