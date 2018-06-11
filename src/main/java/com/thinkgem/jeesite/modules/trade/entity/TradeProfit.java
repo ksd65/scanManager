@@ -46,6 +46,12 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 	private String realPlatCost;
 	private String realPlatProfitRate;
 	
+	private String agentTradeRateLevel2;
+	private String agentProfitRateLevel1;
+	private String agentProfitLevel1;
+	private String channelProfitRate;
+	private String channelProfit;
+	
 	private Office office;			// 机构
 	private Member member;			// 商户
 	private String memberName;		// 商户名称
@@ -395,6 +401,46 @@ public class TradeProfit extends DataEntity<TradeProfit> {
 
 	public void setRealPlatProfitRate(String realPlatProfitRate) {
 		this.realPlatProfitRate = realPlatProfitRate;
+	}
+
+	public String getAgentTradeRateLevel2() {
+		return agentTradeRateLevel2;
+	}
+
+	public void setAgentTradeRateLevel2(String agentTradeRateLevel2) {
+		this.agentTradeRateLevel2 = agentTradeRateLevel2;
+	}
+
+	public String getAgentProfitRateLevel1() {
+		return agentProfitRateLevel1;
+	}
+
+	public void setAgentProfitRateLevel1(String agentProfitRateLevel1) {
+		this.agentProfitRateLevel1 = agentProfitRateLevel1;
+	}
+
+	public String getAgentProfitLevel1() {
+		return agentProfitLevel1;
+	}
+
+	public void setAgentProfitLevel1(String agentProfitLevel1) {
+		this.agentProfitLevel1 = agentProfitLevel1;
+	}
+
+	public String getChannelProfitRate() {
+		return channelProfitRate;
+	}
+
+	public void setChannelProfitRate(String channelProfitRate) {
+		this.channelProfitRate = channelProfitRate;
+	}
+
+	public String getChannelProfit() {
+		return channelProfit;
+	}
+
+	public void setChannelProfit(String channelProfit) {
+		this.channelProfit = channelProfit;
 	}
 
 	

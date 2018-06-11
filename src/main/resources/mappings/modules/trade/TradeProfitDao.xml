@@ -9,11 +9,16 @@
 		t.merchant_code AS merchantCode,t.txn_method AS txnMethod,t.txn_type AS txnType, 
 		convert(t.trade_money,decimal(10,2)) AS tradeMoney,(t.agent_cost-t.plat_cost) AS platProfit,
 		(t.agent_cost-t.real_plat_cost) AS realPlatProfit,(t.member_cost-t.agent_cost) AS agentProfit ,
+    	(t.agent_cost_level2 - t.agent_cost) AS agentProfitLevel1,(t.real_plat_cost - t.plat_cost) AS channelProfit,
 		t.plat_cost AS platCost,t.real_plat_cost AS realPlatCost,t.member_cost AS memberCost,(t.trade_money-t.member_cost) AS settleMoney,
-		convert(t.plat_trade_rate,decimal(10,4)) AS platTradeRate,convert(t.real_plat_trade_rate,decimal(10,4)) AS realPlatTradeRate,convert(t.agent_trade_rate,decimal(10,4)) AS agentTradeRate,convert(t.member_trade_rate,decimal(10,4)) AS memberTradeRate,
+		convert(t.plat_trade_rate,decimal(10,4)) AS platTradeRate,convert(t.real_plat_trade_rate,decimal(10,4)) AS realPlatTradeRate,convert(t.agent_trade_rate,decimal(10,4)) AS agentTradeRate,
+		convert(t.agent_trade_rate_level2,decimal(10,4)) AS agentTradeRateLevel2,
+		convert(t.member_trade_rate,decimal(10,4)) AS memberTradeRate,
 		convert((t.agent_trade_rate-t.plat_trade_rate),decimal(10,4)) AS platProfitRate,
 		convert((t.agent_trade_rate-t.real_plat_trade_rate),decimal(10,4)) AS realPlatProfitRate,
 		convert((t.member_trade_rate-t.agent_trade_rate),decimal(10,4)) AS agentProfitRate ,
+    	CONVERT ((t.agent_trade_rate_level2 - t.agent_trade_rate),DECIMAL (10, 4)) AS agentProfitRateLevel1,
+		CONVERT ((t.real_plat_trade_rate - t.plat_trade_rate),DECIMAL (10, 4)) AS channelProfitRate,
 		m.`name` AS memberName,m.`code` AS memberCode,o.`name` AS "office.name",o1.`name` AS agentName
 		FROM bu_trade_profit t
 		LEFT JOIN bu_member_info m ON m.id=t.member_id
@@ -63,11 +68,12 @@
         convert(SUM(t.member_cost),decimal(10,2)) AS memberCost,
         convert(SUM(t.trade_money-t.member_cost),decimal(10,2)) AS settleMoney,
         convert(SUM(t.agent_cost-t.real_plat_cost),decimal(10,2)) AS realPlatProfit,
-		convert(SUM(t.real_plat_cost),decimal(10,2)) AS realPlatCost
+		convert(SUM(t.real_plat_cost),decimal(10,2)) AS realPlatCost,
+		convert(SUM(t.agent_cost_level2-t.agent_cost),decimal(10,2)) AS agentProfitLevel1 
 		FROM bu_trade_profit t
 		LEFT JOIN bu_member_info m ON m.id=t.member_id
 		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
-		LEFT JOIN sys_office o ON o.id = c.office_id
+		LEFT JOIN sys_office o ON o.id = c.office_id  
 		WHERE 1=1
 		 <if test="memberCode != null and memberCode != ''">
 			AND m.code = #{memberCode}

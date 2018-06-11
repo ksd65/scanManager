@@ -93,16 +93,20 @@
 				<th>交易类型 </th>
 				<th>交易通道 </th>
 				<th>代理商名称 </th>
-				<th>代理商成本扣率 </th>
-				
-				<th>通道商户编码</th>
 				<th>交易金额</th>
+				<th>平台成本扣率 </th>
+				<th>一级代理商成本扣率 </th>
 				<th>平台佣金扣率 </th>
 				<th>平台佣金</th>
-				<th>代理商佣金扣率 </th>
-				<th>代理商佣金 </th>
-				<th>平台成本扣率 </th>
-				<th>上游佣金 </th>
+				<th>一级代理商佣金扣率 </th>
+				<th>一级代理商佣金 </th>
+				
+				<th>通道扣率 </th>
+				<th>通道佣金 </th>
+				
+				<th>渠道方扣率 </th>
+				<th>渠道方佣金 </th>
+				
 				<th>商户成本扣率</th>
 				<th>商户付佣 </th>
 				<th>商户应收 </th>
@@ -135,33 +139,45 @@
 				</td>
 				
 				<td>
-					${tradeProfit.agentTradeRate}
-				</td>
-				 
-				<td>
-					${tradeProfit.merchantCode}
-				</td>
-				<td>
 					${tradeProfit.tradeMoney}
 				</td>
+				
+				<td>
+					${tradeProfit.realPlatTradeRate}
+				</td>
+				
+				<td>
+					${tradeProfit.agentTradeRate}
+				</td>
+				
 				<td>
 					${tradeProfit.realPlatProfitRate}
 				</td>
 				<td>
 					${tradeProfit.realPlatProfit}
 				</td>
+				
 				<td>
-					${tradeProfit.agentProfitRate}
+					${tradeProfit.agentProfitRateLevel1}
 				</td>
 				<td>
-					${tradeProfit.agentProfit}
+					${tradeProfit.agentProfitLevel1}
+				</td>
+				 
+				<td>
+					${tradeProfit.platTradeRate}
 				</td>
 				<td>
-					${tradeProfit.realPlatTradeRate}
+					${tradeProfit.platCost}
+				</td>
+					
+				<td>
+					${tradeProfit.channelProfitRate}
 				</td>
 				<td>
-					${tradeProfit.realPlatCost}
+					${tradeProfit.channelProfit}
 				</td>
+				
 				<td>
 					${tradeProfit.memberTradeRate}
 				</td>

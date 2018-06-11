@@ -225,7 +225,7 @@ public class TradeProfitController extends BaseController {
 				Map<String,Object> map1 = tradeProfitService.platProfitSum(tradeProfit);
 				Double xiaozhengProfit = null;
 				if(map1!=null){
-					xiaozhengProfit = ((BigDecimal)map1.get("agentProfit")).doubleValue();
+					xiaozhengProfit = ((BigDecimal)map1.get("agentProfitLevel1")).doubleValue();
 				}
 				xiaozhengProfit = xiaozhengProfit ==null ? 0:xiaozhengProfit;
 				

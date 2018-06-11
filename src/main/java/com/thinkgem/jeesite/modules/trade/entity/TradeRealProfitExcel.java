@@ -46,6 +46,12 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 	private String realPlatCost;
 	private String realPlatProfitRate;
 	
+	private String agentTradeRateLevel2;
+	private String agentProfitRateLevel1;
+	private String agentProfitLevel1;
+	private String channelProfitRate;
+	private String channelProfit;
+	
 	private Office office;			// 机构
 	private Member member;			// 商户
 	private String memberName;		// 商户名称
@@ -138,7 +144,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.txnType = txnType;
 	}
 
-    @ExcelField(title="通道商户编码", align=2, sort=90)
+   // @ExcelField(title="通道商户编码", align=2, sort=90)
 	@Length(min=0, max=32, message="通道商户编号长度必须介于 0 和 32 之间")
 	public String getMerchantCode() {
 		return merchantCode;
@@ -226,7 +232,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.txnDate = txnDate;
 	}
 
-    @ExcelField(title="交易金额", align=2, sort=100)
+    @ExcelField(title="交易金额", align=2, sort=80)
     public String getTradeMoney() {
 		return tradeMoney;
 	}
@@ -235,7 +241,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.tradeMoney = tradeMoney;
 	}
 
-	@ExcelField(title="商户应收", align=2, sort=190)
+	@ExcelField(title="商户应收", align=2, sort=210)
 	public String getSettleMoney() {
 		return settleMoney;
 	}
@@ -244,7 +250,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.settleMoney = settleMoney;
 	}
 
-	
+	@ExcelField(title="通道扣率", align=2, sort=150)
 	public String getPlatTradeRate() {
 		return platTradeRate;
 	}
@@ -253,7 +259,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.platTradeRate = platTradeRate;
 	}
 
-	@ExcelField(title="代理商成本扣率", align=2, sort=80)
+	@ExcelField(title="一级代理商成本扣率", align=2, sort=95)
 	public String getAgentTradeRate() {
 		return agentTradeRate;
 	}
@@ -262,7 +268,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.agentTradeRate = agentTradeRate;
 	}
 
-	@ExcelField(title="商户成本扣率", align=2, sort=170)
+	@ExcelField(title="商户成本扣率", align=2, sort=190)
 	public String getMemberTradeRate() {
 		return memberTradeRate;
 	}
@@ -271,7 +277,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.memberTradeRate = memberTradeRate;
 	}
 
-	
+	@ExcelField(title="通道佣金", align=2, sort=160)
 	public String getPlatCost() {
 		return platCost;
 	}
@@ -288,7 +294,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.agentCost = agentCost;
 	}
 
-	@ExcelField(title="商户付佣", align=2, sort=180)
+	@ExcelField(title="商户付佣", align=2, sort=200)
 	public String getMemberCost() {
 		return memberCost;
 	}
@@ -314,7 +320,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.platProfit = platProfit;
 	}
 
-	@ExcelField(title="代理商佣金", align=2, sort=140)
+//	@ExcelField(title="代理商佣金", align=2, sort=140)
 	public String getAgentProfit() {
 		return agentProfit;
 	}
@@ -348,7 +354,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.platProfitRate = platProfitRate;
 	}
 
-	@ExcelField(title="代理商佣金扣率", align=2, sort=130)
+//	@ExcelField(title="代理商佣金扣率", align=2, sort=130)
 	public String getAgentProfitRate() {
 		return agentProfitRate;
 	}
@@ -365,7 +371,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.agentName = agentName;
 	}
 
-	@ExcelField(title="平台成本扣率", align=2, sort=150)
+	@ExcelField(title="平台成本扣率", align=2, sort=90)
 	public String getRealPlatTradeRate() {
 		return realPlatTradeRate;
 	}
@@ -383,7 +389,7 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 		this.realPlatProfit = realPlatProfit;
 	}
 
-	@ExcelField(title="上游佣金", align=2, sort=160)
+	//@ExcelField(title="上游佣金", align=2, sort=160)
 	public String getRealPlatCost() {
 		return realPlatCost;
 	}
@@ -399,6 +405,49 @@ public class TradeRealProfitExcel extends DataEntity<TradeRealProfitExcel> {
 
 	public void setRealPlatProfitRate(String realPlatProfitRate) {
 		this.realPlatProfitRate = realPlatProfitRate;
+	}
+
+	public String getAgentTradeRateLevel2() {
+		return agentTradeRateLevel2;
+	}
+
+	public void setAgentTradeRateLevel2(String agentTradeRateLevel2) {
+		this.agentTradeRateLevel2 = agentTradeRateLevel2;
+	}
+	
+	@ExcelField(title="一级代理商佣金扣率", align=2, sort=130)
+	public String getAgentProfitRateLevel1() {
+		return agentProfitRateLevel1;
+	}
+
+	public void setAgentProfitRateLevel1(String agentProfitRateLevel1) {
+		this.agentProfitRateLevel1 = agentProfitRateLevel1;
+	}
+
+	@ExcelField(title="一级代理商佣金", align=2, sort=140)
+	public String getAgentProfitLevel1() {
+		return agentProfitLevel1;
+	}
+
+	public void setAgentProfitLevel1(String agentProfitLevel1) {
+		this.agentProfitLevel1 = agentProfitLevel1;
+	}
+	@ExcelField(title="渠道方扣率", align=2, sort=170)
+	public String getChannelProfitRate() {
+		return channelProfitRate;
+	}
+
+	public void setChannelProfitRate(String channelProfitRate) {
+		this.channelProfitRate = channelProfitRate;
+	}
+
+	@ExcelField(title="渠道方佣金", align=2, sort=180)
+	public String getChannelProfit() {
+		return channelProfit;
+	}
+
+	public void setChannelProfit(String channelProfit) {
+		this.channelProfit = channelProfit;
 	}
 
 	
