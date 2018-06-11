@@ -56,6 +56,12 @@
 					value="${tradeProfit.endTime}"
 					onclick="WdatePicker({dateFmt:'yyyyMMdd',isShowClear:true});"/>
 			</li>
+			<li><label>交易通道：</label>
+				<form:select id="routeCode" path="routeCode" class="input-medium">
+					<form:option value="" label="所有"/>
+					<form:options items="${fns:getDictList('route_code')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label>交易方式：</label>
 				<form:select id="txnMethod" path="txnMethod" class="input-medium">
 					<form:option value="" label="所有"/>
@@ -230,7 +236,7 @@
 <script type="text/javascript">
 function getSumData(){
 	var officeId = $("#officeid").val();
-	//var memberCode = $("#memberCode").val();
+	var routeCode = $("#routeCode").val();
 	var memberName = $("#memberName").val();
 	var beginTime = $("#beginTime").val();
 	var endTime = $("#endTime").val();
@@ -241,7 +247,7 @@ function getSumData(){
         type: "post",
         async: false,
         url: "${ctx}/trade/profit/getPlatSumData",
-        data: "officeId="+officeId+"&memberName="+memberName+"&beginTime="+beginTime+"&endTime="+endTime+"&txnMethod="+txnMethod+"&txnType="+txnType,
+        data: "officeId="+officeId+"&routeCode="+routeCode+"&memberName="+memberName+"&beginTime="+beginTime+"&endTime="+endTime+"&txnMethod="+txnMethod+"&txnType="+txnType,
         success: function(data) {
 			$("#sumTradeMoney").text(data.tradeMoney);
 			$("#sumMemberCost").text(data.memberCost);
