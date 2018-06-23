@@ -74,4 +74,26 @@
 		WHERE id = #{id}
 	</update>
 	
+	<select id="findMemberPayType" resultType="MemberPayType">
+		SELECT 
+			<include refid="memberPayTypeColumns"/>
+		FROM bu_member_paytype a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberId != null and memberId != ''">
+				AND a.member_id = #{memberId}
+			</if>
+			
+			<if test="payMethod != null and payMethod != ''">
+				AND a.pay_method = #{payMethod}
+			</if>
+			
+			<if test="payType != null and payType != ''">
+				AND a.pay_type = #{payType}
+			</if>
+			
+		</where>
+		
+	</select>
+	
 </mapper>

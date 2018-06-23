@@ -40,8 +40,10 @@ import com.thinkgem.jeesite.modules.draw.service.RoutewayDrawService;
 import com.thinkgem.jeesite.modules.mem.entity.Member;
 import com.thinkgem.jeesite.modules.mem.entity.MemberBindAcc;
 import com.thinkgem.jeesite.modules.mem.entity.MemberDrawRoute;
+import com.thinkgem.jeesite.modules.mem.entity.MemberPayType;
 import com.thinkgem.jeesite.modules.mem.service.MemberBindAccService;
 import com.thinkgem.jeesite.modules.mem.service.MemberDrawRouteService;
+import com.thinkgem.jeesite.modules.mem.service.MemberPayTypeService;
 import com.thinkgem.jeesite.modules.mem.service.MemberService;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -76,6 +78,9 @@ public class RoutewayDrawController extends BaseController {
 	
 	@Autowired
 	private MemberDrawRouteService memberDrawRouteService;
+	
+	@Autowired
+	private MemberPayTypeService memberPayTypeService;
 	
 	@ModelAttribute
 	public RoutewayDraw get(@RequestParam(required=false) String id) {
@@ -440,7 +445,7 @@ public class RoutewayDrawController extends BaseController {
 				String memberId = list.get(0).getId();
 				member.setId(memberId);
 				if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
-					memberId = "15";
+					memberId = "3";
 					member.setId(memberId);
 				}
 				MemberBindAcc memberBindAcc = new MemberBindAcc();
@@ -479,7 +484,7 @@ public class RoutewayDrawController extends BaseController {
 				if(list!=null && list.size()>0){
 					String memberId = list.get(0).getId();
 					if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
-						memberId = "15";
+						memberId = "3";
 					}
 					
 					String routeCode = request.getParameter("routeCode");
@@ -563,7 +568,7 @@ public class RoutewayDrawController extends BaseController {
 				if(list!=null && list.size()>0){
 					String memberId = list.get(0).getId();
 					if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
-						memberId = "15";
+						memberId = "3";
 					}
 					MemberBindAcc bindAcc = memberBindAccService.get(new MemberBindAcc(bindAccId));
 					if(bindAcc==null){
@@ -631,7 +636,22 @@ public class RoutewayDrawController extends BaseController {
 		Double todayTradeMoney = tradeDailyTotalService.tradeMoney(paramMap);
 		todayTradeMoney = todayTradeMoney == null ? 0 : todayTradeMoney;
 
-		Double todaySettleMoney = tradeDailyTotalService.settleMoney(paramMap);
+		Double todaySettleMoney = 0d;
+		if("1038".equals(draw.getRouteCode())){
+			MemberPayType payTypeParam = new MemberPayType();
+			payTypeParam.setMemberId(draw.getMemberId());
+			payTypeParam.setPayMethod("005");
+			payTypeParam.setPayType("KJ");
+			List<MemberPayType> list = memberPayTypeService.findMemberPayType(payTypeParam);
+			String memberRate = "1";
+			if(list!=null&&list.size()>0){
+				memberRate = list.get(0).getT0TradeRate();
+			}
+			paramMap.put("memberRate", memberRate);
+			todaySettleMoney = tradeDailyTotalService.settleMemberProfitMoney(paramMap);
+		}else{
+			todaySettleMoney = tradeDailyTotalService.settleMoney(paramMap);
+		}
 		todaySettleMoney = todaySettleMoney == null ? 0 : todaySettleMoney;
 
 		DecimalFormat df = new DecimalFormat("0.00");
@@ -646,6 +666,9 @@ public class RoutewayDrawController extends BaseController {
 		tmp.setRouteCode(draw.getRouteCode());
 		tmp.setAuditStatus("2");
 		tmp.setRespType("S");
+		if("1038".equals(draw.getRouteCode())){
+			tmp.setDrawType("1");
+		}
 		Double drawedMoney = routewayDrawService.countSumMoney(tmp);
 		drawedMoney = drawedMoney == null ? 0 : drawedMoney;
 		draw.setDrawedMoney(df.format(drawedMoney));

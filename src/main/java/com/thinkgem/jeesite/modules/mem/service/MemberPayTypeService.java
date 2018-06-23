@@ -44,4 +44,9 @@ public class MemberPayTypeService extends CrudService<MemberPayTypeDao, MemberPa
 		super.delete(memberPayType);
 	}
 	
+	public List<MemberPayType> findMemberPayType(MemberPayType memberPayType){
+		return dao.findMemberPayType(memberPayType);
+	}
+
+	
 }

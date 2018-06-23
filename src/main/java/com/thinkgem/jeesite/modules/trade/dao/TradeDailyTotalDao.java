@@ -20,5 +20,7 @@ public interface TradeDailyTotalDao extends CrudDao<TradeDailyTotal> {
 	public Double tradeMoney(Map<String,Object> paramMap);
 
 	public Double settleMoney(Map<String,Object> paramMap);
+	
+	public Double settleMemberProfitMoney(Map<String,Object> paramMap);
 
 }

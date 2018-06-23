@@ -37,5 +37,9 @@ public class TradeDailyTotalService extends CrudService<TradeDailyTotalDao, Trad
     	return tradeDailyTotalDao.settleMoney(paramMap);
     }
     
+    public Double settleMemberProfitMoney(Map<String,Object> paramMap){
+    	return tradeDailyTotalDao.settleMemberProfitMoney(paramMap);
+    }
+    
 	
 }

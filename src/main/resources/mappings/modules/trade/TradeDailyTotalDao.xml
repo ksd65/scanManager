@@ -23,4 +23,8 @@
 	<select id="settleMoney" parameterType="java.util.Map" resultType="java.lang.Double">
 		SELECT SUM(t.money*(1-t.member_trade_rate)) FROM bu_trade_detail t where t.txn_date=#{txnDate} AND t.member_id=#{memberId} and t.route_id=#{routeCode} and t.del_flag='0'
 	</select>
+	
+	<select id="settleMemberProfitMoney" parameterType="java.util.Map" resultType="java.lang.Double">
+		SELECT SUM(t.money*(t.member_trade_rate-#{memberRate})) FROM bu_trade_detail t where t.txn_date=#{txnDate} AND t.member_id=#{memberId} and t.route_id=#{routeCode} and t.del_flag='0'
+	</select>
 </mapper>

@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.mem.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.mem.entity.MemberPayType;
@@ -14,5 +16,8 @@ import com.thinkgem.jeesite.modules.mem.entity.MemberPayType;
  */
 @MyBatisDao
 public interface MemberPayTypeDao extends CrudDao<MemberPayType> {
+	
+	List<MemberPayType> findMemberPayType(MemberPayType memberPayType);
+
 	
 }
