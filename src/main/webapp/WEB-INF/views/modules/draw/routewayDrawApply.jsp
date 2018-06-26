@@ -54,6 +54,7 @@
 		
 		function balance(){
 			var routeCode = $("#routeCode").val();
+			$("#bindCardFeeDiv").hide();
 			if(routeCode==""){
 				$("#balance").html("0");
 				$("#canDrawMoneyCount").html("0");
@@ -75,9 +76,16 @@
 							}else{
 								$("#drawFee").html(data.balanceAccount.resData.drawFee);
 							}
+							if(routeCode == "1038"){
+								$("#bindCardFee").html(data.balanceAccount.resData.bindCardFee);
+								$("#bindCardFeeDiv").show();
+							}
 							
 						}else{
 							alert(data.returnMsg);
+							$("#balance").html("0");
+							$("#canDrawMoneyCount").html("0");
+							$("#drawFee").html("0");
 						}
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {    
@@ -125,6 +133,12 @@
 		<div class="control-group">
 			<label class="control-label">提现手续费:</label>
 			<div class="controls" id="drawFee">
+				0
+			</div>
+		</div>
+		<div class="control-group" id="bindCardFeeDiv">
+			<label class="control-label">绑卡手续费:</label>
+			<div class="controls" id="bindCardFee">
 				0
 			</div>
 		</div>

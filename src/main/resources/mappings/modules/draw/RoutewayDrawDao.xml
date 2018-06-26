@@ -199,6 +199,39 @@
 		</where>	
 	</select>
 	
+	<select id="countSumMemberDrawProfit" resultType="java.lang.Double">
+		SELECT
+			SUM(a.memberDrawProfit)
+		FROM bu_routeway_draw a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="memberId != null and memberId != ''">
+				AND a.member_id = #{memberId}
+			</if>
+			<if test="drawType != null and drawType != ''">
+				AND a.draw_type = #{drawType}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				AND left(a.req_date,8) >= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND left(a.req_date,8) &lt;= #{endTime}
+			</if>
+			<if test="respType != null and respType != ''">
+				AND a.resp_type = #{respType}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="routeCode != null and routeCode != ''">
+				AND a.route_code = #{routeCode}
+			</if>
+			<if test="respDate != null and respDate != ''">
+				AND a.resp_date = #{respDate}
+			</if>
+		</where>	
+	</select>
+	
 	<select id="countRecord" resultType="java.lang.Integer">
 		SELECT
 			count(1)

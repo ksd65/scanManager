@@ -445,7 +445,7 @@ public class RoutewayDrawController extends BaseController {
 				String memberId = list.get(0).getId();
 				member.setId(memberId);
 				if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
-					memberId = "3";
+					memberId = "1471";
 					member.setId(memberId);
 				}
 				MemberBindAcc memberBindAcc = new MemberBindAcc();
@@ -484,7 +484,7 @@ public class RoutewayDrawController extends BaseController {
 				if(list!=null && list.size()>0){
 					String memberId = list.get(0).getId();
 					if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
-						memberId = "3";
+						memberId = "1471";
 					}
 					
 					String routeCode = request.getParameter("routeCode");
@@ -568,7 +568,7 @@ public class RoutewayDrawController extends BaseController {
 				if(list!=null && list.size()>0){
 					String memberId = list.get(0).getId();
 					if("087e0384a40544b382f7a9352920a534".equals(office.getId())){//测试机构写死商户
-						memberId = "3";
+						memberId = "1471";
 					}
 					MemberBindAcc bindAcc = memberBindAccService.get(new MemberBindAcc(bindAccId));
 					if(bindAcc==null){
@@ -653,12 +653,21 @@ public class RoutewayDrawController extends BaseController {
 			todaySettleMoney = tradeDailyTotalService.settleMoney(paramMap);
 		}
 		todaySettleMoney = todaySettleMoney == null ? 0 : todaySettleMoney;
-
+		
+		RoutewayDraw tmp2 = new RoutewayDraw();
+		tmp2.setMemberId(draw.getMemberId());
+		tmp2.setRouteCode(draw.getRouteCode());
+		tmp2.setAuditStatus("2");
+		tmp2.setRespType("S");
+		tmp2.setReqDate(DateUtils.getDate("yyyyMMdd"));
+		Double todayDrawProfit = routewayDrawService.countSumMemberDrawProfit(tmp2);
+		todayDrawProfit = todayDrawProfit == null ? 0 : todayDrawProfit;
+		
 		DecimalFormat df = new DecimalFormat("0.00");
 		Double tradeMoney =  new BigDecimal(sumTradeMoney).add(new BigDecimal(todayTradeMoney)).doubleValue();
 		draw.setTradeMoney(df.format(tradeMoney));
 		
-		Double settleMoney =  new BigDecimal(sumSettleMoney).add(new BigDecimal(todaySettleMoney)).doubleValue();
+		Double settleMoney =  new BigDecimal(sumSettleMoney).add(new BigDecimal(todaySettleMoney)).add(new BigDecimal(todayDrawProfit)).doubleValue();
 		draw.setSettleMoney(df.format(settleMoney));
 		
 		RoutewayDraw tmp = new RoutewayDraw();
@@ -689,7 +698,7 @@ public class RoutewayDrawController extends BaseController {
 		if(routeList != null && routeList.size()>0){
 			MemberDrawRoute drawRoute  = routeList.get(0);
 			
-			Double canDrawToday = new BigDecimal(todaySettleMoney).multiply(new BigDecimal(drawRoute.getD0Percent())).doubleValue();//当天可提现的金额
+			Double canDrawToday = (new BigDecimal(todaySettleMoney).add(new BigDecimal(todayDrawProfit))).multiply(new BigDecimal(drawRoute.getD0Percent())).doubleValue();//当天可提现的金额
 			Double canDrawMoney = new BigDecimal(sumSettleMoney).subtract(new BigDecimal(drawedMoney)).subtract(new BigDecimal(drawedMoneyR)).add(new BigDecimal(canDrawToday)).doubleValue();
 			draw.setCanDrawMoney(df.format(canDrawMoney));
 		}

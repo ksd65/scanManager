@@ -20,5 +20,7 @@ public interface RoutewayDrawDao extends CrudDao<RoutewayDraw> {
 	public Double countSumMoney(RoutewayDraw routewayDraw);
     
     public Integer countRecord(RoutewayDraw routewayDraw);
+    
+    public Double countSumMemberDrawProfit(RoutewayDraw routewayDraw);
 	
 }

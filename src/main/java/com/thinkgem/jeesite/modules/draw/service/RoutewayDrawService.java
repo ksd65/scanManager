@@ -58,4 +58,9 @@ public class RoutewayDrawService extends CrudService<RoutewayDrawDao, RoutewayDr
 		return dao.countRecord(routewayDraw);
 	}
 	
+    public Double countSumMemberDrawProfit(RoutewayDraw routewayDraw){
+    	return dao.countSumMemberDrawProfit(routewayDraw);
+    }
+
+	
 }
