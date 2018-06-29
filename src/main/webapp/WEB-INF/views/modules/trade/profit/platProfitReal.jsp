@@ -33,6 +33,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li  class="active"><a href="${ctx}/trade/profit/realPlat">交易实际利润</a></li>
+		<li><a href="${ctx}/trade/profit/platDraw">代付收益</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="tradeProfit" action="${ctx}/trade/profit/realPlat" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>

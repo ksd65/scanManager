@@ -32,7 +32,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/trade/profit/plat">交易利润</a></li>
+		<li><a href="${ctx}/trade/profit/realPlat">交易实际利润</a></li>
 		<li  class="active"><a href="${ctx}/trade/profit/platDraw">代付收益</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="routewayDrawProfit" action="${ctx}/trade/profit/platDraw" method="post" class="breadcrumb form-search">
