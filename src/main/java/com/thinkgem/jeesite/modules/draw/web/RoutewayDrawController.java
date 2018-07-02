@@ -199,17 +199,31 @@ public class RoutewayDrawController extends BaseController {
 			}
 			
 			routewayDraw.setOffice(office);	
+			routewayDraw.setDrawType("2");//代付
+			//默认显示当天数据
+			String applyBeginTime = routewayDraw.getApplyBeginTime();
+			if(StringUtils.isNotEmpty(applyBeginTime)){
+				routewayDraw.setApplyBeginTime(applyBeginTime+" 00:00:00");
+			}else{
+				routewayDraw.setApplyBeginTime(DateUtils.getDate("yyyy-MM-dd")+" 00:00:00");
+			}
+			String applyEndTime = routewayDraw.getApplyEndTime();
+			if(StringUtils.isNotEmpty(applyEndTime)){
+				routewayDraw.setApplyEndTime(applyEndTime+" 23:59:59");
+			}else{
+				routewayDraw.setApplyEndTime(DateUtils.getDate("yyyy-MM-dd")+" 23:59:59");
+			}
 			
-            String fileName = "提现数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            String fileName = "代付数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
             //Page<RoutewayDraw> page = routewayDrawService.findPage(new Page<RoutewayDraw>(request, response, -1), routewayDraw);
             //Page<TradeDetail> page = tradeDetailService.findTradeDetail(new Page<TradeDetail>(request, response, -1), tradeDetail);
     		List<RoutewayDraw> list = routewayDrawService.findList(routewayDraw);
-            new ExportExcel("提现数据", RoutewayDraw.class).setDataList(list).write(response, fileName).dispose();
+            new ExportExcel("代付数据", RoutewayDraw.class).setDataList(list).write(response, fileName).dispose();
     		return null;
 		} catch (Exception e) {
-			addMessage(redirectAttributes, "导出提现数据失败！失败信息："+e.getMessage());
+			addMessage(redirectAttributes, "导出代付数据失败！失败信息："+e.getMessage());
 		}
-		return "redirect:" + adminPath + "/draw/routewayDraw/list?repage";
+		return "redirect:" + adminPath + "/draw/routewayDraw/agentPayList?repage";
     }
 
 	/**
@@ -272,6 +286,7 @@ public class RoutewayDrawController extends BaseController {
 		routewayDraw.setOffice(office);	
 	//	routewayDraw.setDrawType("1");//提现
 		routewayDraw.setNotRouteCode("1027");//排除易生
+		routewayDraw.setListFlag("1");
 		//默认显示当天数据
 		if(StringUtils.isEmpty(routewayDraw.getBeginTime())){
 			//routewayDraw.setBeginTime(DateUtils.getDate("yyyyMMdd"));

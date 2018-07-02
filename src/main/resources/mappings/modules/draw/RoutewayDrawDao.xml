@@ -125,6 +125,9 @@
 			<if test="notRouteCode != null and notRouteCode != ''">
 				AND a.route_code != #{notRouteCode}
 			</if>
+			<if test="listFlag !=null and listFlag !=''">
+				AND (a.route_code not in ('1038') OR a.draw_type='1')
+			</if>
 		</where>
 		<!-- 数据范围过滤 -->
 		<!-- ${sqlMap.dsf} -->

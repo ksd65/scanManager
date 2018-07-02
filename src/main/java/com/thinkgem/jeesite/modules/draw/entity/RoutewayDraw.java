@@ -75,6 +75,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 	private String bankCode;
 	private String routeCode;
 	private String notRouteCode;
+	private String listFlag;
 	
 	private String tradeMoney;//交易总金额
 	private String settleMoney;//可提现金额
@@ -98,7 +99,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.memberName = memberName;
 	}
 
-	@ExcelField(title="手机号", align=2, sort=20)
+//	@ExcelField(title="手机号", align=2, sort=20)
 	public String getMobilePhone() {
 		return mobilePhone;
 	}
@@ -116,7 +117,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.agentNameLevel1 = agentNameLevel1;
 	}
 	
-	@ExcelField(title="所属机构", align=2, sort=40)
+	@ExcelField(title="所属机构", align=2, sort=20)
 	public String getOfficeName() {
 		return office.getName();
 	}
@@ -125,7 +126,12 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.officeName = officeName;
 	}
 	
-	@ExcelField(title="商户编号", align=2, sort=50)
+	@ExcelField(title="审核备注", align=2, sort=120)
+	public String getRemarks() {
+		return remarks;
+	}
+
+	@ExcelField(title="商户编号", align=2, sort=30)
 	@Length(min=0, max=32, message="商户编号长度必须介于 0 和 32 之间")
 	public String getMemberCode() {
 		return memberCode;
@@ -135,7 +141,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.memberCode = memberCode;
 	}
 	
-	@ExcelField(title="平台流水号", align=2, sort=60)
+	@ExcelField(title="平台流水号", align=2, sort=140)
 	@Length(min=1, max=32, message="平台流水号长度必须介于 1 和 32 之间")
 	public String getPtSerialNo() {
 		return ptSerialNo;
@@ -145,7 +151,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.ptSerialNo = ptSerialNo;
 	}
 	
-	@ExcelField(title="提现日期", align=2, sort=70)
+	@ExcelField(title="代付日期", align=2, sort=150)
 	public String getTxDate() {
 		return txDate;
 	}
@@ -154,7 +160,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.txDate = txDate;
 	}
 
-	@ExcelField(title="提现时间", align=2, sort=80)
+	@ExcelField(title="代付时间", align=2, sort=160)
 	public String getTxTime() {
 		return txTime;
 	}
@@ -163,7 +169,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.txTime = txTime;
 	}
 	
-	@ExcelField(title="应答类型", align=2, sort=90, dictType="resp_type")
+	@ExcelField(title="代付结果", align=2, sort=170, dictType="resp_type")
 	@Length(min=0, max=1, message="应答类型 S:成功 E:失败 R:不确定长度必须介于 0 和 1 之间")
 	public String getRespType() {
 		return respType;
@@ -173,7 +179,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.respType = respType;
 	}
 	
-	@ExcelField(title="应答码", align=2, sort=100)
+	//@ExcelField(title="应答码", align=2, sort=100)
 	@Length(min=0, max=10, message="应答码长度必须介于 0 和 10 之间")
 	public String getRespCode() {
 		return respCode;
@@ -183,7 +189,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.respCode = respCode;
 	}
 	
-	@ExcelField(title="交易金额", align=2, sort=110)
+	//@ExcelField(title="交易金额", align=2, sort=110)
 	public String getMoney() {
 		return money;
 	}
@@ -192,7 +198,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.money = money;
 	}
 	
-	@ExcelField(title="实际提现金额", align=2, sort=120)
+	@ExcelField(title="实际代付金额", align=2, sort=90)
 	public String getDrawamount() {
 		return drawamount;
 	}
@@ -201,7 +207,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.drawamount = drawamount;
 	}
 	
-	@ExcelField(title="提现手续费", align=2, sort=130)
+	@ExcelField(title="代付手续费", align=2, sort=85)
 	public String getDrawfee() {
 		return drawfee;
 	}
@@ -210,7 +216,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.drawfee = drawfee;
 	}
 	
-	@ExcelField(title="商户费率", align=2, sort=135)
+	//@ExcelField(title="商户费率", align=2, sort=135)
 	public String getMemberRate() {
 		return memberRate;
 	}
@@ -219,7 +225,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.memberRate = memberRate;
 	}
 	
-	@ExcelField(title="交易手续费", align=2, sort=140)
+	//@ExcelField(title="交易手续费", align=2, sort=140)
 	public String getTradefee() {
 		return tradefee;
 	}
@@ -228,7 +234,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.tradefee = tradefee;
 	}
 	
-	@ExcelField(title="对账日期", align=2, sort=150)
+	//@ExcelField(title="对账日期", align=2, sort=150)
 	@Length(min=0, max=10, message="对账日期长度必须介于 0 和 10 之间")
 	public String getSettleDate() {
 		return settleDate;
@@ -286,6 +292,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.respDate = respDate;
 	}
 	
+	@ExcelField(title="代付结果说明", align=2, sort=180)
 	@Length(min=0, max=256, message="应答描述长度必须介于 0 和 256 之间")
 	public String getRespMsg() {
 		return respMsg;
@@ -329,7 +336,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.endTime = endTime;
 	}
 
-	//@ExcelField(title="创建时间", align=2, sort=130)
+	@ExcelField(title="申请时间", align=2, sort=70)
 	//@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getCreateTime() {
 		return super.createDate;
@@ -339,6 +346,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.createTime = createTime;
 	}
 
+	@ExcelField(title="审核状态", align=2, sort=100,dictType="draw_audit_status")
 	public String getAuditStatus() {
 		return auditStatus;
 	}
@@ -371,6 +379,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.applyEndTime = applyEndTime;
 	}
 
+	@ExcelField(title="申请代付金额", align=2, sort=80)
 	public String getDrawMoney() {
 		return drawMoney;
 	}
@@ -395,6 +404,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.drawType = drawType;
 	}
 
+	@ExcelField(title="银行名称", align=2, sort=40)
 	public String getBankName() {
 		return bankName;
 	}
@@ -403,6 +413,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.bankName = bankName;
 	}
 
+	@ExcelField(title="银行卡号", align=2, sort=50)
 	public String getBankAccount() {
 		return bankAccount;
 	}
@@ -411,6 +422,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.bankAccount = bankAccount;
 	}
 
+	@ExcelField(title="账户名称", align=2, sort=60)
 	public String getAccountName() {
 		return accountName;
 	}
@@ -435,6 +447,7 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 		this.tel = tel;
 	}
 
+	@ExcelField(title="商户订单号", align=2, sort=130)
 	public String getOrderNumOuter() {
 		return orderNumOuter;
 	}
@@ -521,6 +534,14 @@ public class RoutewayDraw extends DataEntity<RoutewayDraw> {
 
 	public void setCanDrawMoney(String canDrawMoney) {
 		this.canDrawMoney = canDrawMoney;
+	}
+
+	public String getListFlag() {
+		return listFlag;
+	}
+
+	public void setListFlag(String listFlag) {
+		this.listFlag = listFlag;
 	}
 	
 	
