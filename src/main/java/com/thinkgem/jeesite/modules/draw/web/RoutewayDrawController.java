@@ -674,7 +674,7 @@ public class RoutewayDrawController extends BaseController {
 		tmp2.setRouteCode(draw.getRouteCode());
 		tmp2.setAuditStatus("2");
 		tmp2.setRespType("S");
-		tmp2.setReqDate(DateUtils.getDate("yyyyMMdd"));
+		tmp2.setRespDate(DateUtils.getDate("yyyyMMdd"));
 		Double todayDrawProfit = routewayDrawService.countSumMemberDrawProfit(tmp2);
 		todayDrawProfit = todayDrawProfit == null ? 0 : todayDrawProfit;
 		

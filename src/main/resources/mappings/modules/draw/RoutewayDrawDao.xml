@@ -230,7 +230,7 @@
 				AND a.route_code = #{routeCode}
 			</if>
 			<if test="respDate != null and respDate != ''">
-				AND a.resp_date = #{respDate}
+				AND LEFT(a.resp_date,8) = #{respDate}
 			</if>
 		</where>	
 	</select>
