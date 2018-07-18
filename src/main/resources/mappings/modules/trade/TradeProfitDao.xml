@@ -62,7 +62,7 @@
 	</select>
 	
 	<select id="platProfitSum" resultType="java.util.Map">
-	SELECT	convert(SUM(t.trade_money),decimal(10,2)) AS tradeMoney,
+	SELECT	convert(SUM(t.trade_money),decimal(20,2)) AS tradeMoney,
         convert(SUM(t.agent_cost-t.plat_cost),decimal(10,2)) AS platProfit,
         convert(SUM(t.member_cost-t.agent_cost),decimal(10,2)) AS agentProfit ,
 		convert(SUM(t.plat_cost),decimal(10,2)) AS platCost,
@@ -150,7 +150,7 @@
 	
 	<select id="agentProfitSum" resultType="java.util.Map">
 		SELECT 
-		convert(SUM(a.trade_money),decimal(10,2)) AS tradeMoney,
+		convert(SUM(a.trade_money),decimal(20,2)) AS tradeMoney,
 		convert(SUM(a.agent_cost),decimal(10,2)) AS agentCost,
 		convert(SUM(a.agent_profit),decimal(10,2)) AS agentProfit
 		FROM(
@@ -190,7 +190,7 @@
 	
 	<select id="agentProfit" resultType="TradeProfit">
 		SELECT a.txn_date AS txnDate, a.route_code AS routeCode,a.agent_office_id AS agentOfficeId,
-		convert(a.trade_money,decimal(10,2)) AS tradeMoney,a.agent_cost AS agentCost,a.agent_profit AS agentProfit,
+		convert(a.trade_money,decimal(20,2)) AS tradeMoney,a.agent_cost AS agentCost,a.agent_profit AS agentProfit,
 		a.draw_per*100 drawPer,s.`name` AS agentName 
 		FROM(
 			SELECT t.txn_date, t.route_code,t.agent_office_id,
@@ -256,7 +256,7 @@
 	
 	<select id="platDrawProfitSum" resultType="java.util.Map">
 	SELECT 
-		convert(SUM(t.money),decimal(10,2)) AS money,convert(SUM(t.profit),decimal(10,2)) AS profit
+		convert(SUM(t.money),decimal(20,2)) AS money,convert(SUM(t.profit),decimal(10,2)) AS profit
  		FROM bu_routeway_draw_profit t
 		LEFT JOIN bu_member_info m ON m.id=t.member_id
 		LEFT JOIN bu_epay_code  c ON c.pay_code = m.pay_code
