@@ -196,25 +196,7 @@
 			<if test="respEndTime != null and respEndTime != ''">
 				AND d.resp_date &lt;= #{respEndTime}
 			</if>
-			UNION ALL
-			SELECT
-			<include refid="ml_trade_detail"/>
-			FROM
-				`ml_trade_detail` `e`
-			where
-			e.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="beginTime != null and beginTime != ''">
-				AND e.txn_date &gt;= #{beginTime}
-			</if>
-			<if test="endTime != null and endTime != ''">
-				AND e.txn_date &lt;= #{endTime}
-			</if>
-			<if test="respBeginTime != null and respBeginTime != ''">
-				AND e.resp_date &gt;= #{respBeginTime}
-			</if>
-			<if test="respEndTime != null and respEndTime != ''">
-				AND e.resp_date &lt;= #{respEndTime}
-			</if>
+			
 	     	) a
 		<include refid="tradeDetailJoins"/>
 		<where>
